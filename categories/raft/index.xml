@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Raft on Mind in the Wind</title>
+    <link>https://runzhen.github.io/categories/raft/</link>
+    <description>Recent content in Raft on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 22 May 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/categories/raft/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>etcd-raft 源码阅读之 raftLog</title>
+      <link>https://runzhen.github.io/posts/etcd-raft-raftlog/</link>
+      <pubDate>Sun, 22 May 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/etcd-raft-raftlog/</guid>
+      <description>etcd-raft 有关 log 的实现在分布在log.go，log_unstable.go，storage.go 三个文件中。首先看一下 raftLog 结构体。
+raftLog 结构体 type raftLog struct { // storage contains all stable entries since the last snapshot. storage Storage // unstable contains all unstable entries and snapshot. // they will be saved into storage. unstable unstable // committed is the highest log position that is known to be in // stable storage on a quorum of nodes. committed uint64 // applied is the highest log position that the application has // been instructed to apply to its state machine.</description>
+    </item>
+    <item>
+      <title>etcd-raft 源码阅读之 Leader 的选举</title>
+      <link>https://runzhen.github.io/posts/etcd-raft-leader-election/</link>
+      <pubDate>Sun, 15 May 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/etcd-raft-leader-election/</guid>
+      <description>首先看一下 raft node 之间传递的基本消息（比如 leader 选举，AppendLog）类型 Message protobuf 定义
+message Message { optional MessageType type = 1 ; optional uint64 to = 2 ; optional uint64 from = 3 ; // 整个消息发出去时，所处的任期 optional uint64 term = 4 ; // logTerm is generally used for appending Raft logs to followers. For example, // (type=MsgApp,index=100,logTerm=5) means leader appends entries starting at // index=101, and the term of entry at index 100 is 5.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Rust on Mind in the Wind</title>
+    <link>https://runzhen.github.io/categories/rust/</link>
+    <description>Recent content in Rust on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 06 Mar 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/categories/rust/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rust WASM 自制俄罗斯方块游戏</title>
+      <link>https://runzhen.github.io/posts/tetris-game-in-rust/</link>
+      <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/tetris-game-in-rust/</guid>
+      <description>起因 事情的起因是在 Switch 上玩 Tetris99 游戏，由于不喜欢这种吃鸡的形式，只想玩小时候的那种掌机模式，于是想到可不可以自己做一个。
+有了这个想法以后，打算使用 Rust + WASM，一方面是学习一下新技术，另一方面考虑到能直接在浏览器运行，可以跨平台，甚至可以在电视机上用浏览器打开网页就可以玩。
+选定技术栈以后，在 Github 上搜了一下，发现早有人做了类似的工作，不过没关系，主要还是要自己实现一下。
+几种技术方案 学习了一圈以后，理解了用 Rust + WASM 实现一个 web 游戏的大体思路。
+首先，Rust 的 wasm-bindgen 库必不可少，这是连接 rust 代码和 wasm 之间的桥梁。
+其次，既然是 web 游戏，那么免不了要画图，如何画图呢？ 大家都不约而同的选择了 HTML 的 canvas，这是一种 html 标准自带的画图方式，比如用下面这样简单的代码，就能画一个矩形。
+&amp;lt;html&amp;gt; &amp;lt;body&amp;gt; &amp;lt;canvas id=&amp;#34;myCanvas&amp;#34; width=&amp;#34;200&amp;#34; height=&amp;#34;100&amp;#34; style=&amp;#34;border:1px solid #000000;&amp;#34;&amp;gt; &amp;lt;/canvas&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; 所以，本质上我要做的就是用 Rust/WASM 代码 或者 JavaScript 代码，控制这个 &amp;lt;canvas id=&amp;quot;myCanvas&amp;quot; ，并且定期刷新，这样就能显示动画效果了。 如果你是个 JavaScript 高手，并且打算全部用 JavaScript 实现，那么现在就可以开始动手了。
+但如果是 Rust WASM 的方式，还需要考虑下是 纯 WASM 实现呢？ 还是 WASM 实现核心算法逻辑，JavaScript 实现画图这样的组合方式？</description>
+    </item>
+    <item>
+      <title>Rust 异步 async 和 tokio</title>
+      <link>https://runzhen.github.io/posts/rust-async-and-tokio/</link>
+      <pubDate>Sun, 27 Feb 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/rust-async-and-tokio/</guid>
+      <description>快速入门 Rust 语言原生提供了异步操作的关键字 async 和 await，但通常还需要配合第三方的 runtime，其中最有名的就是 tokio 了。
+在开始了解 Rust 的所谓异步是什么样子之前，先看一下如何写一个简单的 Rust 异步程序。
+以下是 main.rs
+async fn hello_world() { hello_cat().await; println!(&amp;#34;hello, world!&amp;#34;); } async fn hello_cat() { println!(&amp;#34;hello, kitty!&amp;#34;); } #[tokio::main] async fn main() { let future = hello_world(); println!(&amp;#34;start&amp;#34;); future.await; } Cargo.toml 文件中加入一行
+[dependencies] tokio = { version = &amp;#34;1&amp;#34;, features = [&amp;#34;full&amp;#34;] } 运行上面的代码，会看到这样的输出
+start hello, kitty! hello, world! 可以看出，future = hello_world(); 是创建一个异步执行的代码块， 并把它赋值给了 future 变量，这个代码块不会立刻执行，而是等到用户调用 await 的时候再去执行。</description>
+    </item>
+    <item>
+      <title>Rust 入坑之 LRU Cache</title>
+      <link>https://runzhen.github.io/posts/rust-lru-cache/</link>
+      <pubDate>Sun, 11 Jul 2021 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/rust-lru-cache/</guid>
+      <description>lru 算法的原理简而言之就是一个 hash ，一个 double linked list
+Linked List 提供 O(1) 的复杂度对元素进行插入和删除 hash 提供 O(1) 的复杂度进行查找 本文主要是通过阅读一个 rust 实现的 lru 学习相关语法。
+如何在结构体里面使用指针？ rust 是否有 raw pointer 直接指向内存地址，如果能用该怎么用？ Linked List 节点结构体 上面提到，真正的 key/value 是存在双链表的 Node 里，所以需要先定义这个 Node 长什么样，lru-rs 中 LruEntry 表示的就是 node：
+K V 代表的是泛型的类型， struct LruEntry&amp;lt;K, V&amp;gt; { key: mem::MaybeUninit&amp;lt;K&amp;gt;, val: mem::MaybeUninit&amp;lt;V&amp;gt;, prev: *mut LruEntry&amp;lt;K, V&amp;gt;, next: *mut LruEntry&amp;lt;K, V&amp;gt;, } 下面是如何初始化一个 Node，
+impl&amp;lt;K, V&amp;gt; LruEntry&amp;lt;K, V&amp;gt; { fn new(key: K, val: V) -&amp;gt; Self { LruEntry { key: mem::MaybeUninit::new(key), val: mem::MaybeUninit::new(val), prev: ptr::null_mut(), next: ptr::null_mut(), } } fn new_sigil() -&amp;gt; Self { LruEntry { key: mem::MaybeUninit::uninit(), val: mem::MaybeUninit::uninit(), prev: ptr::null_mut(), next: ptr::null_mut(), } } } key value 用 mem::MaybeUninit::new(key)进行初始化 prev next 指针用 ptr::null_mut() 初始化 LRU cache 结构体 链表的 node 定义好以后，双链表结构也自然而然就有了。接下来还缺一个 map 结构体，这个可以用 rust 原生的 hash 函数库，然后就可以定义出 LRU 结构体</description>
+    </item>
+    <item>
+      <title>Rust 入坑之 Bloom Filter</title>
+      <link>https://runzhen.github.io/posts/rust-examples-1/</link>
+      <pubDate>Sat, 19 Jun 2021 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/rust-examples-1/</guid>
+      <description>关于 Bloom Filter 的原理不做介绍，网上各种资料满天飞，其中参考资料 1 已经讲解的很详细。
+我重点关注如何用 Rust 实现一个简单的 Bloom Filter，并学习一些语法，源码在参考资料 2 。
+BloomFilter 结构体 pub struct BloomFilter&amp;lt;T&amp;gt; { hasher: T, k: u32, bit_vec: BitVec, insert_count: u64, } 尖括号中的 T 代表泛型，这样我们就可以使用不同的 hash 函数实现 （hasher） k 表示使用几个 hash 函数，根据 BF 的原理，使用多个 hash 能减少 False Positive bit vec 表示使用一个多大的 bit 数组，这个关系到 BF 的命中率和 FP 率 BitVec 的作用等于是实现了 bloom filter 的 bit array，直接用这个库省略了作者重复实现一个。
+定义 BloomHasher 定义这个 trait 的目的是让所有的 hash 函数库都有 hash() 这个函数，方便在上面的 hasher 中调用。</description>
+    </item>
+    <item>
+      <title>Rust 语言知识点记录</title>
+      <link>https://runzhen.github.io/posts/rust-programming-language/</link>
+      <pubDate>Wed, 21 Nov 2018 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/rust-programming-language/</guid>
+      <description>Rust 编程语言知识点笔记。
+trait 关键字 Rust没有继承，它和Golang不约而同的选择了trait(Golang叫Interface)作为其实现多态的基础。
+使用trait定义一个特征：
+trait HasArea { fn area(&amp;amp;self) -&amp;gt; f64; } trait里面的函数可以没有函数体，实现代码交给具体实现它的类型去补充：
+struct Circle { x: f64, y: f64, radius: f64, } impl HasArea for Circle { fn area(&amp;amp;self) -&amp;gt; f64 { std::f64::consts::PI * (self.radius * self.radius) } } fn main() { let c = Circle { x: 0.0f64, y: 0.0f64, radius: 1.0f64, }; println!(&amp;#34;circle c has an area of {}&amp;#34;, c.area()); } derive 属性 Rust提供了一个属性derive来自动实现一些trait，这样可以避免重复繁琐地实现他们，能被derive使用的trait包括：Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd。常用的例子是：</description>
+    </item>
+  </channel>
+</rss>

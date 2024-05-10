@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Algo on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/algo/</link>
+    <description>Recent content in Algo on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 02 Aug 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/algo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Union Find 并查集</title>
+      <link>https://runzhen.github.io/posts/union-find/</link>
+      <pubDate>Tue, 02 Aug 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/union-find/</guid>
+      <description>本文几乎全部摘抄了这篇文章，因为写的已经足够清晰易懂了，没有必要自己再做改动。
+唯一区别是代码改成了用 Golang 实现。
+基础概念 并查集有两个英文名：Disjoint Set, Union Find它的作用就是把一个数据集分成若干个子集，每个子集内部数据可以互联互通，而子集之间则不具有连通性。
+并查集的底层结构类似于堆，也是用数组描述一种树结构，但不同的是，堆是一棵独立的二叉树，并查集的树是多叉树，而且可能不止一棵树(也就是森林)。在并查集中，我们把相互独立的数据集称为连通分量，连通分量在逻辑上可以形象地描述为一棵树，每棵树都有一个根节点，其他的元素都会直接或间接指向根节点。
+比如下图这个并查集，我们维护一个parent数组，每个元素初始化为对应的数组下标，代表自己是独立的一棵树，且是树根。以第一棵树为例，在后续数据处理过程中，我们把与所有与&amp;quot;2&amp;quot;同属一个连通分量的元素都连到&amp;quot;2&amp;quot;上，并把数组对应下标的元素赋值为2，其中&amp;quot;5&amp;quot;先连接到了&amp;quot;1&amp;quot;上，&amp;ldquo;1&amp;quot;又连接到了&amp;quot;2&amp;quot;上。最后，数组每个元素都代表其指向的父节点。
+知道了并查集的底层结构，那我们该如何去构建这个结构并进行查找操作呢？并查集有两个最重要的方法：union 和 find，这里先给出 UnionFind 最完善的 API 框架伪代码：
+UnionFind { Init(int N) {} // 构造方法 Find(int x) int {} //查找某个元素的根节点 Union(int x, int y) {} // 为x和y建立联系 IsConnected(int x, int y) bool {} //判断x和y是否相连(在同一棵树也就是连通分量中) Count() int {} // 返回连通分量的个数，也就是多少棵树 } find 方法实现 find方法的目的是寻找某个元素所在树的根节点，代码如下：
+// 查找根节点 func (uf *UnionFind) Find (x int) int { for { if x == uf.parent[x] { break } x = uf.</description>
+    </item>
+    <item>
+      <title>Dijkstra 和 Floyd 最短路径算法</title>
+      <link>https://runzhen.github.io/posts/graph-dijkstra-floyd/</link>
+      <pubDate>Sun, 31 Jul 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/graph-dijkstra-floyd/</guid>
+      <description>图的表示 邻接矩阵（Adjacency Matrix） 邻接矩阵是图的常用存储表示，它的底层依赖一个二维数组。它用两个数组分别存储数据元素（顶点）的信息和数据元素之间的关系（边或弧）的信息。
+优点：
+邻接矩阵的存储方式简单、直接，可以高效的获取两个顶点的关系； 计算方便。（求解最短路径 Floyd-Warshall 算法） 用邻接矩阵来表示一个图，虽然简单、直观，但是比较浪费存储空间。
+邻接表（Adjacency List） Dijkstra 算法 算法的基本逻辑这篇视频里讲的很清楚，简单来说有以下两个步骤
+每次从未标记的节点中选择与出发点最近的点，标记。 计算第一步刚加入的节点 A 的邻近节点 B 的距离。如果节点A 到出发点的距离 + A 到 B 的距离 &amp;lt; 节点 B 的当前值，则更新 B 的距离。 下面看一下算法的大体思路，完整代码见 https://leetcode.com/problems/network-delay-time
+// 邻接表表示法. 并且没有用指针把节点串起来， // 直接用 map[NodeId]Distance 表示了 graph := make([]map[int]int, n+1) // digkstra distance := make([]int, n+1) visited := make([]bool, n+1) // 先赋值无穷大 for i, _ := range distance { distance[i] = math.MaxInt64 } distance[k] = 0 for { // 在没有 visited 的节点中，找 distance 最小的 nextNode := findNextNode(visited, distance) if nextNode == -1 { break } // 标记为已访问 visited[nextNode] = true // 更新这个节点的相邻节点到 K 的最小距离 for k, v := range graph[nextNode] { if distance[k] &amp;gt; v + distance[nextNode] { distance[k] = v + distance[nextNode] } } } 可以看出，算法的复杂度与节点的个数相关，假设有 N 个节点，则 O(n^2)</description>
+    </item>
+    <item>
+      <title>Heap 和 Priority Queue</title>
+      <link>https://runzhen.github.io/posts/heap-and-priority-queue/</link>
+      <pubDate>Sun, 17 Jul 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/heap-and-priority-queue/</guid>
+      <description>什么是堆 堆是一棵具有特定性质的二叉树。
+堆首先必须是一棵完全二叉树； 这棵完全二叉树中，任意一个结点的值都大于等于它的左右孩子结点的值，这样的堆称为大顶堆（也叫最大堆，Max-Heap）；或者任意一个结点的值都小于等于它的左右孩子结点的值，这样的堆称为小顶堆（也叫最小堆，Min-Heap） 因为它是完全二叉树，所以通常在写代码的时候，我们会用一个数组表示树的元素，而且会把第 0 号空出来，这样：
+假设 parent index 为 i，左节点 idx = i * 2，右节点 idx = i * 2 + 1 。 假设某个节点 index = i，其父节点 idx = i / 2 。 什么是优先队列 Priority Queue 是一种数据结构，普通的 Queue 是先进先出，而 PQ 能根据每个元素包含的优先级，选择下一个出队的元素。堆 （Heap）通常是实现 PQ 的底层数据结构，但并不意味着 PQ 一定是堆。
+通常有以下应用
+数据压缩：赫夫曼编码算法； 最短路径算法：Dijkstra算法； 最小生成树算法：Prim算法； 事件驱动仿真：顾客排队算法； 选择问题：查找第k个最小元素； Golang Heap Go 的 container/heap包提供了一个接口，
+type Interface interface { sort.Interface Push(x interface{}) // add x as element Len() Pop() interface{} // remove and return element Len() - 1.</description>
+    </item>
+  </channel>
+</rss>

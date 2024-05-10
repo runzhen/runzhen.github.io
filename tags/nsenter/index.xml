@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Nsenter on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/nsenter/</link>
+    <description>Recent content in Nsenter on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 03 Apr 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/nsenter/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用 nsenter 从 k8s Pod 逃逸到 Host</title>
+      <link>https://runzhen.github.io/posts/nsenter-escape-from-pod-to-host/</link>
+      <pubDate>Sun, 03 Apr 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/nsenter-escape-from-pod-to-host/</guid>
+      <description>本文是读完 Detecting a Container Escape with Cilium and eBPF 和 使用 Cilium 增强 Kubernetes 网络安全 的一个简单总结。
+如何从 Pod 逃逸到 Host 通常为了安全起见，生产环境的 docker image 都要求不使用 root，一般都是在 Dockerfile 中指定 USER xxx，这样启动的 container/pod 是使用非特权的 user，这样的 user 是没法用 sudo 安装软件的。
+有时为了能临时 debug，需要安装 vim, curl 之类的命令，又不想改动 Dockerfile 重新 build image，该怎么办呢？
+一个 k8s 原生支持的方法是在 deployment 里面指定 securityContext，如下所示
+$ cat privileged.yaml apiVersion: v1 kind: Pod metadata: name: privileged-the-pod spec: hostPID: true hostNetwork: true containers: - name: privileged-the-pod image: nginx:latest ports: - containerPort: 80 securityContext: privileged: true 对于 docker container，可以在指定 docker run 命令时，设置 --user 为 0 也能获得 root 的 container。</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Raft on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/raft/</link>
+    <description>Recent content in Raft on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 22 May 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/raft/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>etcd-raft 源码阅读之 raftLog</title>
+      <link>https://runzhen.github.io/posts/etcd-raft-raftlog/</link>
+      <pubDate>Sun, 22 May 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/etcd-raft-raftlog/</guid>
+      <description>etcd-raft 有关 log 的实现在分布在log.go，log_unstable.go，storage.go 三个文件中。首先看一下 raftLog 结构体。
+raftLog 结构体 type raftLog struct { // storage contains all stable entries since the last snapshot. storage Storage // unstable contains all unstable entries and snapshot. // they will be saved into storage. unstable unstable // committed is the highest log position that is known to be in // stable storage on a quorum of nodes. committed uint64 // applied is the highest log position that the application has // been instructed to apply to its state machine.</description>
+    </item>
+    <item>
+      <title>etcd-raft 源码阅读之 Leader 的选举</title>
+      <link>https://runzhen.github.io/posts/etcd-raft-leader-election/</link>
+      <pubDate>Sun, 15 May 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/etcd-raft-leader-election/</guid>
+      <description>首先看一下 raft node 之间传递的基本消息（比如 leader 选举，AppendLog）类型 Message protobuf 定义
+message Message { optional MessageType type = 1 ; optional uint64 to = 2 ; optional uint64 from = 3 ; // 整个消息发出去时，所处的任期 optional uint64 term = 4 ; // logTerm is generally used for appending Raft logs to followers. For example, // (type=MsgApp,index=100,logTerm=5) means leader appends entries starting at // index=101, and the term of entry at index 100 is 5.</description>
+    </item>
+    <item>
+      <title>Raft 一致性算法实现 1</title>
+      <link>https://runzhen.github.io/posts/2009-09-01-raft-implementation-leader/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/2009-09-01-raft-implementation-leader/</guid>
+      <description>在实现的时候发现这张状态转换图非常重要。整个 raft 的运行就是围绕着这张图发生一系列状态转换。 因此，第一步实现一个状态机就成了关键。
+参考资料 Go 并发、管道</description>
+    </item>
+    <item>
+      <title>Raft 算法实现 2：日志的复制</title>
+      <link>https://runzhen.github.io/posts/2009-09-01-raft-implementation-log-replication/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/2009-09-01-raft-implementation-log-replication/</guid>
+      <description>投票的过程 日志的复制 一旦选举成功，所有的 Client 请求最终都会交给 Leader 处理。
+当 Client 请求到 Leader后，Leader 首先将该请求转化成 LogEntry，然后添加到自己的 log[] 中，并且把对应的 index 值存到 LogEntry 的 index 中，这样 LogEntry 中就包含了当前 Leader 的 term 信息和在 log[] 中的index信息，这两个信息在发给 Follower 以后会用到。
+所以一旦一个节点成为 Leader 以后，那么它的 log[] 保存的这一组 LogEntry 就代表了整个集群中的最终一致的数据。用 raft 论文的话来说就是，节点是一个状态机，LogEntry 是指令集，任何一个节点，只要逐个执行这一串指令，最后状态机的状态都一样。
+先看看与日志复制相关的几个数据结构，首先是 raft 结构，其中相关的有以下几个变量：
+type Raft struct {....log []LogEntrycommitIndex int // 所有机器lastApplied int nextIndex []int // 只在 leadermatchIndex []int .....} nextIndex 和 matchIndex，这两个数组只有当这个 raft 是 Leader 的时候才有效，否则这两个数组的内容无效。</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Ratelimit on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/ratelimit/</link>
+    <description>Recent content in Ratelimit on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/ratelimit/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>分布式限流</title>
+      <link>https://runzhen.github.io/posts/distributed-rate-limit/</link>
+      <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/distributed-rate-limit/</guid>
+      <description>限流算法 通常有下面4种：
+固定时间窗口(计数器)算法 基本思想是：在固定时间窗口内对请求数进行统计，然后与阈值比较确定是否进行限流，一旦到了时间临界点，就将计数器清零 缺陷： 可能存在在某个时间窗口前90%时间里没有请求，所有的请求都集中在最后10%，这个在该算法中是允许的 滑动时间窗口算法 基本思想是：一个较大的时间窗口内细分成多个小窗口，大窗口按照时间顺序每次向后移动一个小窗口，并保证每次大窗口内的请求总数不超过阈值。 缺陷：滑动窗口是对固定窗口算法的一种改进，但是并没有真正解决固定窗口的临界突发瞬时大流量问题。 漏桶算法 Leaky Bucket 基本思想是：漏桶算法通过一个固定容量的桶，控制进入桶中的请求总数，然后以一定速率从桶中取出请求进行处理，如果桶已经满了，则直接丢弃请求。 缺陷： 漏桶算法因为是先进先出队列，在突发瞬时大流量情况下，会出现大量请求失败情况，不适合抢购，热点事件等场景 适用场景：就像漏斗一样，出口处的速率是恒定的。因此漏桶算法是流量最均衡的限流算法，用于对流量进行整型，保证流量以固定的速率进入系统。 令牌桶算法 基本思想是：令牌桶相当于反向漏桶算法，即以固定速率生成令牌放入固定容量的桶中，每个请求从桶中获取到令牌就允许执行，没有获取到就丢弃。 令牌桶算法弥补了漏桶算法无法应对突发大流量问题，即可以针对突发大流量进行限流。 单机 ratelimit 参考资料 1 里面有上面四种算法的实现，这里仅列举一下固定窗口法和漏桶算法。
+固定窗口算法
+type FixedWindowRateLimiter struct { threshold int // 阈值 stime time.Time // 开始时间 interval time.Duration // 时间窗口 counter int // 当前计数 lock sync.Mutex } func NewFixedWindowRateLimiter(threshold int, interval time.Duration) *FixedWindowRateLimiter { return &amp;amp;FixedWindowRateLimiter{ threshold: threshold, stime: time.Now(), interval: interval, counter: threshold - 1, // 让其处于下一个时间窗口开始的时间临界点 } } func (l *FixedWindowRateLimiter) Allow() bool { l.</description>
+    </item>
+  </channel>
+</rss>

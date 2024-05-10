@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Makefile on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/makefile/</link>
+    <description>Recent content in Makefile on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 26 Sep 2021 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/makefile/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Makefile 的几个语法坑</title>
+      <link>https://runzhen.github.io/posts/makefile-syntax-pitfalls/</link>
+      <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/makefile-syntax-pitfalls/</guid>
+      <description>Makefile 和 Bash script 在使用的过程中有很多奇奇怪怪的坑，本文做一下纪录。
+首先，有两个文件，一个叫 envs，里面定义了一个环境变量，比如
+$ cat envsexport GOPROXY=&amp;#34;test.local&amp;#34; 第二个文件就是 Makefile ，假如我这样写
+test: source ./envs echo ${GOPROXY} 所以，总的目标是，我希望在 Makefile 中导入另一个文件中事先定义好的环境变量。 然而这样的写法有很多问题。
+source 命令找不到 加入直接运行 make, 很有可能你会看到这样的错误
+$ make source ./envs make: source: Command not found 可是在 terminal 里面明明可以用 source 命令啊？ 于是，第一个坑出现:
+source is a (non-POSIX) shell builtin, not an executable program on any conventional UNIX-like system. If source is changed to ., make changes its strategy; instead of trying to find and execute a program, it just passes the rule body to the system shell.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>RFC on Mind in the Wind</title>
+    <link>https://runzhen.github.io/categories/rfc/</link>
+    <description>Recent content in RFC on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 12 Mar 2018 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/categories/rfc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RFC 793 传输控制协议 TCP</title>
+      <link>https://runzhen.github.io/posts/tcp-rfc793/</link>
+      <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/tcp-rfc793/</guid>
+      <description>RFC 793 是 TCP 正式成为标准时的文档，虽然距今已有 30 多年的历史，并且已经多次被更新，但是要学习 TCP 这份文档仍然值得一读。
+文本算是一个读书笔记，把阅读过程中我认为需要注意的部分记录下来，方便自己以后查漏补缺。后续也会有阅读其他相关 RFC 的读书笔记。
+RFC 的第一二章节是按照惯例的声明，正式内容从 第三章 FUNCTIONAL SPECIFICATION 开始。
+3.1 头部格式 IP 头部带有源地址和目地址等信息，这两者也同样会被 TCP 头部的某些字段使用（比如计算 checksum 的时候）。
+TCP 头部格式如下：
+0 1 2 30 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Source Port | Destination Port |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Sequence Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Acknowledgment Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Data | |U|A|P|R|S|F| || Offset| Reserved |R|C|S|S|Y|I| Window || | |G|K|H|T|N|N| |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Checksum | Urgent Pointer |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Options | Padding |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| data |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+TCP Header Format Source Port，16位，源端口号</description>
+    </item>
+  </channel>
+</rss>

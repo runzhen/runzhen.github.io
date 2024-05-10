@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Programming on Mind in the Wind</title>
+    <link>https://runzhen.github.io/categories/programming/</link>
+    <description>Recent content in Programming on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/categories/programming/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>分布式限流</title>
+      <link>https://runzhen.github.io/posts/distributed-rate-limit/</link>
+      <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/distributed-rate-limit/</guid>
+      <description>限流算法 通常有下面4种：
+固定时间窗口(计数器)算法 基本思想是：在固定时间窗口内对请求数进行统计，然后与阈值比较确定是否进行限流，一旦到了时间临界点，就将计数器清零 缺陷： 可能存在在某个时间窗口前90%时间里没有请求，所有的请求都集中在最后10%，这个在该算法中是允许的 滑动时间窗口算法 基本思想是：一个较大的时间窗口内细分成多个小窗口，大窗口按照时间顺序每次向后移动一个小窗口，并保证每次大窗口内的请求总数不超过阈值。 缺陷：滑动窗口是对固定窗口算法的一种改进，但是并没有真正解决固定窗口的临界突发瞬时大流量问题。 漏桶算法 Leaky Bucket 基本思想是：漏桶算法通过一个固定容量的桶，控制进入桶中的请求总数，然后以一定速率从桶中取出请求进行处理，如果桶已经满了，则直接丢弃请求。 缺陷： 漏桶算法因为是先进先出队列，在突发瞬时大流量情况下，会出现大量请求失败情况，不适合抢购，热点事件等场景 适用场景：就像漏斗一样，出口处的速率是恒定的。因此漏桶算法是流量最均衡的限流算法，用于对流量进行整型，保证流量以固定的速率进入系统。 令牌桶算法 基本思想是：令牌桶相当于反向漏桶算法，即以固定速率生成令牌放入固定容量的桶中，每个请求从桶中获取到令牌就允许执行，没有获取到就丢弃。 令牌桶算法弥补了漏桶算法无法应对突发大流量问题，即可以针对突发大流量进行限流。 单机 ratelimit 参考资料 1 里面有上面四种算法的实现，这里仅列举一下固定窗口法和漏桶算法。
+固定窗口算法
+type FixedWindowRateLimiter struct { threshold int // 阈值 stime time.Time // 开始时间 interval time.Duration // 时间窗口 counter int // 当前计数 lock sync.Mutex } func NewFixedWindowRateLimiter(threshold int, interval time.Duration) *FixedWindowRateLimiter { return &amp;amp;FixedWindowRateLimiter{ threshold: threshold, stime: time.Now(), interval: interval, counter: threshold - 1, // 让其处于下一个时间窗口开始的时间临界点 } } func (l *FixedWindowRateLimiter) Allow() bool { l.</description>
+    </item>
+    <item>
+      <title>Rust 的所有权和生命周期</title>
+      <link>https://runzhen.github.io/posts/rust-ownership-lifetime/</link>
+      <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/rust-ownership-lifetime/</guid>
+      <description>所有权 在 Rust 中，heap 上的一块内存区域是一块 “值”，与之绑定的是一个变量，也就是说变量和值是绑定的，要注意这种绑定关系。 在任何时候，一个值只有一个对应的变量作为所有者。
+理解了这些概念之后，再来看所有权和它的基本特性：
+Rust中的每个值都有一个对应的变量作为它的所有者； 在同一时间内，只有且仅有一个所有者； 当所有者离开自己的作用域时，它持有的值就会被释放掉。 所有权的转移 赋值即转移。 如下面的示例，
+fn test() { let v: Vec&amp;lt;u8&amp;gt; = vec![0;20]; let u = v } 在第二行，u 成为了内存中这个数组数据的所有者，当函数返回时，u 的作用域结束，这块内存随即被释放。
+要想让 v 和 u 各自都拥有独立的数据，可以使用 v.clone() 函数，
+注意，int, char 等基本类型，在赋值的时候等于自动调用了 clone，所以对于这些基本类型可以放心的像 C/C++ 语言那样使用。
+所有权的借用 &amp;amp; 是一个在 C/C++ 和 Golang 中常见的符号，在 Rust 中，用在一个变量上是借用的意思，也就是说所有权不变。
+官方文档用这样一个例子来说明借用
+fn main() { let s1 = String::from(&amp;#34;hello&amp;#34;); let len = calculate_length(&amp;amp;s1); println!(&amp;#34;The length of &amp;#39;{}&amp;#39; is {}.&amp;#34;, s1, len); } fn calculate_length(s: &amp;amp;String) -&amp;gt; usize { s.</description>
+    </item>
+    <item>
+      <title>从 C 语言调用 Rust 的函数</title>
+      <link>https://runzhen.github.io/posts/call-rust-functions-from-c/</link>
+      <pubDate>Sat, 15 Dec 2018 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/call-rust-functions-from-c/</guid>
+      <description>看到 rust 可以编译成动态链接库（.so），想到是不是可以用 C 语言链接到这个库呢？答案是肯定的。Rust 提供了 FFI 接口，即 Foreign Function Interface，目的就是和其他语言交互。
+废话不多说，开始干。我们要实现三个例子：
+C 调用 Rust 动态库 C 调用 Rust 静态库 Rust 调用 C 函数 (不是库) C 调用 Rust 动态库 Rust 部分 首先是用 cargo new NAME --lib 创建一个新项目，然后编辑 src/lib.rs
+#![crate_type = &amp;#34;dylib&amp;#34;] #[no_mangle] pub extern fn double_input(input: i32) -&amp;gt; i32 { println!(&amp;#34;hello --from rust shared library&amp;#34;); input * 2 } crate_type = &amp;ldquo;dylib&amp;rdquo; 代表编译成动态链接库。
+no_mangle 告诉 rust 编译器，不要擅自改变下面这个函数的函数名。一些高级语言比如 c++ 之类，为了防止不同库中的函数名冲突，都会在编译时给每个函数生成独一无二的函数名，比如 func::h485dee。</description>
+    </item>
+  </channel>
+</rss>

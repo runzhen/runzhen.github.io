@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Grpc-Go on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/grpc-go/</link>
+    <description>Recent content in Grpc-Go on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 18 Jan 2021 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/grpc-go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>gRPC-go Server 端实现</title>
+      <link>https://runzhen.github.io/posts/grpc-go-server-code/</link>
+      <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/grpc-go-server-code/</guid>
+      <description>在上一篇文章中，介绍了 grpc 建立 TCP 连接的过程，侧重点在 Client 端，而关于 Server 端建立 TCP 的过程相对是比较简单的。
+Server端 listen on 本地端口，并且接收来自 client 的连接请求，一旦建立 TCP 连接后，接下来的步骤是什么呢？ 建立 HTTP2 server，并收发数据。
+本文尝试回答一下几个问题：
+Server 怎么利用 http2 的 stream 传输数据？ 从 stream 里读的数据存放在哪？ Stream 读到的数据如何传给用户 Server 要发送的数据又是从哪发送的？ 创建 http2Server 首先从用户的代码入手，用户的代码最后会调用 grpcServer.Serve(lis), 稍微追踪几个函数就能发现调用链是 handleRawConn() 到 serveStreams()。
+从 handleRawConn() 中我们发现 newHTTP2Transport 会创建一个新的 http2Server。
+serveStreams() 中的 HandleStreams() 是 type ServerTransport interface 的一个函数，而 type http2Server struct 实现了这个接口。
+值得注意的是，有两个结构体实现了 ServerTransport，分别是
+transport/handler_server.go 的 serverHandlerTransport transport/http2_server.go 的 http2Server 一般我们在 main 函数中调用 grpcServer.</description>
+    </item>
+  </channel>
+</rss>

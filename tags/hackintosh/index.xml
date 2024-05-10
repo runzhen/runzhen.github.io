@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Hackintosh on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/hackintosh/</link>
+    <description>Recent content in Hackintosh on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 05 Nov 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/hackintosh/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>记录安装黑苹果过程中的各种坑</title>
+      <link>https://runzhen.github.io/posts/hackintosh/</link>
+      <pubDate>Sat, 05 Nov 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/hackintosh/</guid>
+      <description>主机配置
+CPU：i7-9700k CPU 集显：Intel UHD 630 主板：MSI B365M Pro-VDH 黑苹果镜像来源于黑果小兵的 Monterey 12.6，下载链接 , 安装的过程就不赘述了，网上有很多资料。
+安装之后最大的问题就是显卡只显示 14 MB 显存，意思就是 MacOS 没有正确的驱动 CPU 的集成显卡，需要改 config.plist 文件。
+以上都是安装黑苹果大多数人都会遇到的问题，网上也有很多教程教你把 AAPL,ig-platform-id 的值改成 07009B3E，以及其他的一系列参数等等，但是问题是按照他们的参数设置后，显卡依然无法正常工作。
+尝试了很多参数，遇到的问题主要是以下两种
+显存依然是 14 MB，但其他正常。但是因为无法驱动导致显示性能所限，无法打开消耗GPU性能的应用，比如 Docker 无法启动，因为 Mac 版的 Docker 初试启动需要开启一个桌面，无法打开。VS Code 也无法使用。 Goland 可以使用。 显存显示正常 1560 MB，但是屏幕的色彩全变了，蓝色显示为橘黄，红色显示为蓝色。 这是困扰我最大的问题，尝试了几天都没有找到解决办法。 最后，通过这个 Youtube 视频介绍的方法 https://www.youtube.com/watch?v=4EU8oT0-Ea8 居然试验成功了！！
+为什么成功了呢？ 我只做了以下几个操作，可能是其中一个，或者全部组合起了作用。
+在 ACPI -&amp;gt; Patch 里面添加了 2 项。 NVRAM “7C436110” 那一项的 boot-args 参数里面加了 -cdfon 在 PlatformInfo SMBIOS 里面选择了 iMac19,1 注意：</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Kubeflow on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/kubeflow/</link>
+    <description>Recent content in Kubeflow on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 22 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/kubeflow/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubeflow 部署 MNIST</title>
+      <link>https://runzhen.github.io/posts/mnist_step_by_step/</link>
+      <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/mnist_step_by_step/</guid>
+      <description>在阅读本文之前，假设已经在 GCP 上安装好了 Kubeflow。
+首先进入 Kubeflow，点击 Notebook Server，新建一个 Jupyter Notebook。
+新建的时候会让你输入 Name 和 Namespace，在 Kubeflow 中，每个用户都在 k8s 集群上有自己的 Namespace。
+这里输入的 Name 对应的 Notebook Pod 最后会在自己的 Namespace 下。
+新的 Notebook 里面是空的，我们需要下载一些例子。打开 terminal
+然后输入 git clone 命令：
+git clone https://github.com/kubeflow/examples.git
+回到默认界面会看到刚刚 clone 的项目，打开 mnist 目录下的 mnist_gcp.ipynb
+开始 首先第一个问题，当我打开这个 Jupyter Notebook 的 WebUI 时，它运行在哪里？
+Notebook 是在哪个 Pod $ kubectl -n Your-namespace get pod NAME READY STATUS RESTARTS AGE fairing-builder-chvkq-6s4cn 0/1 Completed 0 3d23h mnist-model-7886dcbb5b-t2kk8 1/1 Running 0 3d22h mnist-tensorboard-774c585b7c-65766 2/2 Running 0 21h mnist-train-2596-chief-0 0/1 Completed 0 3d22h mnist-train-2596-worker-0 0/1 Completed 0 3d22h mnist-ui-7f95c8498b-xqsfs 2/2 Running 0 3d22h test1-0 2/2 Running 0 3d23h test1-0 是之前在 UI里面创建 Notebook server 时定下的名字，于是test1-0</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,93 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Linux | Mind in the Wind</title>
+<meta name=keywords content><meta name=description content="ExampleSite description"><meta name=author content="Me"><link rel=canonical href=https://runzhen.github.io/tags/linux/><meta name=google-site-verification content="XYZabc"><meta name=yandex-verification content="XYZabc"><meta name=msvalidate.01 content="XYZabc"><link crossorigin=anonymous href=/assets/css/stylesheet.a8f620eb24ba9442cd3765590f9208a0752be50e5a7b9dd9e3e555c8cb5e74e6.css integrity="sha256-qPYg6yS6lELNN2VZD5IIoHUr5Q5ae53Z4+VVyMtedOY=" rel="preload stylesheet" as=style><link rel=icon href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate type=application/rss+xml href=https://runzhen.github.io/tags/linux/index.xml><link rel=alternate hreflang=en href=https://runzhen.github.io/tags/linux/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><meta property="og:title" content="Linux"><meta property="og:description" content="ExampleSite description"><meta property="og:type" content="website"><meta property="og:url" content="https://runzhen.github.io/tags/linux/"><meta property="og:image" content="https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta property="og:site_name" content="Mind in the Wind"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta name=twitter:title content="Linux"><meta name=twitter:description content="ExampleSite description"></head><body class=list id=top><script>localStorage.getItem("pref-theme")==="dark"&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://runzhen.github.io/ accesskey=h title="Home (Alt + H)"><img src=https://runzhen.github.io/apple-touch-icon.png alt aria-label=logo height=35>Home</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://runzhen.github.io/posts/ title=Blog><span>Blog</span></a></li><li><a href=https://runzhen.github.io/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://runzhen.github.io/categories/ title=Categories><span>Categories</span></a></li><li><a href=https://runzhen.github.io/tags/ title=Tags><span>Tags</span></a></li></ul></nav></header><main class=main><header class=page-header><h1>Linux
+<a href=/tags/linux/index.xml title=RSS aria-label=RSS><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" height="23"><path d="M4 11a9 9 0 019 9"/><path d="M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1"/></svg></a></h1></header><article class="post-entry tag-entry"><header class=entry-header><h2 class=entry-hint-parent>用GDB追踪glibc代码执行过程</h2></header><div class=entry-content><p>首先需要安装一下额外的工具包，一个是 libc6-dbg，这是带有debug symbol信息的 libc.so；另一个是libc6-dev，这是glibc的源代码，获取之后我们就可以在gdb中查看代码了。
+在Ubuntu/Debian 系统上，我们可以通过以下2条命令获得：
+$sudo apt-get install libc6-dbg
+$sudo apt-get source libc6-dev
+在Fedora/Red Hat 系的OS上，需要安装的软件包的名字不叫 libc6-dbg，libc6-dev，貌似应该是glibc-debuginfo。
+之后，以一段小程序为例来演示整个过程，小程序包含了一个系统调用fork()，一个库函数printf()
+int main(){ pid_t son; if((son=fork())==0) printf("I am son\n"); else printf("I am farther\n"); return 0; } 接着，编译产生带有调试信息的可执行文件 $gcc -g -o f fork.c 然后开启gdb调试 $gdb fork
+在开始调试之前，需要指定一下刚刚获得的带有libc6-dev源码文件夹的路径，比如我把这些源码放在了 ~/glibc/lib 文件夹下，通常一般程序需要的是stdio-common这个目录内的文件，
+于是输入 (gdb) directory ~/glibc/lib/stdio-common
+注意看其中几条命令的用法。
+程序在调用fork函数后，其实执行的是glibc包装过的__libc_fork ，并且我们可以查看其源代码。 这里有几个常用命令：
+s 单步执行； list 查看源代码； start 程序开始执行，并在main函数处停下，相当于在main处加断点。 但是在执行了几步之后出现了这样的错误：
+_IO_list_lock () at genops.c:1299 1299 genops.c: No such file or directory....</p></div><footer class=entry-footer><span title='2012-03-27 00:00:00 +0000 UTC'>2012-03-27</span>&nbsp;·&nbsp;Me</footer><a class=entry-link aria-label="post link to 用GDB追踪glibc代码执行过程" href=https://runzhen.github.io/posts/trace-glibc-by-using-gdb/></a></article><article class="post-entry tag-entry"><header class=entry-header><h2 class=entry-hint-parent>从书上的一个错误说 Buffer Overflow</h2></header><div class=entry-content><p>时间倒回到2011年5月的一天，大学的最后一门课《计算机信息安全技术》，讲到《缓冲区溢出》这一章，并且给出了一段示例代码来演示缓冲区溢出，回到宿舍后出于好奇我运行了一下这段代码，发现结果并不是书上所说的那样，当时在人人网也发过一篇吐槽的日志，但是一直拖到现在都没有仔细的去研究过，正好现在十一放假没事，就花点时间搞搞啦。
+书第136页-137页。代码如下，出于简单考虑（其实书上的C++代码格式也是错的），我除去了头文件和cout函数，这样就跟纯C语言代码是一样了。
+void function(int a)
+{
+char buffer[5];
+char *ret;
+ret = buffer + 12;
+*ret += 8;
+}
+int main()
+{
+int x;
+x = 10;
+function(7);
+x = 1;
+return 0;
+} 书上说最后x的值是10，不是1，而我的结果恰恰相反。 接着用gcc产生汇编代码，在这里用 gcc -O0 -S命令告诉编译器不采用任何优化措施，产生最原始的汇编代码，这样有利于我们分析，即使是采用-O1级优化的时候，汇编代码已经很难读了，大家可以试一试。
+function:
+pushl %ebp
+movl %esp, %ebp
+subl $16, %esp
+leal -9(%ebp), %eax
+addl $12, %eax
+movl %eax, -4(%ebp)
+movl -4(%ebp), %eax
+movzbl (%eax), %eax
+addl $8, %eax
+movl %eax, %edx
+movl -4(%ebp), %eax
+movb %dl, (%eax)
+leave
+main:
+pushl %ebp
+movl %esp, %ebp
+subl $20, %esp
+movl $10, -4(%ebp)
+movl $7, (%esp)
+call function
+movl $1, -4(%ebp)
+leave
+ret 书上详细的解释了为什么结果是10，下面我来逐条分析。首先画一张内存图，同样处于简洁考虑，只画function函数附近的内存分布，不影响分析。...</p></div><footer class=entry-footer><span title='2011-10-01 00:00:00 +0000 UTC'>2011-10-01</span>&nbsp;·&nbsp;Me</footer><a class=entry-link aria-label="post link to 从书上的一个错误说 Buffer Overflow" href=https://runzhen.github.io/posts/buffer-overflow/></a></article><article class="post-entry tag-entry"><header class=entry-header><h2 class=entry-hint-parent>《编程珠玑》Maximum Subarray</h2></header><div class=entry-content><p>Table {:toc} 问题 有一个数组 31,-41,59,26,-53,58,97,-93,-23,84 。现在要求出它的连续子串的最大值。 比如，31,-41,59,26是它的一个连续的子串，他们的和为75。但是75并不是最大值，有一个子串 59,26,-53,58,97它们的和187才是最大的。
+解答 《Programming Pearls》第77页开始一共给出了4种解法，前两种非常简单，是大多数人思考几分钟就能想出的方法，但是复杂度却很高，分别为O(n^3)和O(n^2)。后两种解法则非常巧妙，更神奇的是第四种方法居然只有线性复杂度O(n)
+解法1、解法2略。
+解法 3：分治法 复杂度为O(nlogn)。 分治法在结构上是递归的，在保证不改变原问题的条件下，将问题的规模减小，生成多个子问题，并多次递归调用自身来解决子问题，之后再将子问题的求解结果合并成原问题的解。
+对于case1，我们只要比较 ma 和 mb 的大小就可以得出原数组的最大子串的和了。 对于case2, 只要把ma和mb相加即可。以上只是将问题一次分解的过程，我们还需要将问题再分解直到不能在分解或是能直接得出结果为止。
+什么时候能直接得出结果？当子数组只有一个元素的时候，此时ma就是它本身（为负数时我们让它为0）。 因此，原数组的最大和 = 2个子数组中最大和的较大者，或者，包括中间分界线的一段连续区域的和。
+即，maxsum(orignial)=max(mc，maxsum(a)，maxsum(b))
+递归结束的条件是，子数组只有一个元素，如果是正返回它本身，为负返回0
+代码如下。
+int maxSubArray(std::vector&lt;int>& nums) {
+return maxsum(nums, 0, nums.size()-1);
+}
+int maxsum(std::vector&lt;int> &amp;nums, int left, int right) {
+if (left > right) {
+return 0;
+}
+if (left == right) {
+return nums[left];
+}
+int mid = (left + right)/2;
+int left_max = INT_MIN, right_max = INT_MIN;
+int tmp_max = 0;
+for (int i = mid; i >= left; i--) {
+tmp_max += nums[i];
+left_max = std::max(left_max, tmp_max);
+}
+tmp_max = 0;
+for (int i = mid+1; i &lt;= right; i++) {
+tmp_max += nums[i];
+right_max = std::max(right_max, tmp_max);
+}
+return std::max(left_max+right_max,
+std::max(maxsum(nums, left, mid),
+maxsum(nums, mid+1, right)));
+} 解法4：扫描法 一次扫描数组即可得出答案，复杂度O(n)。这种方法用文字描述不容易说清楚，下面用每一步运算的图示来表达。伪代码如下：...</p></div><footer class=entry-footer><span title='2011-07-19 00:00:00 +0000 UTC'>2011-07-19</span>&nbsp;·&nbsp;Me</footer><a class=entry-link aria-label="post link to 《编程珠玑》Maximum Subarray " href=https://runzhen.github.io/posts/maximum-subarray/></a></article><footer class=page-footer><nav class=pagination><a class=prev href=https://runzhen.github.io/tags/linux/page/2/>«&nbsp;Prev&nbsp;</a></nav></footer></main><footer class=footer><span>&copy; 2024 <a href=https://runzhen.github.io/>Mind in the Wind</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>

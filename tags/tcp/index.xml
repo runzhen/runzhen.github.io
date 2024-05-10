@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>TCP on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/tcp/</link>
+    <description>Recent content in TCP on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 12 Mar 2018 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/tcp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RFC 793 传输控制协议 TCP</title>
+      <link>https://runzhen.github.io/posts/tcp-rfc793/</link>
+      <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/tcp-rfc793/</guid>
+      <description>RFC 793 是 TCP 正式成为标准时的文档，虽然距今已有 30 多年的历史，并且已经多次被更新，但是要学习 TCP 这份文档仍然值得一读。
+文本算是一个读书笔记，把阅读过程中我认为需要注意的部分记录下来，方便自己以后查漏补缺。后续也会有阅读其他相关 RFC 的读书笔记。
+RFC 的第一二章节是按照惯例的声明，正式内容从 第三章 FUNCTIONAL SPECIFICATION 开始。
+3.1 头部格式 IP 头部带有源地址和目地址等信息，这两者也同样会被 TCP 头部的某些字段使用（比如计算 checksum 的时候）。
+TCP 头部格式如下：
+0 1 2 30 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Source Port | Destination Port |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Sequence Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Acknowledgment Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Data | |U|A|P|R|S|F| || Offset| Reserved |R|C|S|S|Y|I| Window || | |G|K|H|T|N|N| |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Checksum | Urgent Pointer |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Options | Padding |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| data |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+TCP Header Format Source Port，16位，源端口号</description>
+    </item>
+    <item>
+      <title>TCP 的 FIN_WAIT1 状态</title>
+      <link>https://runzhen.github.io/posts/tcp-fin-wait/</link>
+      <pubDate>Wed, 09 Aug 2017 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/tcp-fin-wait/</guid>
+      <description>最近看到了一篇有关 TCP 关闭连接时 FIN-WAIT1 状态的文章（见参考资料），觉得很有意思，于是也在自己的电脑上验证了一下。
+首先，开局一张图：
+{:height=&amp;ldquo;300&amp;rdquo; width=&amp;ldquo;300&amp;rdquo;}
+FIN-WAIT1 状态出现在 主动关闭链接方发出 FIN 报文后，收到对应 ACK 之前。通常 Server 在收到 FIN 报文之后，会在很短的时间内回复 ACK（这个 ACK 可能携带数据，也可能只是一个纯 ACK），所以 FIN-WAIT1 状态存在的时间非常短暂，很难被观察到。
+于是准备两台虚拟机，我们可以设计这样一个实验：
+1）服务端监听 1234 端口：nc -l 1234
+2）客户端连接服务端：nc 192.168.122.183 1234， 此时 TCP 的状态为 ESTABLISHED
+$ sudo netstat -anp | grep tcptcp 0 0 192.168.122.167:60482 192.168.122.183:1234 ESTABLISHED 3712/nc 3）服务端配置 iptables，拦截从服务端发送到客户端的任何报文：iptables -A OUTPUT -d 192.168.122.167 -j DROP
+4）客户端按下 ctrl + c 断开连接，这一步的目的是让操作系统自动发送 FIN 报文给服务端。
+在完成第 4 步之后，客户端就会进入 FIN-WAIT-1 状态，服务端也会收到 FIN 报文，并且马上会发出一个 ACK，但是因为配置了 iptables，因此客户端会一直等待服务端的 ACK。</description>
+    </item>
+  </channel>
+</rss>

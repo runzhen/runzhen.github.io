@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Database on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/database/</link>
+    <description>Recent content in Database on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 03 Oct 2020 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/database/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Spanner Distributed Database 阅读</title>
+      <link>https://runzhen.github.io/posts/spanner-paper-reading/</link>
+      <pubDate>Sat, 03 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/spanner-paper-reading/</guid>
+      <description>Introduction Spanner 数据库中的数据是分片(Shard)分散存储在多个数据中心的，数据是用 Paxos 算法(状态机)保证一致性。如果数据中心发生变化，Spanner 自动做 reshard。
+Spanner 中的数据是存储在 schematized semi-relational table 上的。 在 commit 的时候把 timestamp 作为数据的 version。老版本的数据可以被垃圾回收，client 也可以读老数据。
+Spanner 有两个特性是一般的分布式系统非常难实现的，
+读和写操作的外部一致性。 在一个时间戳下，读操作是全局一致的。 能实现以上两点，是因为 Spanner 可以分配全球范围内保持一致的 commit timestamp。Spanner 的 timestamp 靠 TrueTime API 实现，甚至可以用 GPS 和原子钟来提高 TrueTime API 的精度。
+Implementation 一个 Spanner 集群被称为一个 universe，如下图所示
+Spanner 被组织成许多个 zone 的集合，zone 是管理部署的基本单元。一个数据中心可能会有多个 zone，zone 也是物理隔离的单元，例如，两个不同应用的数据就会被分散在两个 zone 上。
+Zonemaster 把数据分配给 spanserver，spanserver 是真正存数据的地方 Client 从 location proxy 定位数据在哪个 spanserver 上 Universe master 主要是一个管理界面 Placement driver 周期性的与 spanserver 交互，进行负载均衡 Spanserver Software Stack 每一台 spanserver 上会存 100 到 1000 张表，每一张表上都有一个 Paxos 状态机，每一个 Paxos 状态机都会把自己的 metadata 和 log 存在 tablet 上。</description>
+    </item>
+    <item>
+      <title>LSM Tree 简介</title>
+      <link>https://runzhen.github.io/posts/lsm-tree-basic/</link>
+      <pubDate>Sun, 09 Jun 2019 00:33:33 -0700</pubDate>
+      <guid>https://runzhen.github.io/posts/lsm-tree-basic/</guid>
+      <description>LSM Tree 是 Log Structured Merge Tree 的缩写，这种 Tree 数据结构的特点就是”Log Structured“ 和 ”Merge“。LSM Tree 主要用在各种新兴的数据库，作为底层数据结构。 提供了比 B+ 树/ISAM 更好的写性能。
+本文是一篇读书笔记，作为以后再次阅读的提纲，此外，原文旁征博引有不少参考资料，值得一读。 原文传送门。
+Some Background 核心： 硬盘（无论是磁盘，SSD 甚至是内存）随机读写性能太差，但是顺序读写性能非常高，所以要充分利用一点。
+这篇文章指出，磁盘的顺序访问甚至比内存的随机访问还快！
+所以，如果我们对写性能要求高，怎么办？ 一种方法是写数据的时候只 append（添加在文件尾部）。通常我们把这种叫做写日志，logging。
+但是，简单的 log 结构无法满足复杂的需求，为了满足类似搜索、kv 之类的场景，需要在 logging 基础上加上额外的数据结构，比如 binary search, hash, B+ or external。
+Search Sorted File: save data to a file, sorted by key. If data has defined widths use Binary search. If not use a page index + scan. Hash: split the data into buckets using a hash function, which can later be used to direct reads.</description>
+    </item>
+  </channel>
+</rss>

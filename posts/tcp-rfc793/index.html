@@ -1,0 +1,376 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>RFC 793 传输控制协议 TCP | Mind in the Wind</title>
+<meta name=keywords content="读书笔记,TCP,RFC"><meta name=description content="RFC 793 是 TCP 正式成为标准时的文档，虽然距今已有 30 多年的历史，并且已经多次被更新，但是要学习 TCP 这份文档仍然值得一读。
+文本算是一个读书笔记，把阅读过程中我认为需要注意的部分记录下来，方便自己以后查漏补缺。后续也会有阅读其他相关 RFC 的读书笔记。
+RFC 的第一二章节是按照惯例的声明，正式内容从 第三章 FUNCTIONAL SPECIFICATION 开始。
+3.1 头部格式 IP 头部带有源地址和目地址等信息，这两者也同样会被 TCP 头部的某些字段使用（比如计算 checksum 的时候）。
+TCP 头部格式如下：
+0 1 2 30 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Source Port | Destination Port |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Sequence Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Acknowledgment Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Data | |U|A|P|R|S|F| || Offset| Reserved |R|C|S|S|Y|I| Window || | |G|K|H|T|N|N| |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Checksum | Urgent Pointer |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Options | Padding |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| data |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+TCP Header Format Source Port，16位，源端口号"><meta name=author content="Me"><link rel=canonical href=https://runzhen.github.io/posts/tcp-rfc793/><meta name=google-site-verification content="XYZabc"><meta name=yandex-verification content="XYZabc"><meta name=msvalidate.01 content="XYZabc"><link crossorigin=anonymous href=/assets/css/stylesheet.a8f620eb24ba9442cd3765590f9208a0752be50e5a7b9dd9e3e555c8cb5e74e6.css integrity="sha256-qPYg6yS6lELNN2VZD5IIoHUr5Q5ae53Z4+VVyMtedOY=" rel="preload stylesheet" as=style><link rel=icon href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://runzhen.github.io/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://runzhen.github.io/posts/tcp-rfc793/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><meta property="og:title" content="RFC 793 传输控制协议 TCP"><meta property="og:description" content="RFC 793 是 TCP 正式成为标准时的文档，虽然距今已有 30 多年的历史，并且已经多次被更新，但是要学习 TCP 这份文档仍然值得一读。
+文本算是一个读书笔记，把阅读过程中我认为需要注意的部分记录下来，方便自己以后查漏补缺。后续也会有阅读其他相关 RFC 的读书笔记。
+RFC 的第一二章节是按照惯例的声明，正式内容从 第三章 FUNCTIONAL SPECIFICATION 开始。
+3.1 头部格式 IP 头部带有源地址和目地址等信息，这两者也同样会被 TCP 头部的某些字段使用（比如计算 checksum 的时候）。
+TCP 头部格式如下：
+0 1 2 30 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Source Port | Destination Port |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Sequence Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Acknowledgment Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Data | |U|A|P|R|S|F| || Offset| Reserved |R|C|S|S|Y|I| Window || | |G|K|H|T|N|N| |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Checksum | Urgent Pointer |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Options | Padding |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| data |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+TCP Header Format Source Port，16位，源端口号"><meta property="og:type" content="article"><meta property="og:url" content="https://runzhen.github.io/posts/tcp-rfc793/"><meta property="og:image" content="https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-03-12T00:00:00+00:00"><meta property="article:modified_time" content="2018-03-12T00:00:00+00:00"><meta property="og:site_name" content="Mind in the Wind"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta name=twitter:title content="RFC 793 传输控制协议 TCP"><meta name=twitter:description content="RFC 793 是 TCP 正式成为标准时的文档，虽然距今已有 30 多年的历史，并且已经多次被更新，但是要学习 TCP 这份文档仍然值得一读。
+文本算是一个读书笔记，把阅读过程中我认为需要注意的部分记录下来，方便自己以后查漏补缺。后续也会有阅读其他相关 RFC 的读书笔记。
+RFC 的第一二章节是按照惯例的声明，正式内容从 第三章 FUNCTIONAL SPECIFICATION 开始。
+3.1 头部格式 IP 头部带有源地址和目地址等信息，这两者也同样会被 TCP 头部的某些字段使用（比如计算 checksum 的时候）。
+TCP 头部格式如下：
+0 1 2 30 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Source Port | Destination Port |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Sequence Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Acknowledgment Number |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Data | |U|A|P|R|S|F| || Offset| Reserved |R|C|S|S|Y|I| Window || | |G|K|H|T|N|N| |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Checksum | Urgent Pointer |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| Options | Padding |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+| data |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+TCP Header Format Source Port，16位，源端口号"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Blog","item":"https://runzhen.github.io/posts/"},{"@type":"ListItem","position":2,"name":"RFC 793 传输控制协议 TCP","item":"https://runzhen.github.io/posts/tcp-rfc793/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"RFC 793 传输控制协议 TCP","name":"RFC 793 传输控制协议 TCP","description":"RFC 793 是 TCP 正式成为标准时的文档，虽然距今已有 30 多年的历史，并且已经多次被更新，但是要学习 TCP 这份文档仍然值得一读。\n文本算是一个读书笔记，把阅读过程中我认为需要注意的部分记录下来，方便自己以后查漏补缺。后续也会有阅读其他相关 RFC 的读书笔记。\nRFC 的第一二章节是按照惯例的声明，正式内容从 第三章 FUNCTIONAL SPECIFICATION 开始。\n3.1 头部格式 IP 头部带有源地址和目地址等信息，这两者也同样会被 TCP 头部的某些字段使用（比如计算 checksum 的时候）。\nTCP 头部格式如下：\n0 1 2 3\r0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Source Port | Destination Port |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Sequence Number |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Acknowledgment Number |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Data | |U|A|P|R|S|F| |\r| Offset| Reserved |R|C|S|S|Y|I| Window |\r| | |G|K|H|T|N|N| |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Checksum | Urgent Pointer |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Options | Padding |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| data |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\rTCP Header Format Source Port，16位，源端口号","keywords":["读书笔记","TCP","RFC"],"articleBody":"RFC 793 是 TCP 正式成为标准时的文档，虽然距今已有 30 多年的历史，并且已经多次被更新，但是要学习 TCP 这份文档仍然值得一读。\n文本算是一个读书笔记，把阅读过程中我认为需要注意的部分记录下来，方便自己以后查漏补缺。后续也会有阅读其他相关 RFC 的读书笔记。\nRFC 的第一二章节是按照惯例的声明，正式内容从 第三章 FUNCTIONAL SPECIFICATION 开始。\n3.1 头部格式 IP 头部带有源地址和目地址等信息，这两者也同样会被 TCP 头部的某些字段使用（比如计算 checksum 的时候）。\nTCP 头部格式如下：\n0 1 2 3\r0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Source Port | Destination Port |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Sequence Number |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Acknowledgment Number |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Data | |U|A|P|R|S|F| |\r| Offset| Reserved |R|C|S|S|Y|I| Window |\r| | |G|K|H|T|N|N| |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Checksum | Urgent Pointer |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| Options | Padding |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\r| data |\r+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\rTCP Header Format Source Port，16位，源端口号\nDestination Port，16位，目的端口号\nSequence Number，32位，序列号。\nAcknowledgment Number，32位，确认号。\nData Offset，4位，数据偏移量。通过它可以得出一个 TCP 报文的数据的起始位置，它的单位是32位，也就是以4字节为单位，所以能表示最大值为 15*4=60字节，换句话说 TCP 首部长度最大为60字节。（TCP 首部也是4字节对齐的，不满的部分需要 padding）\nReserved，4位，保留未用。\nControl Bits: 6位，从左到右分别为，URG, ACK，PSH，RST，SYN，FIN。\nWindow，16位，接受窗口大小。指明发送这个 TCP 报文的发送方接受窗口的大小\nChecksum，16位，校验位。包括了 TCP 的首部和数据都在计算校验值的范围内。计算是以 16bit（2字节）为单位进行的，如果 tcp 报文不能被2字节整除，那么要在最后加0作为 padding。计算这个校验值的时候，IP 层的源地址、目的地址、协议类型、TCP 长度几个字段都在计算的范围内。其中 TCP 长度包括头部和数据长度，这个值没有包含在 IP 或者 TCP 报文的头部，而是在计算 checksum 的时候计算出来的。这4个字段加起来一共 96 bit，12个字节。如下图所示。\n+--------+--------+--------+--------+\r| Source Address |\r+--------+--------+--------+--------+\r| Destination Address |\r+--------+--------+--------+--------+\r| zero | PTCL | TCP Length |\r+--------+--------+--------+--------+ 熟悉 IP 首部的同学会发现，真正的 IP 首部中这4个字段不是像上面这样排列的，只是在计算 checksum 的时候临时构造了一个“伪首部”。\nUrgent Pointer，16位，紧急指针。它的值表示以本报文中数据段为起点的偏移量。\nOptions，可变长度，选项字段。选项在 TCP 首部的最后，以1字节为单位。所有的选项字段在计算 checksum 的时候都计算在内。选项字段可能包含多个选项，它们没有类似2字节的对齐要求（多个选项可以一个接一个开始）。\n选项通常有两种格式：\n单个字节的选项类型 一字节类型，一字节选项长度（长度包含类型和长度，也就是 +2 ），然后紧接选项数据。 TCP 必须实现下面几种选项：\n| Kind | Length | Meaning |\r| ------ | --------- | ------------ |\r| 0 | | End of option list. |\r| 1 | | No-Operation. |\r| 2 | 4 | Maximum Segment Size. | 第一种，一字节8位全是0，出现在所有选项的最后，代表结束。 正常情况下（没有选项的情况）不出现。当可选项总长度不够32位的倍数，用该可选项来填补。\n+--------+\r|00000000|\r+--------+ 第二种，No-Operation，无操作，NOP字段可以作为选项之间不足4倍数字节填充，也可作为选项间分隔。设计该字段主要是用来明确不同可选项之间的分割点，假设有多个可选项的情况下，一般用该可选项来分割下，因此在一个数据包中可以出现多个nop。(似乎第一和第二选项的功能有些重复？)\n第三种，Maximum Segment Size （MSS），其作用是发送方告诉接收方能接受的最大报文长度。 MSS 只在发起链接的过程中（例如在 SYN 报文）有用，TCP 正常传输数据的时候，即使有这个选项也会被忽略，MSS 值用2字节表示。\n+--------+--------+---------+--------+\r|00000010|00000100| max seg size |\r+--------+--------+---------+--------+\rKind=2 Length=4 3.2 术语 TCP 的数据结构 TCB（传输控制块）中存储着本地和对方的 socket 标识符（其实就是文件描述符），数据的 buffer，以及一些额外的变量用于记录发送和接受的序列（通信两方都有 发送和接受 这两个概念，因为 TCP 是全双工通信）。\n发送序列的变量：\nSND.UNA send unacknowledged SND.NXT send next SND.WND send window SND.UP send urgent pointer SND.WL1 segment sequence number used for last window update SND.WL2 segment acknowledgment number used for last window update ISS initial send sequence number 接收序列的变量：\nRCV.NXT receive next RCV.WND receive window RCV.UP receive urgent pointer IRS initial receive sequence number 发送序列空间：\n1 2 3 4\r----------|----------|----------|----------\rSND.UNA SND.NXT SND.UNA\r+SND.WND 区间 1 表示已经发送的，并且接收方已经确认的。 区间 2 表示已经发送的，但是对方还没有确认的。 区间 3 表示将要发送的。 区间 4 表示还不允许被发送的字节。 发送窗口 指的是 区间 3\n接受序列空间：\n1 2 3\r----------|----------|----------\rRCV.NXT RCV.NXT\r+RCV.WND 区间 1 表示已经被确认的。 区间 2 表示等待接受的字节。 区间 3 表示目前不允许接受的字节。 接受窗口 指的是 区间 2\n以下这几个 TCB 成员变量的值是直接从 tcp 报文中获取的；\nSEG.SEQ segment sequence number SEG.ACK segment acknowledgment number SEG.LEN segment length SEG.WND segment window SEG.UP segment urgent pointer SEG.PRC segment precedence value TCP 的状态转换图略。\n3.3 序列号 TCP 传输的每一个字节都有对应的序列号，同样，每个字节也有对应的确认号。但是并不是每个字节逐个确认，而是采用了累计的方法：一个确认号表示在他之前的都已经收到了。TCP 的序列号的大小是 0 到 2^32-1， 实际中，所有的运算都需要 mod 2^32-1。\n通常我们需要对序列号做以下比较：\n一个 Seq number 空间中哪些已经发送了，但是还未确认。 一个报文中的 Seq number 全部被确认了（当需要把这个报文从重传队列中移走的时候需要这些信息） 决定一个收到的报文中的 Seq number 是我们想要的（当这个报文与 接收窗口 重叠的时候） 通常对于一个确认号有以下操作：\nSND.UNA = oldest unacknowledged sequence number SND.NXT = next sequence number to be sent SEG.ACK = acknowledgment from the receiving TCP (next sequence number expected by the receiving TCP) SEG.SEQ = first sequence number of a segment SEG.LEN = the number of octets occupied by the data in the segment (counting SYN and FIN) SEG.SEQ+SEG.LEN-1 = last sequence number of a segment SND.UNA \u003c SEG.ACK =\u003c SND.NXT\n在重传队列上的报文，如果它的序列号加长度小于等于当前收到的报文的 ACK 值，那么可以认为这个报文被确认了。\n当收到一个新报文时，以下变量要更新：\nRCV.NXT = next sequence number expected on an incoming segments, and is the left or lower edge of the receive window RCV.NXT+RCV.WND-1 = last sequence number expected on an incoming segment, and is the right or upper edge of the receive window. SEG.SEQ = first sequence number occupied by the incoming segment SEG.SEQ+SEG.LEN-1 = last sequence number occupied by the incoming segment 收到一个新报文时，如果它符合下面两个条件，则认为它是在当前的接收空间的，否则这个报文会被丢弃。\nRCV.NXT =\u003c SEG.SEQ \u003c RCV.NXT+RCV.WND\nRCV.NXT =\u003c SEG.SEQ \u003c RCV.NXT+RCV.WND\n第一个检查报文的开始在不在窗口内，第二个检查报文最后一个字节在不在窗口内。而实际情况稍微比这个复杂一点，因为存在 0窗口 和 0 长度的报文。\nSegment Receive Test\rLength Window\r------- ------- -------------------------------------------\r0 0 SEG.SEQ = RCV.NXT\r0 \u003e0 RCV.NXT =\u003c SEG.SEQ \u003c RCV.NXT+RCV.WND\r\u003e0 0 not acceptable\r\u003e0 \u003e0 RCV.NXT =\u003c SEG.SEQ \u003c RCV.NXT+RCV.WND\ror RCV.NXT =\u003c SEG.SEQ+SEG.LEN-1 \u003c RCV.NXT+RCV.WND 注： 就算接收窗口是0，tcp 也要能够接收 ACK 报文，以及带有 RST 和 URG 标志的报文。\n初始序列号的选择 随机化初始序列号的理由：如果通信双方快速的建立和断开链接，如果 ISN 都从 0 开始，那么有可能上一个链接的报文会被当成这次链接的报文。（虽然概率非常小，但是还是有可能发生，而且随机 ISN 的另一个理由是防止 SYN flood 攻击）\n说了一堆理由总之就是要随机化 ISN，取随机数的简单的方法是用一个clock，类似 CPU 的时钟，取其低32位作为 ISN，这样32位空间的一个轮回大约需要4.55小时，而 MSL（Maximum Segment Lifetime）远远小于这个数字，所以这个方法可行。\n知道何时保持安静 旧的 TCP 报文还在网络中传输，此时 TCP 就不能开启一个可能造成序列号冲突的新链接，所以 TCP 要等 MSL 时间。MSL 通常是2 分钟，这是一个经验值。\n（我的疑问是现在的 TCP 必须等这么久吗？ 况且 Linux 一般还阻止短时间内重复使用端口号，所以这一小节的内容在现实中是怎样的？ ）\nTCP 安静时间的概念 这里讨论的问题主要是主机重启之后，恢复原来的 TCP 链接，可能会造成新链接的报文和老链接遗留的报文产生冲突。解决办法是重启之后 TCP 必须等待 MSL 时间之后才能恢复原来的链接。\n（我觉得这一段有点扯蛋，不同 TCP 实现不一定会遵守这个约定，而且黑客也正是可以利用这一点发起攻击）\n3.4 建立一个链接 以下罗列了几种建立链接的情况。\n最简单的经典三次握手 值得注意的是 A 在收到 B 的 SYN/ACK 之后，它的状态立马就变成了 ESTABLISHED，也就是图中的第三行。同理，B 在收到 A 对它的 SYN 的 ACK 之后，也立马变成了 ESTABLISHED。\n(SEQ, 序列号，可以把它理解为 对于这个包，我方的数据流从这个数开始, 4 报文 SEQ = 101，但是没有数据，所以 5 报文 SEQ 仍然为 101)\nTCP A TCP B\r1. CLOSED LISTEN\r2. SYN-SENT --\u003e ","wordCount":"1968","inLanguage":"en","image":"https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E","datePublished":"2018-03-12T00:00:00Z","dateModified":"2018-03-12T00:00:00Z","author":{"@type":"Person","name":"Me"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://runzhen.github.io/posts/tcp-rfc793/"},"publisher":{"@type":"Organization","name":"Mind in the Wind","logo":{"@type":"ImageObject","url":"https://runzhen.github.io/%3Clink%20/%20abs%20url%3E"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://runzhen.github.io/ accesskey=h title="Home (Alt + H)"><img src=https://runzhen.github.io/apple-touch-icon.png alt aria-label=logo height=35>Home</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://runzhen.github.io/posts/ title=Blog><span>Blog</span></a></li><li><a href=https://runzhen.github.io/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://runzhen.github.io/categories/ title=Categories><span>Categories</span></a></li><li><a href=https://runzhen.github.io/tags/ title=Tags><span>Tags</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">RFC 793 传输控制协议 TCP</h1><div class=post-meta><span title='2018-03-12 00:00:00 +0000 UTC'>2018-03-12</span>&nbsp;·&nbsp;Me</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#31-%e5%a4%b4%e9%83%a8%e6%a0%bc%e5%bc%8f aria-label="3.1 头部格式">3.1 头部格式</a></li><li><a href=#32-%e6%9c%af%e8%af%ad aria-label="3.2 术语">3.2 术语</a></li><li><a href=#33-%e5%ba%8f%e5%88%97%e5%8f%b7 aria-label="3.3 序列号">3.3 序列号</a><ul><li><a href=#%e5%88%9d%e5%a7%8b%e5%ba%8f%e5%88%97%e5%8f%b7%e7%9a%84%e9%80%89%e6%8b%a9 aria-label=初始序列号的选择>初始序列号的选择</a></li><li><a href=#%e7%9f%a5%e9%81%93%e4%bd%95%e6%97%b6%e4%bf%9d%e6%8c%81%e5%ae%89%e9%9d%99 aria-label=知道何时保持安静>知道何时保持安静</a></li><li><a href=#tcp-%e5%ae%89%e9%9d%99%e6%97%b6%e9%97%b4%e7%9a%84%e6%a6%82%e5%bf%b5 aria-label="TCP 安静时间的概念">TCP 安静时间的概念</a></li></ul></li><li><a href=#34-%e5%bb%ba%e7%ab%8b%e4%b8%80%e4%b8%aa%e9%93%be%e6%8e%a5 aria-label="3.4 建立一个链接">3.4 建立一个链接</a><ul><ul><li><a href=#%e6%9c%80%e7%ae%80%e5%8d%95%e7%9a%84%e7%bb%8f%e5%85%b8%e4%b8%89%e6%ac%a1%e6%8f%a1%e6%89%8b aria-label=最简单的经典三次握手>最简单的经典三次握手</a></li><li><a href=#%e5%8f%8c%e6%96%b9%e5%90%8c%e6%97%b6%e5%8f%91%e8%b5%b7%e9%93%be%e6%8e%a5 aria-label=双方同时发起链接>双方同时发起链接</a></li><li><a href=#%e5%8d%8a%e5%bc%80%e7%9a%84%e9%93%be%e6%8e%a5%e5%92%8c%e5%85%b6%e4%bb%96%e5%bc%82%e5%b8%b8 aria-label=半开的链接和其他异常>半开的链接和其他异常</a></li><li><a href=#%e5%8f%91%e9%80%81-rst-%e6%8a%a5%e6%96%87 aria-label="发送 RST 报文">发送 RST 报文</a></li><li><a href=#rst-%e7%9a%84%e5%a4%84%e7%90%86 aria-label="RST 的处理">RST 的处理</a></li></ul></ul></li><li><a href=#35-%e5%85%b3%e9%97%ad%e4%b8%80%e4%b8%aa%e9%93%be%e6%8e%a5 aria-label="3.5 关闭一个链接">3.5 关闭一个链接</a></li><li><a href=#37-%e6%95%b0%e6%8d%ae%e4%bc%a0%e8%be%93 aria-label="3.7 数据传输">3.7 数据传输</a><ul><ul><li><a href=#%e9%87%8d%e4%bc%a0%e8%b6%85%e6%97%b6 aria-label=重传超时>重传超时</a></li><li><a href=#urgent-%e4%bf%a1%e6%81%af%e7%9a%84%e4%bc%a0%e8%be%93 aria-label="Urgent 信息的传输">Urgent 信息的传输</a></li><li><a href=#%e7%aa%97%e5%8f%a3%e7%ae%a1%e7%90%86 aria-label=窗口管理>窗口管理</a></li></ul></ul></li><li><a href=#38-%e6%8e%a5%e5%8f%a3 aria-label="3.8 接口">3.8 接口</a></li><li><a href=#39-%e4%ba%8b%e4%bb%b6%e7%9a%84%e5%a4%84%e7%90%86 aria-label="3.9 事件的处理">3.9 事件的处理</a><ul><li><a href=#open-call aria-label="OPEN Call">OPEN Call</a></li><li><a href=#send-call aria-label="SEND Call">SEND Call</a></li><li><a href=#received-call aria-label="RECEIVED Call">RECEIVED Call</a></li><li><a href=#close-call aria-label="CLOSE Call">CLOSE Call</a></li><li><a href=#abort-call aria-label="ABORT Call">ABORT Call</a></li><li><a href=#status-call aria-label="STATUS Call">STATUS Call</a></li><li><a href=#segment-arrives aria-label="SEGMENT ARRIVES">SEGMENT ARRIVES</a></li><li><a href=#user-timout aria-label="USER TIMOUT">USER TIMOUT</a></li></ul></li><li><a href=#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99 aria-label=参考资料>参考资料</a></li></ul></div></details></div><div class=post-content><p>RFC 793 是 TCP 正式成为标准时的文档，虽然距今已有 30 多年的历史，并且已经多次被更新，但是要学习 TCP 这份文档仍然值得一读。</p><p>文本算是一个读书笔记，把阅读过程中我认为需要注意的部分记录下来，方便自己以后查漏补缺。后续也会有阅读其他相关 RFC 的读书笔记。</p><p>RFC 的第一二章节是按照惯例的声明，正式内容从 <strong>第三章 FUNCTIONAL SPECIFICATION</strong> 开始。</p><h2 id=31-头部格式>3.1 头部格式<a hidden class=anchor aria-hidden=true href=#31-头部格式>#</a></h2><p>IP 头部带有源地址和目地址等信息，这两者也同样会被 TCP 头部的某些字段使用（比如计算 checksum 的时候）。</p><p>TCP 头部格式如下：</p><pre tabindex=0><code>    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |          Source Port          |       Destination Port        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                        Sequence Number                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    Acknowledgment Number                      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Data |           |U|A|P|R|S|F|                               |
+   | Offset| Reserved  |R|C|S|S|Y|I|            Window             |
+   |       |           |G|K|H|T|N|N|                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           Checksum            |         Urgent Pointer        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    Options                    |    Padding    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                             data                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                            TCP Header Format
+</code></pre><p>Source Port，16位，源端口号</p><p>Destination Port，16位，目的端口号</p><p>Sequence Number，32位，序列号。</p><p>Acknowledgment Number，32位，确认号。</p><p>Data Offset，4位，数据偏移量。通过它可以得出一个 TCP 报文的数据的起始位置，它的单位是32位，也就是以4字节为单位，所以能表示最大值为 <code>15*4=60</code>字节，换句话说 TCP 首部长度最大为60字节。（TCP 首部也是4字节对齐的，不满的部分需要 padding）</p><p>Reserved，4位，保留未用。</p><p>Control Bits: 6位，从左到右分别为，URG, ACK，PSH，RST，SYN，FIN。</p><p>Window，16位，接受窗口大小。指明<code>发送这个 TCP 报文</code>的<code>发送方</code>接受窗口的大小</p><p>Checksum，16位，校验位。包括了 TCP 的首部和数据都在计算校验值的范围内。计算是以 16bit（2字节）为单位进行的，如果 tcp 报文不能被2字节整除，那么要在最后加0作为 padding。计算这个校验值的时候，IP 层的源地址、目的地址、协议类型、TCP 长度几个字段都在计算的范围内。其中 TCP 长度包括头部和数据长度，这个值没有包含在 IP 或者 TCP 报文的头部，而是在计算 checksum 的时候计算出来的。这4个字段加起来一共 96 bit，12个字节。如下图所示。</p><pre tabindex=0><code>                     +--------+--------+--------+--------+
+                     |           Source Address          |
+                     +--------+--------+--------+--------+
+                     |         Destination Address       |
+                     +--------+--------+--------+--------+
+                     |  zero  |  PTCL  |    TCP Length   |
+                     +--------+--------+--------+--------+
+</code></pre><p>熟悉 IP 首部的同学会发现，真正的 IP 首部中这4个字段不是像上面这样排列的，只是在计算 checksum 的时候临时构造了一个“伪首部”。</p><p>Urgent Pointer，16位，紧急指针。它的值表示以本报文中数据段为起点的偏移量。</p><p>Options，可变长度，选项字段。选项在 TCP 首部的最后，以1字节为单位。所有的选项字段在计算 checksum 的时候都计算在内。选项字段可能包含多个选项，它们没有类似2字节的对齐要求（多个选项可以一个接一个开始）。</p><p>选项通常有两种格式：</p><ul><li>单个字节的选项类型</li><li>一字节类型，一字节选项长度（长度包含类型和长度，也就是 +2 ），然后紧接选项数据。</li></ul><p>TCP 必须实现下面几种选项：</p><pre tabindex=0><code>| Kind   |   Length  |  Meaning              |
+| ------ | --------- | ------------          |
+| 0      |           | End of option list.   |
+| 1      |           | No-Operation.         |
+| 2      |    4      | Maximum Segment Size. |
+</code></pre><p>第一种，一字节8位全是0，出现在所有选项的最后，代表结束。 正常情况下（没有选项的情况）不出现。当可选项总长度不够32位的倍数，用该可选项来填补。</p><pre tabindex=0><code>        +--------+
+        |00000000|
+        +--------+
+</code></pre><p>第二种，No-Operation，无操作，NOP字段可以作为选项之间不足4倍数字节填充，也可作为选项间分隔。设计该字段主要是用来明确不同可选项之间的分割点，假设有多个可选项的情况下，一般用该可选项来分割下，因此在一个数据包中可以出现多个nop。(似乎第一和第二选项的功能有些重复？)</p><p>第三种，Maximum Segment Size （MSS），其作用是发送方告诉接收方能接受的最大报文长度。 MSS 只在发起链接的过程中（例如在 SYN 报文）有用，TCP 正常传输数据的时候，即使有这个选项也会被忽略，MSS 值用2字节表示。</p><pre tabindex=0><code>        +--------+--------+---------+--------+
+        |00000010|00000100|   max seg size   |
+        +--------+--------+---------+--------+
+         Kind=2   Length=4
+</code></pre><h2 id=32-术语>3.2 术语<a hidden class=anchor aria-hidden=true href=#32-术语>#</a></h2><p>TCP 的数据结构 TCB（传输控制块）中存储着本地和对方的 socket 标识符（其实就是文件描述符），数据的 buffer，以及一些额外的变量用于记录发送和接受的序列（通信两方都有 发送和接受 这两个概念，因为 TCP 是全双工通信）。</p><p>发送序列的变量：</p><ul><li>SND.UNA send unacknowledged</li><li>SND.NXT send next</li><li>SND.WND send window</li><li>SND.UP send urgent pointer</li><li>SND.WL1 segment sequence number used for last window update</li><li>SND.WL2 segment acknowledgment number used for last window update</li><li>ISS initial send sequence number</li></ul><p>接收序列的变量：</p><ul><li>RCV.NXT receive next</li><li>RCV.WND receive window</li><li>RCV.UP receive urgent pointer</li><li>IRS initial receive sequence number</li></ul><p>发送序列空间：</p><pre tabindex=0><code>                   1         2          3          4
+              ----------|----------|----------|----------
+                     SND.UNA    SND.NXT    SND.UNA
+                                          +SND.WND
+</code></pre><ol><li>区间 1 表示已经发送的，并且接收方已经确认的。</li><li>区间 2 表示已经发送的，但是对方还没有确认的。</li><li>区间 3 表示将要发送的。</li><li>区间 4 表示还<code>不允许</code>被发送的字节。</li></ol><p><code>发送窗口</code> 指的是 <code>区间 3</code></p><p>接受序列空间：</p><pre tabindex=0><code>                     1          2          3
+                   ----------|----------|----------
+                          RCV.NXT    RCV.NXT
+                                    +RCV.WND
+</code></pre><ol><li>区间 1 表示已经被确认的。</li><li>区间 2 表示等待接受的字节。</li><li>区间 3 表示目前<code>不允许</code>接受的字节。</li></ol><p><code>接受窗口</code> 指的是 <code>区间 2</code></p><p>以下这几个 TCB 成员变量的值是直接从 tcp 报文中获取的；</p><ul><li>SEG.SEQ segment sequence number</li><li>SEG.ACK segment acknowledgment number</li><li>SEG.LEN segment length</li><li>SEG.WND segment window</li><li>SEG.UP segment urgent pointer</li><li>SEG.PRC segment precedence value</li></ul><p>TCP 的状态转换图略。</p><h2 id=33-序列号>3.3 序列号<a hidden class=anchor aria-hidden=true href=#33-序列号>#</a></h2><p>TCP 传输的每一个字节都有对应的序列号，同样，每个字节也有对应的确认号。但是并不是每个字节逐个确认，而是采用了累计的方法：一个确认号表示在他之前的都已经收到了。TCP 的序列号的大小是 0 到 2^32-1， 实际中，所有的运算都需要 mod 2^32-1。</p><p>通常我们需要对序列号做以下比较：</p><ul><li>一个 Seq number 空间中哪些已经发送了，但是还未确认。</li><li>一个报文中的 Seq number 全部被确认了（当需要把这个报文从重传队列中移走的时候需要这些信息）</li><li>决定一个收到的报文中的 Seq number 是我们想要的（当这个报文与 <code>接收窗口</code> 重叠的时候）</li></ul><p>通常对于一个确认号有以下操作：</p><ul><li>SND.UNA = oldest unacknowledged sequence number</li><li>SND.NXT = next sequence number to be sent</li><li>SEG.ACK = acknowledgment from the receiving TCP (next sequence number expected by the receiving TCP)</li><li>SEG.SEQ = first sequence number of a segment</li><li>SEG.LEN = the number of octets occupied by the data in the segment (counting SYN and FIN)</li><li><code>SEG.SEQ+SEG.LEN-1</code> = last sequence number of a segment</li></ul><p>SND.UNA &lt; SEG.ACK =&lt; SND.NXT</p><p>在重传队列上的报文，如果它的序列号加长度小于等于当前收到的报文的 ACK 值，那么可以认为这个报文被确认了。</p><p>当收到一个新报文时，以下变量要更新：</p><ul><li>RCV.NXT = next sequence number expected on an incoming segments, and is the left or lower edge of the receive window</li><li>RCV.NXT+RCV.WND-1 = last sequence number expected on an incoming segment, and is the right or upper edge of the receive window.</li><li>SEG.SEQ = first sequence number occupied by the incoming segment</li><li>SEG.SEQ+SEG.LEN-1 = last sequence number occupied by the incoming segment</li></ul><p>收到一个新报文时，如果它符合下面两个条件，则认为它是在当前的接收空间的，否则这个报文会被丢弃。</p><blockquote><p>RCV.NXT =&lt; SEG.SEQ &lt; RCV.NXT+RCV.WND</p></blockquote><blockquote><p>RCV.NXT =&lt; SEG.SEQ &lt; RCV.NXT+RCV.WND</p></blockquote><p>第一个检查报文的开始在不在窗口内，第二个检查报文最后一个字节在不在窗口内。而实际情况稍微比这个复杂一点，因为存在 <code>0窗口</code> 和 0 长度的报文。</p><pre tabindex=0><code>    Segment Receive  Test
+    Length  Window
+    ------- -------  -------------------------------------------
+
+       0       0     SEG.SEQ = RCV.NXT
+
+       0      &gt;0     RCV.NXT =&lt; SEG.SEQ &lt; RCV.NXT+RCV.WND
+
+      &gt;0       0     not acceptable
+
+      &gt;0      &gt;0     RCV.NXT =&lt; SEG.SEQ &lt; RCV.NXT+RCV.WND
+                  or RCV.NXT =&lt; SEG.SEQ+SEG.LEN-1 &lt; RCV.NXT+RCV.WND
+</code></pre><p><code>注：</code> 就算接收窗口是0，tcp 也要能够接收 ACK 报文，以及带有 RST 和 URG 标志的报文。</p><h3 id=初始序列号的选择>初始序列号的选择<a hidden class=anchor aria-hidden=true href=#初始序列号的选择>#</a></h3><p>随机化初始序列号的理由：如果通信双方快速的建立和断开链接，如果 ISN 都从 0 开始，那么有可能上一个链接的报文会被当成这次链接的报文。（虽然概率非常小，但是还是有可能发生，而且随机 ISN 的另一个理由是防止 SYN flood 攻击）</p><p>说了一堆理由总之就是要随机化 ISN，取随机数的简单的方法是用一个clock，类似 CPU 的时钟，取其低32位作为 ISN，这样32位空间的一个轮回大约需要4.55小时，而 MSL（Maximum Segment Lifetime）远远小于这个数字，所以这个方法可行。</p><h3 id=知道何时保持安静>知道何时保持安静<a hidden class=anchor aria-hidden=true href=#知道何时保持安静>#</a></h3><p>旧的 TCP 报文还在网络中传输，此时 TCP 就不能开启一个可能造成序列号冲突的新链接，所以 TCP 要等 MSL 时间。MSL 通常是2 分钟，这是一个经验值。</p><p>（我的疑问是现在的 TCP 必须等这么久吗？ 况且 Linux 一般还阻止短时间内重复使用端口号，所以这一小节的内容在现实中是怎样的？ ）</p><h3 id=tcp-安静时间的概念>TCP 安静时间的概念<a hidden class=anchor aria-hidden=true href=#tcp-安静时间的概念>#</a></h3><p>这里讨论的问题主要是主机重启之后，恢复原来的 TCP 链接，可能会造成新链接的报文和老链接遗留的报文产生冲突。解决办法是重启之后 TCP 必须等待 MSL 时间之后才能恢复原来的链接。</p><p>（我觉得这一段有点扯蛋，不同 TCP 实现不一定会遵守这个约定，而且黑客也正是可以利用这一点发起攻击）</p><h2 id=34-建立一个链接>3.4 建立一个链接<a hidden class=anchor aria-hidden=true href=#34-建立一个链接>#</a></h2><p>以下罗列了几种建立链接的情况。</p><h4 id=最简单的经典三次握手>最简单的经典三次握手<a hidden class=anchor aria-hidden=true href=#最简单的经典三次握手>#</a></h4><p>值得注意的是 A 在收到 B 的 SYN/ACK 之后，它的状态立马就变成了 <code>ESTABLISHED</code>，也就是图中的第三行。同理，B 在收到 A 对它的 SYN 的 ACK 之后，也立马变成了 <code>ESTABLISHED</code>。</p><p>(SEQ, 序列号，可以把它理解为 <code>对于这个包，我方的数据流从这个数开始</code>, 4 报文 SEQ = 101，但是没有数据，所以 5 报文 SEQ 仍然为 101)</p><pre tabindex=0><code>      TCP A                                                TCP B
+
+  1.  CLOSED                                               LISTEN
+  2.  SYN-SENT    --&gt; &lt;SEQ=100&gt;&lt;CTL=SYN&gt;               --&gt; SYN-RECEIVED
+  3.  ESTABLISHED &lt;-- &lt;SEQ=300&gt;&lt;ACK=101&gt;&lt;CTL=SYN,ACK&gt;  &lt;-- SYN-RECEIVED
+  4.  ESTABLISHED --&gt; &lt;SEQ=101&gt;&lt;ACK=301&gt;&lt;CTL=ACK&gt;       --&gt; ESTABLISHED
+  5.  ESTABLISHED --&gt; &lt;SEQ=101&gt;&lt;ACK=301&gt;&lt;CTL=ACK&gt;&lt;DATA&gt; --&gt; ESTABLISHED
+
+          Basic 3-Way Handshake for Connection Synchronization
+</code></pre><h4 id=双方同时发起链接>双方同时发起链接<a hidden class=anchor aria-hidden=true href=#双方同时发起链接>#</a></h4><p>注意，A 和 B 的初始状态都是 <code>CLOSED</code>，对比上图，B 的状态是 LISTEN。 &ldquo;&mldr;&rdquo; 表示这个报文还在网络上传输。</p><pre tabindex=0><code>      TCP A                                            TCP B
+
+  1.  CLOSED                                           CLOSED
+
+  2.  SYN-SENT     --&gt; &lt;SEQ=100&gt;&lt;CTL=SYN&gt;              ...
+
+  3.  SYN-RECEIVED &lt;-- &lt;SEQ=300&gt;&lt;CTL=SYN&gt;              &lt;-- SYN-SENT
+
+  4.               ... &lt;SEQ=100&gt;&lt;CTL=SYN&gt;              --&gt; SYN-RECEIVED
+
+  5.  SYN-RECEIVED --&gt; &lt;SEQ=100&gt;&lt;ACK=301&gt;&lt;CTL=SYN,ACK&gt; ...
+
+  6.  ESTABLISHED  &lt;-- &lt;SEQ=300&gt;&lt;ACK=101&gt;&lt;CTL=SYN,ACK&gt; &lt;-- SYN-RECEIVED
+
+  7.               ... &lt;SEQ=101&gt;&lt;ACK=301&gt;&lt;CTL=ACK&gt;     --&gt; ESTABLISHED
+
+                Simultaneous Connection Synchronization
+</code></pre><p>TCP 建立链接需要三次握手，这样的设计主要是为了防止有重复的报文引起冲突。RST 标志位就是为了处理这样的情况的。</p><blockquote><p>如果接受报文的 TCP 一端是处于刚开始同步状态（例如，SYN-SENT, SYN-RECEIVED)，那么当它收到 RST 时，它将返回回 LISTEN 状态。</p></blockquote><blockquote><p>如果接受报文的 TCP 一端处于已同步状态（例如，ESTABLISHED, FIN-WAIT-1, FIN-WAIT-2, CLOSE-WAIT, CLOSING, LAST-ACK, TIME-WAIT），那么当它收到 RST 时，断开链接。</p></blockquote><p>下图是在多个不相关的 SYN 报文中建立正确链接的例子。</p><pre tabindex=0><code>      TCP A                                                TCP B
+
+  1.  CLOSED                                               LISTEN
+
+  2.  SYN-SENT    --&gt; &lt;SEQ=100&gt;&lt;CTL=SYN&gt;               ...
+
+  3.  (duplicate) ... &lt;SEQ=90&gt;&lt;CTL=SYN&gt;               --&gt; SYN-RECEIVED
+
+  4.  SYN-SENT    &lt;-- &lt;SEQ=300&gt;&lt;ACK=91&gt;&lt;CTL=SYN,ACK&gt;  &lt;-- SYN-RECEIVED
+
+  5.  SYN-SENT    --&gt; &lt;SEQ=91&gt;&lt;CTL=RST&gt;               --&gt; LISTEN
+
+
+  6.              ... &lt;SEQ=100&gt;&lt;CTL=SYN&gt;               --&gt; SYN-RECEIVED
+
+  7.  SYN-SENT    &lt;-- &lt;SEQ=400&gt;&lt;ACK=101&gt;&lt;CTL=SYN,ACK&gt;  &lt;-- SYN-RECEIVED
+
+  8.  ESTABLISHED --&gt; &lt;SEQ=101&gt;&lt;ACK=401&gt;&lt;CTL=ACK&gt;      --&gt; ESTABLISHED
+
+                    Recovery from Old Duplicate SYN
+</code></pre><h4 id=半开的链接和其他异常>半开的链接和其他异常<a hidden class=anchor aria-hidden=true href=#半开的链接和其他异常>#</a></h4><blockquote><p>如果 TCP 链接的一端非正常关闭了，另一端并不知道这一情况，或者，通信两端因为某些情况变的状态不一致。这样的状态被称为 <strong>半开链接</strong>。</p></blockquote><p>在这种情况下，如果一端尝试发送数据，链接将要被重置。</p><p>如果服务器 A 上的 TCP 链接不存在，但是 B 尝试着发送数据给 A，这样导致 B 收到一个 RST 报文，告诉 B 发生了错误，Abort。</p><p>假设 A 和 B 建立了一个 TCP 链接，此时 A crash 并且重启了。那么重启后的 A 可能会选择重新开始，或者是接着上次的链接继续。如下图所示，在第3行，A 发送 SYN 希望能建立链接，而此时的 B，它的所处的状态是“已建立链接”，正在等待 A 发送数据，但是很显然，A 的 SYN 并不是它期望的，而且也不在它的接受窗口之内，于是就给 A 回复一个 ACK，重申 “我希望收到的序列号是多少”（<code>这里是不是可以一起黑客攻击？</code>），此时 A 看到 B 回复的并不是它想要的，“unsynchronized”，可以判定此时双方处于了 <code>半开链接</code> 的状态，于是发送 RST。之后重新建立链接。</p><pre tabindex=0><code>      TCP A                                           TCP B
+
+  1.  (CRASH)                               (send 300,receive 100)
+
+  2.  CLOSED                                           ESTABLISHED
+
+  3.  SYN-SENT --&gt; &lt;SEQ=400&gt;&lt;CTL=SYN&gt;              --&gt; (??)
+
+  4.  (!!)     &lt;-- &lt;SEQ=300&gt;&lt;ACK=100&gt;&lt;CTL=ACK&gt;     &lt;-- ESTABLISHED
+
+  5.  SYN-SENT --&gt; &lt;SEQ=100&gt;&lt;CTL=RST&gt;              --&gt; (Abort!!)
+
+  6.  SYN-SENT                                         CLOSED
+
+  7.  SYN-SENT --&gt; &lt;SEQ=400&gt;&lt;CTL=SYN&gt;              --&gt;
+
+                     Half-Open Connection Discovery
+</code></pre><p>另一个有趣的是，A crash 了，但是 B 不知道，继续发送数据，那么此时的情况就是本小节一开头说的，A 会发送 RST 给 B。</p><pre tabindex=0><code>        TCP A                                              TCP B
+
+  1.  (CRASH)                                   (send 300,receive 100)
+
+  2.  (??)    &lt;-- &lt;SEQ=300&gt;&lt;ACK=100&gt;&lt;DATA=10&gt;&lt;CTL=ACK&gt; &lt;-- ESTABLISHED
+
+  3.          --&gt; &lt;SEQ=100&gt;&lt;CTL=RST&gt;                   --&gt; (ABORT!!)
+
+           Active Side Causes Half-Open Connection Discovery
+</code></pre><p>再看一种情况，A B 都在 LISTEN 状态，此时网络上之前滞留的 SYN 报文到达了 B，B 回复ACK，但是 A 收到报文后发现这个 ACK 不能接受，发送 RST 给 B，B 重新回到 LISTEN 状态。</p><pre tabindex=0><code>      TCP A                                         TCP B
+
+  1.  LISTEN                                        LISTEN
+
+  2.       ... &lt;SEQ=Z&gt;&lt;CTL=SYN&gt;                --&gt;  SYN-RECEIVED
+
+  3.  (??) &lt;-- &lt;SEQ=X&gt;&lt;ACK=Z+1&gt;&lt;CTL=SYN,ACK&gt;   &lt;--  SYN-RECEIVED
+
+  4.       --&gt; &lt;SEQ=Z+1&gt;&lt;CTL=RST&gt;              --&gt;  (return to LISTEN!)
+
+  5.  LISTEN                                        LISTEN
+
+       Old Duplicate SYN Initiates a Reset on two Passive Sockets
+</code></pre><p>还有很多奇奇怪怪的情况发生，但最终都会导致一方发出 RST，下面就来看看 RST 产生的条件。</p><h4 id=发送-rst-报文>发送 RST 报文<a hidden class=anchor aria-hidden=true href=#发送-rst-报文>#</a></h4><p>通常来说，通信双方 A 和 B，只要有一方收到了明显不应该出现的报文，那么就可以发送 RST。</p><p>有三种状态集：</p><h4 id=rst-的处理>RST 的处理<a hidden class=anchor aria-hidden=true href=#rst-的处理>#</a></h4><p>收到 RST 的时候都要检查它的 seq number 在不在接受窗口内，除了在 SYN-SENT 状态下不用检查，在 SYN-SENT 状态下，只要报文的 ACK 了 ISN，那么 RST 就是有效的。</p><p>接收到 RST 的一方先检查正确性，然后改变自己的状态：</p><ul><li>如果在 LISTEN 状态，则一切照旧，继续</li><li>在 SYN-RECEIVED 状态，之前是 LISTEN，则返回到 LISTEN 状态。</li><li>其他情况 Abort，进入 CLOSED</li></ul><h2 id=35-关闭一个链接>3.5 关闭一个链接<a hidden class=anchor aria-hidden=true href=#35-关闭一个链接>#</a></h2><p>3.6 优先和安全 小节略。</p><h2 id=37-数据传输>3.7 数据传输<a hidden class=anchor aria-hidden=true href=#37-数据传输>#</a></h2><p>TCP 重传机制确保在网络传输中丢失的包在重传一次，但是这样也可能会导致多个重复的包先后到达对方，在序列号那一小节已经讨论过接收方如何处理这些重复的报文。</p><p>发送方时刻关注 SND.NXT 中的 seq number 是多少，同时接收方也关注下一个期望收到的 RCV.NXT 是多少，发送者记录最大的未确认的 seq number 是多少 SND.UNA 。如果所有已发送的字节都被确认的话，这三个变量的值相等。</p><h4 id=重传超时>重传超时<a hidden class=anchor aria-hidden=true href=#重传超时>#</a></h4><p>这里只是举了一个例子表示如何决定重传超时的时间。首先，RTT 表示发送一个字节，到收到它的确认，这一个来回的时间为 RTT。然后计算一个所谓的 Smoothed Round Trip Time。</p><blockquote><p>SRTT = ( ALPHA * SRTT ) + ((1-ALPHA) * RTT)</p></blockquote><p>最后计算重传时间 RTO</p><blockquote><p>RTO = min[UBOUND,max[LBOUND,(BETA*SRTT)]]</p></blockquote><p>ALPHA 和 BETA 都是因子，根据经验或者其他计算方法决定它的值，在其他 RFC 中有对它的研究，后续再更新。</p><h4 id=urgent-信息的传输>Urgent 信息的传输<a hidden class=anchor aria-hidden=true href=#urgent-信息的传输>#</a></h4><p>就是用 TCP 头部的 urgent 字段告诉接受者，这个 TCP 报文数据部分从某个偏移量开始是紧急数据部分。这个字段并不常见，留着以后再研究。</p><h4 id=窗口管理>窗口管理<a hidden class=anchor aria-hidden=true href=#窗口管理>#</a></h4><p>即使当前发送方 TCP 的发送窗口是0，它也要能够发送一个字节的数据。即使窗口为 0，发送方的 TCP 必须能够重传已经发送的报文。</p><p>窗口管理的建议：</p><p>如果把窗口设置的太小，那么性能就太差了，所以我们也要避免窗口太小。如果接收者到一个报文，窗口值设置的非常小，那么接受者可以延迟更新 TCB 结构中有关窗口的变量，直到对方发送过来一个“合理”的值。</p><p>再从发送者的角度来看，发送者也要避免发送非常小的窗口值，所以一个可行的方法值等到窗口扩展到足够大了，再发送报文。</p><p><code>注意</code>：不能因为要等窗口扩大而延迟 ACK 报文的发送，因为一旦不发送 ACK，对方就会重传报文。 一个解决方法是，当对方有小报文传来（不用更新窗口），发送 ACK 以免引起不必要的重传，之后再等待时机发送新窗口值。</p><p>（窗口值为 0 的这一段没有看懂，等看完其他资料再来更新）</p><h2 id=38-接口>3.8 接口<a hidden class=anchor aria-hidden=true href=#38-接口>#</a></h2><p>这一章节没有太多新的东西，有 socket 编程经验的人都熟悉，就是一些高级的用户函数，Open(), Close(), Listen(), Connect() 等。</p><p>略。</p><h2 id=39-事件的处理>3.9 事件的处理<a hidden class=anchor aria-hidden=true href=#39-事件的处理>#</a></h2><p>在实现一个 TCP 栈的时候，可以看做 TCP 是对一系列事件的回应，事件主要分为三大类，用户调用函数、有报文到达、超时。通常还要根据当前 TCP 的状态，加上发生的事件，来决定下一步怎么做。</p><p>对于每一个收到的报文，我们可以想象是这样的先后操作：先检查 seq number 在不在接收窗口之内，然后把这个报文以 seq number 大小为序，放在队列里面。如果一个报文的数据和已经收到的报文重叠，那么 TCP 栈要负责识别并且去重复的工作。</p><h3 id=open-call>OPEN Call<a hidden class=anchor aria-hidden=true href=#open-call>#</a></h3><blockquote><p>CLOSED STATE ( 例如 TCB 不存在)</p></blockquote><p>创建一个新的 TCB，设置源地址，目的地址，定时器等。在被动打开(passive OPEN，举例 ？？)的情况下，一开始并没有目的地址，要等到收到 SYN 报文才有。
+如果是主动打开(active open) 发出一个 SYN 报文。</p><blockquote><p>LISTEN STATE</p></blockquote><p>发送一个 SYN，设置 SND.UNA = ISS，SND.NXT = ISS+1。 进入 SYN-SENT 状态。</p><p>其他状态下遇到 OPEN Call 没有任何动作。</p><h3 id=send-call>SEND Call<a hidden class=anchor aria-hidden=true href=#send-call>#</a></h3><blockquote><p>LISTEN STATE</p></blockquote><p>如果指定了目的地址，那么从被动模式转到主动模式，发送 SYN，设置 SND.UNA = ISS，SND.NXT = ISS+1， 进入 SYN-SENT 状态。SEND 命令所携带的数据可能在这个 SYN 报文发送，也有可能缓存起来等到链接建立好了进入 ESTABLISHED 状态再发送。（<code>听这段话的意思，数据是可以在 SYN 发送的？ 现实中好像不可以</code>）</p><blockquote><p>SYN-SENT STATE, SYN-RECEIVED STATE</p></blockquote><p>缓存用户的这个请求命令，直到链接进入 ESTABLISHED 状态再发送。</p><blockquote><p>ESTABLISHED STATE, CLOSE-WAIT STATE</p></blockquote><p>发送用户数据，并且 ACK 的 value = RCV.NXT</p><p>其他状态下遇到 SEND Call 没有任何动作。</p><h3 id=received-call>RECEIVED Call<a hidden class=anchor aria-hidden=true href=#received-call>#</a></h3><blockquote><p>CLOSED STATE</p></blockquote><p>返回错误。</p><blockquote><p>LISTEN STATE, SYN-SENT STATE, SYN-RECEIVED STATE</p></blockquote><p>缓存用户的这个请求，直到链接进入 ESTABLISHED 状态再处理。</p><blockquote><p>ESTABLISHED STATE, FIN-WAIT-1 STATE, FIN-WAIT-2 STATE</p></blockquote><p>如果此时接收对方的数据还没接收完，则把用户的请求缓存起来，等数据全部收完了再回复用户的请求。如果已经收完了则立即回复。</p><blockquote><p>CLOSE-WAIT STATE</p></blockquote><p>因为对方已经发送了 FIN（所以这一方才会进入 CLOSE-WAIT 状态），所以剩下的数据在队列中，只是还没有交到用户手中而已，这种情况下直接把数据拷贝过去就行了。</p><p>其他状态下遇到 RECEIVED Call 没有任何动作。</p><h3 id=close-call>CLOSE Call<a hidden class=anchor aria-hidden=true href=#close-call>#</a></h3><blockquote><p>CLOSED STATE</p></blockquote><p>没啥好说的，直接关闭。</p><blockquote><p>LISTEN STATE</p></blockquote><p>删除 TCB，进入 CLOSED 状态</p><blockquote><p>SYN-SENT STATE</p></blockquote><p>删除 TCB，对所有在队列中的发送或接收请求返回 “error: closeing”</p><blockquote><p>SYN-RECEIVED STATE</p></blockquote><p>如果命令队列中没有发送请求，发送一个 FIN，进入 FIN-WAIT-1 状态。否则缓存这个命令，等到链接进入 ESTABLISED 状态再处理。</p><blockquote><p>ESTABLISHED</p></blockquote><p>把这条命令放在最后，先把队列中该发送的数据发送掉，然后发送 FIN，进入 FIN-WAIT-1 状态。</p><blockquote><p>FIN-WAIT-1 STATE, FIN-WAIT-2 STATE</p></blockquote><p>这种情况下应该是发生错误，直接返回错吧。</p><blockquote><p>CLOSE-WAIT STATE</p></blockquote><p>缓存这个命令知道其他的发送命令全部结束后，发送 FIN，进入 CLOSING 状态。</p><h3 id=abort-call>ABORT Call<a hidden class=anchor aria-hidden=true href=#abort-call>#</a></h3><h3 id=status-call>STATUS Call<a hidden class=anchor aria-hidden=true href=#status-call>#</a></h3><p>以上这两个状态没有太多要注意的，具体的细节直接看 RFC 原文就行了。</p><h3 id=segment-arrives>SEGMENT ARRIVES<a hidden class=anchor aria-hidden=true href=#segment-arrives>#</a></h3><p>这是最重要的一个状态转换，当一个报文到达时，每一个状态都要细细讨论。对照文档中的内容，写成伪代码的形式最容易理解，甚至在写真正的代码时可以照搬伪代码。</p><pre tabindex=0><code>收到了一个报文，接收方的 TCP 协议栈做如下判断:
+
+if (state == CLOSED) {
+  丢弃任何收到的报文
+  return;
+} 
+
+
+if (state == LISTEN) {
+  1. 检查报文如果设置了 RST
+     return;
+  2. 检查报文 ACK 标志，在 LISTEN 状态，我们不应该收到 ACK 报文，所以必定有些地方出错了，
+     发送 RST 报文给对方，其中 SEQ = SEG.ACK, CTL = RST, return;
+  3. 检查报文SYN。如果 SYN 位设置，则需要检查安全性。
+     if (SEG.PRC &lt; TCB.PRC) {
+         RCV.NXT = SEG.SEQ+1;
+         发送 SYN 报文，&lt;SEQ=ISS&gt;&lt;ACK=RCV.NXT&gt;&lt;CTL=SYN,ACK&gt; 
+         SND.NXT = ISS + 1， SND.UNA = ISS
+         链接的状态进入 SYN-RECEIVED，之后收到的报文要在 SYN-RECEIVED 状态处理，
+         但是这个状态不会再处理 SYN 报文了。
+     } else {
+         发送 RST。
+     }
+
+  4. 检查其他控制位。无论其他 flags 是什么，ACK 总是要被置位的，如果这个报文没有 ACK，则 RST     
+} 
+
+
+if (state == SYN-SENT) {
+  1. check ACK bit
+    if (ACK is set) {
+      if (SEG.ACK &lt;= ISS || SEG.ACK &gt; SND.NXT) {
+        发送 RST ： &lt;SEQ=SEG.ACK&gt;&lt;CTL=RST&gt;
+        return；
+      }
+
+      if (SND.UNA &lt;= SEG.ACK &lt;= SND.NXT) {
+        这个报文可以接受。
+      }
+    }
+
+  2. 检查 RST bit，如果设置了，则报错并 close 这个链接。
+  3. 检查安全和优先级。（略）
+  
+  4. 检查 SYN bit。只有当 ACK 检查没有问题，或者没有 ACK，但是报文没有设置 RST 的时候才会到这一步。
+
+     if (SYN bit is on, 安全性检查没有问题) {
+        RCV.NXT = SEG.SEQ+1
+        IRS = SEG.SEQ
+        SND.UNA + 1 == SEG.ACK,
+        其他在重传队列的报文，如果因为这个报文而被确认了，则从重传队列中移除。
+     } 
+
+     if (SND.UNA &gt; ISS) {
+         state = ESTABLISHED
+         发送一个 ACK ： &lt;SEQ=SND.NXT&gt;&lt;ACK=RCV.NXT&gt;&lt;CTL=ACK&gt;
+     } else {
+         state = SYN-RECEIVED
+         发送一个 SYN，ACK = &lt;SEQ=ISS&gt;&lt;ACK=RCV.NXT&gt;&lt;CTL=SYN,ACK&gt;
+     }
+
+  5. 如果收到了报文既没有 SYN 也没有 RST，丢弃。
+
+}
+
+
+当 TCP 栈的状态不在上面列举的三个时，那么它必定在剩下的 8 个中。
+
+此时，收到一个报文：
+
+1. 检查 seq number，先判断这个报文是不是 dup，确认不是 dup 后留下处理
+   后续的处理是按照 SEG.SEQ 的顺序来，如果这个报文与其他有重叠，则去重后留下新的。
+   检查的过程有些复杂，还要考虑 接收窗口。
+
+        Segment Receive  Test
+        Length  Window
+        ------- -------  -------------------------------------------
+
+           0       0     SEG.SEQ = RCV.NXT
+
+           0      &gt;0     RCV.NXT =&lt; SEG.SEQ &lt; RCV.NXT+RCV.WND
+
+          &gt;0       0     not acceptable
+
+          &gt;0      &gt;0     RCV.NXT =&lt; SEG.SEQ &lt; RCV.NXT+RCV.WND
+                      or RCV.NXT =&lt; SEG.SEQ+SEG.LEN-1 &lt; RCV.NXT+RCV.WND
+    
+    如果 RCV.WND 是空，不接受新报文。但是允许接收 ACK，URG，RST。
+    如果这个报文最后判定为不能接收，除了RST以外，需要发送ACK：&lt;SEQ=SND.NXT&gt;&lt;ACK=RCV.NXT&gt;&lt;CTL=ACK&gt;
+
+2. 第二步检查 RST
+   if (state == SYN-RECEIVED) {
+      if (RST bit is set) {
+         如果链接是被动打开的（从 LISTEN 状态而来的）
+         则重新回到 LISTEN，也不需要回复发送者。
+         如果链接是主动的，则告诉上层用户出错了，进入 CLOSED，删 TCB
+      }
+   } 
+
+   if (state == ESTABLISHED || FIN-WAIT-1 || FIN-WAIT-2 || CLOSE-WAIT) {
+      告诉上层用户出错了，进入 CLOSED，删 TCB
+   }
+
+   if (state == CLOSING STATE || LAST-ACK STATE || TIME-WAIT) {
+       进入 CLOSED，删 TCB
+   }
+
+3. 第三步，检查安全和优先级。
+   if (state == SYN-RECEIVED) {
+       如果优先级检查不满足，则发送一个 RST，return
+   }
+
+   if (state == ESTABLISHED STATE) {
+      告诉上层用户出错了，进入 CLOSED，删 TCB
+   }
+
+4. 第四步，检查 SYN 
+   if (state == SYN-RECEIVED || ESTABLISHED STATE || FIN-WAIT STATE-1 ||
+                FIN-WAIT STATE-2 || CLOSE-WAIT STATE || CLOSING STATE ||
+                LAST-ACK STATE || TIME-WAIT STATE) {
+      
+      如果这个 SYN 在接收窗口内，则发生了严重的错误，
+      告诉上层用户出错了，进入 CLOSED，删 TCB
+
+      如果 SYN 不在接收窗口内，（这种情况不会遇到，因为在第一步就已经处理了）
+    }
+
+5. 第五步，检查 ACK 
+   if (ACK 没有设置)，直接丢弃这个报文。
+   
+   if (ACK is set) {
+      if (state == SYN-RECEIVED) {
+          if (SND.UNA =&lt; SEG.ACK =&lt; SND.NXT) {
+             进入 ESTABLISHED 状态继续
+
+             if (如果 ACK 不能接收) {
+                发送一个 RST ：&lt;SEQ=SEG.ACK&gt;&lt;CTL=RST&gt;
+             }
+          }
+      }
+
+      if (state == ESTABLISHED) {
+         if (SND.UNA &lt; SEG.ACK =&lt; SND.NXT) {
+             SND.UNA = SEG.ACK
+             重传队列上被确认的报文都需要移除。
+             如果 ACK 重复确认了，则忽略。
+             如果 ACK 确认了不该确认的 （SEG.ACK &gt; SND.NXT）
+                则发送一个 ACK，丢弃这个报文。
+         }
+
+         if (SND.UNA &lt; SEG.ACK =&lt; SND.NXT) {
+             需要更新 发送窗口。
+             if (SND.WL1 &lt; SEG.SEQ or (SND.WL1 = SEG.SEQ and
+                                       SND.WL2 =&lt; SEG.ACK)) {
+                    SND.WND = SEG.WND
+                    SND.WL1 = SEG.SEQ
+                    SND.WL2 = SEG.ACK
+              }
+         }
+
+         需要注意的是，SND.WND 是从 SND.UNA 的偏移量，
+         SND.WL1 记录了用于更新 SND.WND 的 seq number
+         SND.WL2 记录了用于更新 SND.WND 的报文的确认号
+
+         这样做的目的是阻止使用旧的报文去更新窗口
+      }
+
+      其他的状态略，具体可以查看 RFC
+   }
+
+6. 第六步，检查 URG， 这一步略。
+7. 第七步，处理 segment text。 略
+
+8. 第八步，检查 FIN
+
+if (state == CLOSED, LISTEN or SYN-SENT) {
+   直接忽略 FIN 报文
+}
+
+除此之外，收到 FIN 要通知用户准备关闭连接。
+
+if (state == SYN-RECEIVED || ESTABLISHED) {
+   进入  CLOSE-WAIT
+}
+
+if (state == FIN-WAIT-1) {
+   if (FIN 被 ACK 了) {
+       那么进入 TIME-WAIT 状态，
+       开启 time-wait 计时器
+       关闭其他计时器
+   } else {
+       进入 CLOSING 状态
+   }
+}
+
+if (state == FIN-WAIT-2) {
+    进入 TIME-WAIT
+    开启 time-wait 计时器
+    关闭其他计时器
+}
+
+if (state == CLOSE-WAIT || CLOSING || LAST-ACK) {
+    保持这个状态
+}
+
+if (state == TIME-WAIT) {
+   保持这个状态，重启 2 MSL time-wait 定时器。
+}
+</code></pre><h3 id=user-timout>USER TIMOUT<a hidden class=anchor aria-hidden=true href=#user-timout>#</a></h3><blockquote><p>USER TIMEOUT，定时器超时，任何情况下如果这个定时器超时了，清理队列、TCB，返回给用户一条错误信息，完事。</p></blockquote><blockquote><p>RETRANSMISSION TIMEOUT，把重传队列头部的报文重新发送一次，并且重置定时器。</p></blockquote><blockquote><p>TIME-WAIT TIMEOUT，删 TCB，进入 CLOSED 状态。</p></blockquote><h2 id=参考资料>参考资料<a hidden class=anchor aria-hidden=true href=#参考资料>#</a></h2><ul><li><a href=https://tools.ietf.org/html/rfc793>https://tools.ietf.org/html/rfc793</a></li><li><a href=https://www.jianshu.com/p/39b23068bb0f>https://www.jianshu.com/p/39b23068bb0f</a></li></ul></div><footer class=post-footer><ul class=post-tags><li><a href=https://runzhen.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/>读书笔记</a></li><li><a href=https://runzhen.github.io/tags/tcp/>TCP</a></li><li><a href=https://runzhen.github.io/tags/rfc/>RFC</a></li></ul><nav class=paginav><a class=prev href=https://runzhen.github.io/posts/dockerize-blog/><span class=title>« Prev</span><br><span>容器化博客的编译环境</span>
+</a><a class=next href=https://runzhen.github.io/posts/wordpress-to-jekyll/><span class=title>Next »</span><br><span>博客十年的变迁: 从 Wordpress 到 Jekyll</span></a></nav><ul class=share-buttons><li><a target=_blank rel="noopener noreferrer" aria-label="share RFC 793 传输控制协议 TCP on x" href="https://x.com/intent/tweet/?text=RFC%20793%20%e4%bc%a0%e8%be%93%e6%8e%a7%e5%88%b6%e5%8d%8f%e8%ae%ae%20TCP&amp;url=https%3a%2f%2frunzhen.github.io%2fposts%2ftcp-rfc793%2f&amp;hashtags=%e8%af%bb%e4%b9%a6%e7%ac%94%e8%ae%b0%2cTCP%2cRFC"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentcolor"><path d="M512 62.554V449.446C512 483.97 483.97 512 449.446 512H62.554C28.03 512 0 483.97.0 449.446V62.554C0 28.03 28.029.0 62.554.0H449.446C483.971.0 512 28.03 512 62.554zM269.951 190.75 182.567 75.216H56L207.216 272.95 63.9 436.783h61.366L235.9 310.383l96.667 126.4H456L298.367 228.367l134-153.151H371.033zM127.633 110h36.468l219.38 290.065H349.5z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share RFC 793 传输控制协议 TCP on linkedin" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2frunzhen.github.io%2fposts%2ftcp-rfc793%2f&amp;title=RFC%20793%20%e4%bc%a0%e8%be%93%e6%8e%a7%e5%88%b6%e5%8d%8f%e8%ae%ae%20TCP&amp;summary=RFC%20793%20%e4%bc%a0%e8%be%93%e6%8e%a7%e5%88%b6%e5%8d%8f%e8%ae%ae%20TCP&amp;source=https%3a%2f%2frunzhen.github.io%2fposts%2ftcp-rfc793%2f"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentcolor"><path d="M449.446.0C483.971.0 512 28.03 512 62.554v386.892C512 483.97 483.97 512 449.446 512H62.554c-34.524.0-62.554-28.03-62.554-62.554V62.554c0-34.524 28.029-62.554 62.554-62.554h386.892zM160.461 423.278V197.561h-75.04v225.717h75.04zm270.539.0V293.839c0-69.333-37.018-101.586-86.381-101.586-39.804.0-57.634 21.891-67.617 37.266v-31.958h-75.021c.995 21.181.0 225.717.0 225.717h75.02V297.222c0-6.748.486-13.492 2.474-18.315 5.414-13.475 17.767-27.434 38.494-27.434 27.135.0 38.007 20.707 38.007 51.037v120.768H431zM123.448 88.722C97.774 88.722 81 105.601 81 127.724c0 21.658 16.264 39.002 41.455 39.002h.484c26.165.0 42.452-17.344 42.452-39.002-.485-22.092-16.241-38.954-41.943-39.002z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share RFC 793 传输控制协议 TCP on reddit" href="https://reddit.com/submit?url=https%3a%2f%2frunzhen.github.io%2fposts%2ftcp-rfc793%2f&title=RFC%20793%20%e4%bc%a0%e8%be%93%e6%8e%a7%e5%88%b6%e5%8d%8f%e8%ae%ae%20TCP"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentcolor"><path d="M449.446.0C483.971.0 512 28.03 512 62.554v386.892C512 483.97 483.97 512 449.446 512H62.554c-34.524.0-62.554-28.03-62.554-62.554V62.554c0-34.524 28.029-62.554 62.554-62.554h386.892zM446 265.638c0-22.964-18.616-41.58-41.58-41.58-11.211.0-21.361 4.457-28.841 11.666-28.424-20.508-67.586-33.757-111.204-35.278l18.941-89.121 61.884 13.157c.756 15.734 13.642 28.29 29.56 28.29 16.407.0 29.706-13.299 29.706-29.701.0-16.403-13.299-29.702-29.706-29.702-11.666.0-21.657 6.792-26.515 16.578l-69.105-14.69c-1.922-.418-3.939-.042-5.585 1.036-1.658 1.073-2.811 2.761-3.224 4.686l-21.152 99.438c-44.258 1.228-84.046 14.494-112.837 35.232-7.468-7.164-17.589-11.591-28.757-11.591-22.965.0-41.585 18.616-41.585 41.58.0 16.896 10.095 31.41 24.568 37.918-.639 4.135-.99 8.328-.99 12.576.0 63.977 74.469 115.836 166.33 115.836s166.334-51.859 166.334-115.836c0-4.218-.347-8.387-.977-12.493 14.564-6.47 24.735-21.034 24.735-38.001zM326.526 373.831c-20.27 20.241-59.115 21.816-70.534 21.816-11.428.0-50.277-1.575-70.522-21.82-3.007-3.008-3.007-7.882.0-10.889 3.003-2.999 7.882-3.003 10.885.0 12.777 12.781 40.11 17.317 59.637 17.317 19.522.0 46.86-4.536 59.657-17.321 3.016-2.999 7.886-2.995 10.885.008 3.008 3.011 3.003 7.882-.008 10.889zm-5.23-48.781c-16.373.0-29.701-13.324-29.701-29.698.0-16.381 13.328-29.714 29.701-29.714 16.378.0 29.706 13.333 29.706 29.714.0 16.374-13.328 29.698-29.706 29.698zM160.91 295.348c0-16.381 13.328-29.71 29.714-29.71 16.369.0 29.689 13.329 29.689 29.71.0 16.373-13.32 29.693-29.689 29.693-16.386.0-29.714-13.32-29.714-29.693z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share RFC 793 传输控制协议 TCP on facebook" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2frunzhen.github.io%2fposts%2ftcp-rfc793%2f"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentcolor"><path d="M449.446.0C483.971.0 512 28.03 512 62.554v386.892C512 483.97 483.97 512 449.446 512H342.978V319.085h66.6l12.672-82.621h-79.272v-53.617c0-22.603 11.073-44.636 46.58-44.636H425.6v-70.34s-32.71-5.582-63.982-5.582c-65.288.0-107.96 39.569-107.96 111.204v62.971h-72.573v82.621h72.573V512h-191.104c-34.524.0-62.554-28.03-62.554-62.554V62.554c0-34.524 28.029-62.554 62.554-62.554h386.892z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share RFC 793 传输控制协议 TCP on whatsapp" href="https://api.whatsapp.com/send?text=RFC%20793%20%e4%bc%a0%e8%be%93%e6%8e%a7%e5%88%b6%e5%8d%8f%e8%ae%ae%20TCP%20-%20https%3a%2f%2frunzhen.github.io%2fposts%2ftcp-rfc793%2f"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentcolor"><path d="M449.446.0C483.971.0 512 28.03 512 62.554v386.892C512 483.97 483.97 512 449.446 512H62.554c-34.524.0-62.554-28.03-62.554-62.554V62.554c0-34.524 28.029-62.554 62.554-62.554h386.892zm-58.673 127.703c-33.842-33.881-78.847-52.548-126.798-52.568-98.799.0-179.21 80.405-179.249 179.234-.013 31.593 8.241 62.428 23.927 89.612l-25.429 92.884 95.021-24.925c26.181 14.28 55.659 21.807 85.658 21.816h.074c98.789.0 179.206-80.413 179.247-179.243.018-47.895-18.61-92.93-52.451-126.81zM263.976 403.485h-.06c-26.734-.01-52.954-7.193-75.828-20.767l-5.441-3.229-56.386 14.792 15.05-54.977-3.542-5.637c-14.913-23.72-22.791-51.136-22.779-79.287.033-82.142 66.867-148.971 149.046-148.971 39.793.014 77.199 15.531 105.329 43.692 28.128 28.16 43.609 65.592 43.594 105.4-.034 82.149-66.866 148.983-148.983 148.984zm81.721-111.581c-4.479-2.242-26.499-13.075-30.604-14.571-4.105-1.495-7.091-2.241-10.077 2.241-2.986 4.483-11.569 14.572-14.182 17.562-2.612 2.988-5.225 3.364-9.703 1.12-4.479-2.241-18.91-6.97-36.017-22.23C231.8 264.15 222.81 249.484 220.198 245s-.279-6.908 1.963-9.14c2.016-2.007 4.48-5.232 6.719-7.847 2.24-2.615 2.986-4.484 4.479-7.472 1.493-2.99.747-5.604-.374-7.846-1.119-2.241-10.077-24.288-13.809-33.256-3.635-8.733-7.327-7.55-10.077-7.688-2.609-.13-5.598-.158-8.583-.158-2.986.0-7.839 1.121-11.944 5.604-4.105 4.484-15.675 15.32-15.675 37.364.0 22.046 16.048 43.342 18.287 46.332 2.24 2.99 31.582 48.227 76.511 67.627 10.685 4.615 19.028 7.371 25.533 9.434 10.728 3.41 20.492 2.929 28.209 1.775 8.605-1.285 26.499-10.833 30.231-21.295 3.732-10.464 3.732-19.431 2.612-21.298-1.119-1.869-4.105-2.99-8.583-5.232z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share RFC 793 传输控制协议 TCP on telegram" href="https://telegram.me/share/url?text=RFC%20793%20%e4%bc%a0%e8%be%93%e6%8e%a7%e5%88%b6%e5%8d%8f%e8%ae%ae%20TCP&amp;url=https%3a%2f%2frunzhen.github.io%2fposts%2ftcp-rfc793%2f"><svg viewBox="2 2 28 28" height="30" width="30" fill="currentcolor"><path d="M26.49 29.86H5.5a3.37 3.37.0 01-2.47-1 3.35 3.35.0 01-1-2.47V5.48A3.36 3.36.0 013 3 3.37 3.37.0 015.5 2h21A3.38 3.38.0 0129 3a3.36 3.36.0 011 2.46V26.37a3.35 3.35.0 01-1 2.47 3.38 3.38.0 01-2.51 1.02zm-5.38-6.71a.79.79.0 00.85-.66L24.73 9.24a.55.55.0 00-.18-.46.62.62.0 00-.41-.17q-.08.0-16.53 6.11a.59.59.0 00-.41.59.57.57.0 00.43.52l4 1.24 1.61 4.83a.62.62.0 00.63.43.56.56.0 00.4-.17L16.54 20l4.09 3A.9.9.0 0021.11 23.15zM13.8 20.71l-1.21-4q8.72-5.55 8.78-5.55c.15.0.23.0.23.16a.18.18.0 010 .06s-2.51 2.3-7.52 6.8z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share RFC 793 传输控制协议 TCP on ycombinator" href="https://news.ycombinator.com/submitlink?t=RFC%20793%20%e4%bc%a0%e8%be%93%e6%8e%a7%e5%88%b6%e5%8d%8f%e8%ae%ae%20TCP&u=https%3a%2f%2frunzhen.github.io%2fposts%2ftcp-rfc793%2f"><svg width="30" height="30" viewBox="0 0 512 512" fill="currentcolor" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"><path d="M449.446.0C483.971.0 512 28.03 512 62.554V449.446C512 483.97 483.97 512 449.446 512H62.554C28.03 512 0 483.97.0 449.446V62.554C0 28.03 28.029.0 62.554.0H449.446zM183.8767 87.9921h-62.034L230.6673 292.4508V424.0079h50.6655V292.4508L390.1575 87.9921H328.1233L256 238.2489z"/></svg></a></li></ul></footer></article></main><footer class=footer><span>&copy; 2024 <a href=https://runzhen.github.io/>Mind in the Wind</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

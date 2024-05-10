@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tls on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/tls/</link>
+    <description>Recent content in Tls on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 19 Jun 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/tls/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>抓包分析 TLS 1.2 连接过程</title>
+      <link>https://runzhen.github.io/posts/tls2-packets/</link>
+      <pubDate>Sun, 19 Jun 2016 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/tls2-packets/</guid>
+      <description>本文是《Traffic Analysis of an SSL/TLS Session》的笔记，原文见此处。
+在 TLS 协议格式 中详细分析了协议数据的各个字段， 现在就来实战 ——用 Wireshark 抓包并观察数据。
+第一发（Client -&amp;gt; Server） Full contents of the packet0000 02 00 00 00 45 00 00 98 13 ed 40 00 40 06 00 00 ....E.....@.@...0010 7f 00 00 01 7f 00 00 01 ec 26 01 bb 43 7c ee 74 .........&amp;amp;..C|.t0020 60 b5 50 0a 80 18 31 d7 fe 8c 00 00 01 01 08 0a `.</description>
+    </item>
+    <item>
+      <title>TLS 1.2 协议格式</title>
+      <link>https://runzhen.github.io/posts/tls-basic/</link>
+      <pubDate>Sat, 18 Jun 2016 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/tls-basic/</guid>
+      <description>本文内容来自《Traffic Analysis of an SSL/TLS Session》的阅读笔记，原文见此处。
+TLS 全称为 Transport Layer Security，它本身也分为了 Lower 和 Higher 两层协议。
+Lower Layer Lower Layer 协议在 TCP 协议之上，提供面向连接的可靠传输，在这一层的协议主要是记录协议（TLS Record Protocol）。 记录协议首先把上层协议传来的数据分成小于2^14字节的数据块，如果设置了压缩选项，则第二步为压缩数据，然后在数据块的末尾增加 MAC（Message Authentication Code），第三步将数据块加密，最后增加记录头。该过程如下所示。
+each block is packed into a structure that does not preserve client message boundaries, meaning that mulitiple message of the same type maybe coalesced into a single structure
+-----------+ data --+--------------&amp;gt; 1. Fragment data -----------+ +------------------------+ | | | | +------------------------+ 2. Compress data (generally no compression applied) +------------------------+----+ | |MAC | Add a Message Authentication Code | | | +------------------------+----+ 3.</description>
+    </item>
+  </channel>
+</rss>

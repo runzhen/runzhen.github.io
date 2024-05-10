@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Bbolt on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/bbolt/</link>
+    <description>Recent content in Bbolt on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 07 Jul 2021 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/bbolt/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>bbolt 的设计与实现</title>
+      <link>https://runzhen.github.io/posts/bbolt/</link>
+      <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/bbolt/</guid>
+      <description>关于 bbolt 的分析，网上已经有很多资料，本文只是对资料和源码的整理，主要是自己的学习笔记，文章最后的参考资料中有更多链接。
+bbolt DB 整体组织 首先，bbolt 的一个文件是一个 DB，DB 中可以有多个 table， 每一个 table 是一个 B+ 树。而这个 table 在源码中就是 bucket， 整个 DB 就是一个大 bucket，它的子节点有多个 bucket。整体结构如图所示：
+顶层 B+ 树，比较特殊，称为 root bucket，其所有叶子节点保存的都是子 bucket B+ 树根的 page id 其他 B+ 树，不妨称之为 data bucket，其叶子节点可能是正常用户数据，也可能是子 bucket B+ 树根的 page id。 这样，就清楚的知道了 bbolt 中 DB，table，和 data 是如何组织的了。
+bbolt 的源码很简洁，主要功能分布在以下几个文件：
+bucket.go：对 bucket 操作的高层封装。包括 kv 的增删改查、子 bucket 的增删改查以及 B+ 树拆分和合并。 node.go：对 node 所存元素和 node 间关系的相关操作。节点内所存元素的增删、加载和落盘，访问孩子兄弟元素、拆分与合并的详细逻辑。 cursor.go：实现了类似迭代器的功能，可以在 B+ 树上的叶子节点上进行随意游走。 page.go: page 是磁盘上一个 4kb 页的表示，注意，相比 page，第二行提到的 node 表示的是内存里的结构。 db.</description>
+    </item>
+  </channel>
+</rss>

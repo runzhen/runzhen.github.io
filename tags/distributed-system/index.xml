@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Distributed-System on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/distributed-system/</link>
+    <description>Recent content in Distributed-System on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 09 Jul 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/distributed-system/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>一致性哈希 Consistent Hashing</title>
+      <link>https://runzhen.github.io/posts/consistent-hashing/</link>
+      <pubDate>Sat, 09 Jul 2022 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/consistent-hashing/</guid>
+      <description>在理解一致性 hash 之前，先来看看这个问题是怎么产生的。 例如我们有一个数据库，里面存了成千上万张图片，用户访问图片会呈现一定的规律性，比如某段时间内一张照片火了，那么短时间内会有大量的请求访问这张图片，会对数据库造成压力，这时候我们就想到要加一层缓存，这也是系统架构的终极法宝。
+所以，这种场景下典型的系统架构如下图所示：
+客户端要访问文件名为 A 的图片，代理服务器根据文件名去缓存服务器中查询，如果cache中没有，那么最终去数据库取，同时也把取到的图片文件缓存在某个缓存服务器中。 这里有个题外话，通常我们会把文件名 A 通过 hash 函数转换成一段数字，便于操作，这里的 hash 函数与本文的一致性 hash 是不一样的。
+那么问题来了：如何将图片均匀的缓存在缓存服务器上呢？
+最简单的方式，以文件名为 key，缓存服务器个数为 N，取模得到余数，即 key % N = i，i 是几，就把图片缓存到对应编号的服务器上。
+这种方式确实能够将数据 均匀的 分布在缓存上，但是最大的缺点是一旦 N 的数量发生变化，那么几乎所有的 i 都会改变，导致缓存失效。
+例如，
+key = 5 的文件，在 N = 3 时，缓存在编号为 2 的缓存服务器上。 增加一台服务器，N = 4，那么 key = 5 的文件应该在 1 号服务器上，但事实上它在 2 号。 导致这种情况的根本原因是什么呢？ 我们想让数据均匀分布，但是均匀的算法却依赖于 N ，而 N 直接依赖于服务器的数量！
+一致性 Hash 的原理 消除依赖 所以解决的办法就是，让均匀分布的计算方法不依赖于 Redis 的个数 N。</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Kubernetes on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/kubernetes/</link>
+    <description>Recent content in Kubernetes on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 28 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kubernetes 的 Volume 和 StorageClass</title>
+      <link>https://runzhen.github.io/posts/kubernetes-volume-pv-pvc/</link>
+      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/kubernetes-volume-pv-pvc/</guid>
+      <description>Kubernetes 的 Pod 可以 mount 很多种 Volume，常见的 volume 有
+emptyDir hostPath configMap, secret persistentVolumeClaim nfs, gitRepo, cephfs, iscsi, cinder 等 其中，emptyDir 是最简单的一种，用于挂载一些临时文件，比如同一个 Pod 中两个 container 需要通过 unix socket 通信，那么把 socket 放在 emptyDir 中是最简单的方法。
+甚至可以指定把这个抽象的目录放在内存，从而加快速度。
+volumes: - name: html emptyDir: medium: Memory hostPath 是把数据直接存在 kubernetes 某个 worker node 上，这种方法一般不推荐使用，因为当 Pod 被调度到其他节点上后，数据就丢失了。
+那么什么样的情况适合挂载 hostPath 呢？一些系统级的组件，需要挂载 node 上系统本身自带的一些文件时，比如需要读取 host 的 cert 目录，或者 etc 目录。常见的有 kube-system 空间下的 coreDNS 组件等。
+当 Pod 中的程序需要把数据持久化到外部存储时，最推荐的用法是先在系统中定义 StorageClass，然后配合 persistentVolumeClaim (PVC) 和 persistentVolume (PV) 一起动态的分配空间。</description>
+    </item>
+    <item>
+      <title>Kubernetes Headless Service</title>
+      <link>https://runzhen.github.io/posts/kubernetes-headless-service/</link>
+      <pubDate>Sun, 20 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/kubernetes-headless-service/</guid>
+      <description>问题起源于我用 envoy 对 grpc 做 Layer 7 负载均衡的时候，发现 traffic 永远被转发到了一个特定的 Pod，显然是配置出错了。
+环境如下：
+同一个 namespace 下部署了 2 个 grpc server，一个 envoy
+$ kubectl get pod NAME READY STATUS RESTARTS AGE grpc-envoy-7684f49cb-9fv4h 1/1 Running 0 4h49m grpc-server-668bdd6576-2bvkz 1/1 Running 0 4h51m grpc-server-668bdd6576-tqzj4 1/1 Running 0 4h51m envoy 的 service 配置如下
+apiVersion: v1 kind: Service metadata: name: grpc-envoy namespace: default labels: app: grpc-envoy spec: type: NodePort ports: - name: grpc port: 8080 targetPort: grpc nodePort: 30061 protocol: TCP selector: app: grpc-envoy grpc-server 的 service 配置如下</description>
+    </item>
+    <item>
+      <title>Kubernetes Pod 中的 Pause 容器</title>
+      <link>https://runzhen.github.io/posts/k8s-pod-pause-container/</link>
+      <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/k8s-pod-pause-container/</guid>
+      <description>在一个运行 kubernetes 的节点上，我们能看到很多名叫 “pause” 的 container。比如
+$ sudo docker ps | grep pause a4218d1d379b k8s.gcr.io/pause:3.1 &amp;#34;/pause&amp;#34; a2109bf3f0db k8s.gcr.io/pause:3.1 &amp;#34;/pause&amp;#34; 57cfa42e95d3 k8s.gcr.io/pause:3.1 &amp;#34;/pause&amp;#34; 仔细观察一下不难发现，每一个 Pod 都会对应一个 pause container。
+在查阅了网上的一些资料以后，我总结了一下它大概有两个作用，
+它是 Pod 中第一个启动的 container ，由它创建新的 linux namespace，其他 container 启动后再加入到这些 namespace 中。 在 Pod 的环境中充当 init process 的角色，它的 PID 是 1，负责回收所有僵尸进程。 说个题外话，在 docker 中，一个 container 启动时，Dockerfile 的 ENTRYPOINT 中指定的命令会成为这个 container 的 init process，PID 为 1.
+顺便来看一下 pause 容器的实现，一共只有几十行 C 语言代码
+static void sigdown(int signo) { psignal(signo, &amp;#34;Shutting down, got signal&amp;#34;); exit(0); } static void sigreap(int signo) { while (waitpid(-1, NULL, WNOHANG) &amp;gt; 0) ; } int main(int argc, char **argv) { if (getpid() !</description>
+    </item>
+    <item>
+      <title>Kubernetes 部署 Tensorflow Serving</title>
+      <link>https://runzhen.github.io/posts/kubernetes-tensorflow-serving/</link>
+      <pubDate>Mon, 20 Jan 2020 20:22:33 -0800</pubDate>
+      <guid>https://runzhen.github.io/posts/kubernetes-tensorflow-serving/</guid>
+      <description>本文记录如何把 TensorFlow ResNet 模型部署在本地 Kubernetes 集群上，并提供一个 grpc 端口供集群外部访问。
+本文不牵涉 ResNet（Deep residual networks）模型的实现细节，只讨论部署。
+本文来源于 TensorFlow 官网上的一个例子，但正如大多数项目的文档一样，文档落后于项目的发展，因此有一些小坑，这里记录一下。
+下载 ResNet 模型数据 这一步没什么好说的，按照步骤下载就行了
+mkdir /tmp/resnet curl -s http://download.tensorflow.org/models/official/20181001_resnet/savedmodels/resnet_v2_fp32_savedmodel_NHWC_jpg.tar.gz | \ tar --strip-components=2 -C /tmp/resnet -xvz 制作并启动 ResNet serving 因为我们要把这个 serving 部署到 k8s，所以制作 docker 镜像是必须的。
+先启动运行一个空 serving 镜像：
+docker run -d --name serving_base tensorflow/serving 然后把刚刚下载的 /tmp/resnet 文件夹下的所有内容拷贝到容器中：
+docker cp /tmp/resnet serving_base:/models/resnet 最后，commit 生成一个自己的 image
+docker commit --change &amp;#34;ENV MODEL_NAME resnet&amp;#34; serving_base resnet_serving docker kill serving_base docker rm serving_base 然后我们试着运行一下这个镜像，要是看到类似如下输出，证明启动正常。</description>
+    </item>
+    <item>
+      <title>Kubernetes DNS</title>
+      <link>https://runzhen.github.io/posts/kubernetes-dns/</link>
+      <pubDate>Sun, 19 Jan 2020 21:47:47 -0800</pubDate>
+      <guid>https://runzhen.github.io/posts/kubernetes-dns/</guid>
+      <description>在介绍 Kubernetes 中的 DNS 之前，我们先来看看 Kubernetes 中的另一个概念 Service，以及为什么需要 Service。
+什么是 Service 我们知道 k8s 集群中应用的部署是以 Pod 为单位的，在 Pod 内执行 ifconfig 可以看到每个 Pod 都有自己的 IP，这个 IP 在集群内部是唯一的，其他 Pod 都能 ping 这个地址。
+这样的设计使得 Pod 里的应用程序可以直接交互。
+另一方面，Pod 的生命周期是短暂的，因此 Pod IP 也是不断变化的，而且 Pod 也会有多个副本。
+那么问题来了： 其他程序访问这个 Pod 时该用哪个 IP 地址呢 ？
+这个时候就需要 Service 出场了， Service 对外只会提供一个 IP，一个请求到来时 Service 决定该转发到后面哪一个 Pod 上。
+我们可以理解为 Service 加上的一组 Pod 可以看做是一个微服务。
+Service 对外提供 ClusterIP, NodePort 等访问方式。
+Kubernetes DNS 上面提到 Service 对外提供一个唯一的 IP，但这个 IP 偶尔也会随着 service 的更新改变，所以还需要一个 k8s 集群内部的 DNS 把服务对应到 IP 上。</description>
+    </item>
+    <item>
+      <title>安装 Kubernetes Dashboard</title>
+      <link>https://runzhen.github.io/posts/kubernetes-dashboard/</link>
+      <pubDate>Sat, 18 Jan 2020 23:07:24 -0800</pubDate>
+      <guid>https://runzhen.github.io/posts/kubernetes-dashboard/</guid>
+      <description>Kubernetes Dashboard 是一个 Web UI 的集群管理工具。项目主页在这里
+首先根据它的主页上 README 里面的内容直接 kubectl apply -f recommended.yaml，这样集群中就会创建并运行 dashboard 的 POD。
+接下来的问题是如何从外界访问到这个 UI。
+我的 k8s 集群环境是一台物理主机上的三台虚拟机，每个虚拟机都是 Headless 启动，也就是说纯命令行没有桌面环境，无法打开浏览器，因此项目主页上说的 kubectl proxy 访问 http://localhost:8001 的方式不适用。
+我希望最终能从物理主机上访问到这个 WebUI。
+使用 NodePort 我们查看一下 kubernetes-dashboard 使用 recommended.yaml 部署之后 service 的类型是 ClusterIP
+$ kubectl get svc --all-namespaces NAMESPACE NAME TYPE CLUSTER-IP EXTERNAL-IP PORT(S) AGE default kubernetes ClusterIP 10.96.0.1 &amp;lt;none&amp;gt; 443/TCP 17d default redis-nodeport NodePort 10.96.39.42 &amp;lt;none&amp;gt; 6379:31250/TCP 15d kube-system kube-dns ClusterIP 10.96.0.10 &amp;lt;none&amp;gt; 53/UDP,53/TCP,9153/TCP 17d kubernetes-dashboard dashboard-metrics-scraper ClusterIP 10.</description>
+    </item>
+    <item>
+      <title>本地搭建三节点 Kubenetes</title>
+      <link>https://runzhen.github.io/posts/kubenetes-cluster-from-scratch/</link>
+      <pubDate>Sat, 28 Dec 2019 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/kubenetes-cluster-from-scratch/</guid>
+      <description>赶在 2019 年快结束之际，写一篇博客作为本年度的收官之作吧。
+前言 虽然现在各大云平台厂商都提供了一键搭建 kubenetes 的服务，但缺点是费用太贵了，如果仅仅把它作为自己没事折腾的小玩具非常不划算，另外虽然也可以用公司的账号，但并不想把自己的折腾的东西跟工作混为一谈。
+所以决定自己在主机上手动搭建一个。
+准备工作 一般 kubenetes 至少要三台 linux 主机组建成一个 cluster，因为手头没有三台 linux 物理主机，所以要用虚拟机代替。
+kubenetes 各个虚拟机节点的规划如下：
+主机名 主机 IP OS 集群角色 192-168-56-10.master 192.168.56.10 Ubuntu 18.04 master 192-168-56-11.node 192.168.56.11 Ubuntu 18.04 node1 192-168-56-12.node 192.168.56.12 Ubuntu 18.04 node2 准备工作主要为下面几步：
+物理主机内存 16G，操作系统为 Ubuntu 18.04 安装 Virtualbox 6.1 创建三台虚拟机，每台内存 4G 对三台虚拟机做基本配置 VirtualBox 虚拟机配置 默认只有一个 NAT 适配器，我们需要添加一个 Host-Only Adapter。NAT 适配器是虚拟机用来访问互联网的，Host-Only 适配器是用来虚拟机之间通信的。上面表格所指的 主机 IP 也是这个 Host only IP。
+vbox 上配置一个 host only adapter， 默认名字 vboxnet0，网络地址 192.</description>
+    </item>
+  </channel>
+</rss>

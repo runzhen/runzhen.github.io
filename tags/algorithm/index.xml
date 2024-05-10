@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Algorithm on Mind in the Wind</title>
+    <link>https://runzhen.github.io/tags/algorithm/</link>
+    <description>Recent content in Algorithm on Mind in the Wind</description>
+    <image>
+      <title>Mind in the Wind</title>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- 0.125.5</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 14 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://runzhen.github.io/tags/algorithm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Aho–Corasick 算法，AC 自动机</title>
+      <link>https://runzhen.github.io/posts/aho-ac-automaton/</link>
+      <pubDate>Sat, 14 Jul 2018 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/aho-ac-automaton/</guid>
+      <description>AHO 算法，或者叫 AC 自动机、又或者叫 Aho–Corasick string matching algorithm，是一个高效的多模式匹配算法，它的特点是可以同时匹配多个模式串。
+最常见的应用就是病毒扫描 : 把所有病毒的特征码（类似一段字符串）构造成一个 AC 自动机，把用户的文件或者网络数据流作为输入文本，只要在输入文本中找到了任何一个特征码，那么就表示有病毒存在。
+对于这样的一个应用场景，我们最希望的功能就是只扫描一遍输入文本，找出所有的病毒，而 AC 自动机恰恰就有这样的能力。
+一般使用 AC 自动机需要以下三步：
+根据待匹配的字符串 P1, P2, Pn 建立 Trie 给 Trie 添加失败路径，实际上是生成了一个自动机。 将输入文本 str 的字符逐个通过自动机，在 O(n) 的时间复杂度内找出 P1, P2 &amp;hellip; Pn 是否存在于 str 内。 举例 假设我们有模式字符串 { fat, fare, hat, are }， 输入的文本为 “fatehatfare”。
+显然，所有的模式串都出现在了我们的输入文本中。我们的目标就是只扫描一遍文本串，找出所有的模式串。
+建立 Trie 首先根据模式串建立起一个 trie，一般来说每个节点的结构大概是这样：
+Node {Node * children[26]; /* 指向子节点的指针 */Node * parent; /* 指向父节点的指针 */ Node * fail; /* 失败指针 */bool terminate; /* 是否是一个终结节点，即一个串的最后一个字符 */} Trie 建立好之后大概是这个样子：</description>
+    </item>
+    <item>
+      <title>一个简单的跳表(SkipList)实现</title>
+      <link>https://runzhen.github.io/posts/skiplist/</link>
+      <pubDate>Fri, 22 Feb 2013 00:00:00 +0000</pubDate>
+      <guid>https://runzhen.github.io/posts/skiplist/</guid>
+      <description>跳表（skiplist） 是一个非常有趣的、简单的数据结构， 应用也非常广泛， 著名的NoSQL内存数据库Redis， 就用到了skiplist作为排序集合的基础数据结构。 跳表最大的特点就是插入、删除操作的性能均为O(logn) 。
+关于它的原理网上有一大堆，如果不了解的话，可以先看看文章末尾的参考资料， 或者动手google一下。
+需要指出的是，网上搜的一些的文章原理介绍的不错， 但是代码写的有点乱， 排版的时候也没有语法高亮， 所以我自己也参照着写了一份， 并且在这里简单的注释一下。
+首先， 一个“跳表” 基本上长的是这个样子的：
+再来看下抽象的数据结构：
+#define object int typedef struct _node { int key; object *obj; struct _node *forward[1]; } node; typedef struct _skiplist { int level; struct _node *head; } skiplist; 值得注意的是， 结构体 node 的 forward 指针数组长度为1， 而我们从 skiplist 的长相和定义来看， forward 数组大小是随机的， 在 1 – MAX_LEVEL 之间， 因此， 一个技巧就是这样：
+node *nd = (node *)malloc(sizeof(node) + level * sizeof(node *)); 每次创建新的节点的时候， 都必须用到上面这条语句。</description>
+    </item>
+  </channel>
+</rss>
