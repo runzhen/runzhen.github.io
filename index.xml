@@ -203,14 +203,6 @@ raftLog 结构体 type raftLog struct { // storage contains all stable entries s
 message Message { optional MessageType type = 1 ; optional uint64 to = 2 ; optional uint64 from = 3 ; // 整个消息发出去时，所处的任期 optional uint64 term = 4 ; // logTerm is generally used for appending Raft logs to followers. For example, // (type=MsgApp,index=100,logTerm=5) means leader appends entries starting at // index=101, and the term of entry at index 100 is 5.</description>
     </item>
     <item>
-      <title>记一次 cert chain 乱序导致 OCSP 验证失败</title>
-      <link>https://runzhen.github.io/posts/ocsp-verify-certificate/</link>
-      <pubDate>Sat, 07 May 2022 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/ocsp-verify-certificate/</guid>
-      <description>证书的基本信息 通常 cert 里面是包含了 OCSP 信息的，我们用 openssl 命令来看一下证书 server.cert 里面有哪些东西。
-$ openssl x509 -noout -text -in server.cert Certificate: Data: Version: 3 (0x2) Serial Number: 6f:66:75:a4:db:bb:e6:5e:73:0a:7a:66:e7:41:a0:e1:18:4f:43:3f Signature Algorithm: sha384WithRSAEncryption Issuer: CN = SJC-Services-Issuing-CA2-BETA2-G3, O = Palo-Alto-Networks-Inc., C = US Validity Not Before: Apr 8 16:42:14 2022 GMT Not After : Mar 1 21:34:11 2024 GMT Subject: CN = *.ace-stg.tpcloud.paloaltonetworks.com, OU = tpi-server, O = Palo Alto Networks Inc., L = Santa Clara, ST = CA, C = US Subject Public Key Info: Public Key Algorithm: rsaEncryption RSA Public-Key: (2048 bit) Modulus: 00:d0:24:7d:e8:62:02:f9:97:a7:79:5e:82:24:56: Exponent: 65537 (0x10001) X509v3 extensions: X509v3 Basic Constraints: critical CA:FALSE X509v3 Authority Key Identifier: keyid:D3:B2:01:8C:86:DA:51:DD:38:BE:54:CF:AC:65:BA:4D:4F:C0:6C:27 Authority Information Access: CA Issuers - URI:https://crl.</description>
-    </item>
-    <item>
       <title>记一次 go-redis 的 debug 过程</title>
       <link>https://runzhen.github.io/posts/go-redis-latency-debug/</link>
       <pubDate>Sun, 01 May 2022 00:00:00 +0000</pubDate>
