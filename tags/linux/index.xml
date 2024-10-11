@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Wed, 22 Mar 2023 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
@@ -18,302 +18,731 @@
       <link>https://runzhen.github.io/posts/cgroups-intro/</link>
       <pubDate>Wed, 22 Mar 2023 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/cgroups-intro/</guid>
-      <description>cgroup 比较有趣的地方是它没有提供任何的系统调用接口，所以你不能用 API Call 的方式使用 cgroup，实际上 cgroup 实现了 linux 虚拟文件系统 vfs，所以类似我们熟悉的 btfrs, ext4， 因此可以用类似文件系统的方式进行操作。
-比如用 mount 命令看一下 linux 上挂载了哪些设备：
-# mount -t cgroup /dev/sda2 on / type ext4 (rw,relatime) cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,name=systemd) cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,net_cls,net_prio) cgroup on /sys/fs/cgroup/rdma type cgroup (rw,nosuid,nodev,noexec,relatime,rdma) cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot) 可以看到，
-第一行是磁盘 sda2 挂载在根目录 /, 它的类型是 ext4 后面几行是 cgroup 挂载在了目录 /sys/fs/cgroup/，类型是 cgroup 如果你的内核比较新的话，将看不到上面那些 cgroup 的行，而是只能看到最后这一行 cgroup2，这是因为新版本的内核使用了 cgroup v2 。 另外类似于 “net_cls”， “rdma” 这些都是 cgroup 子系统的名字，详见本文结尾的附录。</description>
+      <description>&lt;p&gt;cgroup 比较有趣的地方是它没有提供任何的系统调用接口，所以你不能用 API Call 的方式使用 cgroup，实际上 cgroup 实现了 linux 虚拟文件系统 vfs，所以类似我们熟悉的 btfrs, ext4， 因此可以用类似文件系统的方式进行操作。&lt;/p&gt;
+&lt;p&gt;比如用 mount 命令看一下 linux 上挂载了哪些设备：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;mount&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;t&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;/dev/sda2 on / type ext4 (rw,relatime)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;on&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;fs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;systemd&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;rw&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nosuid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nodev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;noexec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;relatime&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;xattr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;systemd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;on&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;fs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;net_cls&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;net_prio&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;rw&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nosuid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nodev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;noexec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;relatime&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;net_cls&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;net_prio&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;on&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;fs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;rdma&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;rw&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nosuid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nodev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;noexec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;relatime&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;rdma&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;cgroup2&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;on&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;fs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;cgroup2&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;rw&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nosuid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nodev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;noexec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;relatime&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;nsdelegate&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;memory_recursiveprot&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;可以看到，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一行是磁盘 sda2 挂载在根目录 &lt;code&gt;/&lt;/code&gt;, 它的类型是 ext4&lt;/li&gt;
+&lt;li&gt;后面几行是 cgroup 挂载在了目录 &lt;code&gt;/sys/fs/cgroup/&lt;/code&gt;，类型是 cgroup&lt;/li&gt;
+&lt;li&gt;如果你的内核比较新的话，将看不到上面那些 cgroup 的行，而是只能看到最后这一行 &lt;strong&gt;cgroup2&lt;/strong&gt;，这是因为新版本的内核使用了 cgroup v2 。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;另外类似于  “net_cls”， “rdma” 这些都是 cgroup 子系统的名字，详见本文结尾的附录。&lt;/p&gt;
+&lt;p&gt;知道了上面这些，那么我们就能用操作文件系统的方式使用 cgroup 了，正好我有两台 linux VM，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;一个 Ubuntu Server 22.04，内核 5.15， 默认使用了 cgroup v2&lt;/li&gt;
+&lt;li&gt;另一个是 Ubuntu Server 20.04, 内核 5.4，使用 cgroup v1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;cgroup 和 cgroup2 有很多不一样的地方，具体见参考资料 1。本文所有例子都基于 cgroup v2。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Latency numbers every programmer should know</title>
       <link>https://runzhen.github.io/posts/latency-numbers-every-programer-should-know/</link>
       <pubDate>Sun, 02 Oct 2022 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/latency-numbers-every-programer-should-know/</guid>
-      <description>这期水一篇文章。 网上有很多人流传 Jeff Dean 的这个 Latency numbers，我看过很多遍但总是记不住，干脆把它抄下来算了。
-L1 cache reference ......................... 0.5 ns Branch mispredict ............................ 5 ns L2 cache reference ........................... 7 ns Mutex lock/unlock ........................... 25 ns Main memory reference ...................... 100 ns Compress 1K bytes with Zippy ............. 3,000 ns = 3 µs Send 2K bytes over 1 Gbps network ....... 20,000 ns = 20 µs SSD random read ........................ 150,000 ns = 150 µs Read 1 MB sequentially from memory .</description>
+      <description>&lt;p&gt;这期水一篇文章。 网上有很多人流传 Jeff Dean 的这个 &lt;a href=&#34;https://gist.github.com/hellerbarde/2843375&#34;&gt;Latency numbers&lt;/a&gt;，我看过很多遍但总是记不住，干脆把它抄下来算了。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;L1 cache reference ......................... 0.5 ns
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Branch mispredict ............................ &lt;span class=&#34;m&#34;&gt;5&lt;/span&gt; ns
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;L2 cache reference ........................... &lt;span class=&#34;m&#34;&gt;7&lt;/span&gt; ns
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Mutex lock/unlock ........................... &lt;span class=&#34;m&#34;&gt;25&lt;/span&gt; ns
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Main memory reference ...................... &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt; ns             
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Compress 1K bytes with Zippy ............. 3,000 &lt;span class=&#34;nv&#34;&gt;ns&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; µs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Send 2K bytes over &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; Gbps network ....... 20,000 &lt;span class=&#34;nv&#34;&gt;ns&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;  &lt;span class=&#34;m&#34;&gt;20&lt;/span&gt; µs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SSD random &lt;span class=&#34;nb&#34;&gt;read&lt;/span&gt; ........................ 150,000 &lt;span class=&#34;nv&#34;&gt;ns&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;150&lt;/span&gt; µs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Read &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; MB sequentially from memory ..... 250,000 &lt;span class=&#34;nv&#34;&gt;ns&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;250&lt;/span&gt; µs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Round trip within same datacenter ...... 500,000 &lt;span class=&#34;nv&#34;&gt;ns&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 0.5 ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Read &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; MB sequentially from SSD* ..... 1,000,000 &lt;span class=&#34;nv&#34;&gt;ns&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Disk seek ........................... 10,000,000 &lt;span class=&#34;nv&#34;&gt;ns&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;  &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt; ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Read &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; MB sequentially from disk .... 20,000,000 &lt;span class=&#34;nv&#34;&gt;ns&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;  &lt;span class=&#34;m&#34;&gt;20&lt;/span&gt; ms
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Send packet CA-&amp;gt;Netherlands-&amp;gt;CA .... 150,000,000 &lt;span class=&#34;nv&#34;&gt;ns&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;150&lt;/span&gt; ms
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果对上面的纳秒、毫秒还没有很直观的概念的话，有人给出了下面这样一个有意思的对比：&lt;/p&gt;</description>
     </item>
     <item>
       <title>使用 Kubernetes 遇到的一些问题和解决思路</title>
       <link>https://runzhen.github.io/posts/k8s-debug-stories/</link>
       <pubDate>Wed, 27 Apr 2022 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/k8s-debug-stories/</guid>
-      <description>update on 2022-05-21
-今天在 homelab 的 k8s 集群上发生了同样的情况，我想删除一个 namespace，再确认已经把 namespace 里面所有其他资源都删除的情况下，namespace 始终是 Terminating, 找了很多资料，方法也众说纷纭 。
-最后通过看 api-server log 发现原来又是 Unable to authenticate the request due to an error: x509: certificate has expired or is not yet valid
-root cause 还是我更新 cert 的时候又漏了某些步骤。
-事情的起因是 k8s 的 cert 过期了，在目录 /etc/kubernetes/pki/ 下面的这些 cert 都与 k8s 的核心服务息息相关，因此 cert 过期了，整个 k8s 集群就停止服务了。
-这个集群是 kubernetes 1.14, 因此需要运行几个命令完成更新，而 1.15 版本以上这个过程简化了不少。 由于之前已经 renew cert 两次了，因此正常按部就班几个操作就完事了，但是这个因为一点小疏忽，加上系统死机重启了一次，花了很多时间去恢复各种服务。
-本文记录 debug 的过程中遇到的一些症状，以及后来发现的解决方法，为以后遇到类似问题提供思路。</description>
+      <description>&lt;p&gt;update on 2022-05-21&lt;/p&gt;
+&lt;p&gt;今天在 homelab 的 k8s 集群上发生了同样的情况，我想删除一个 namespace，再确认已经把 namespace 里面所有其他资源都删除的情况下，namespace 始终是 Terminating, 找了很多资料，方法也&lt;a href=&#34;https://github.com/kubernetes/kubernetes/issues/60807#issuecomment-524772920&#34;&gt;众说纷纭&lt;/a&gt; 。&lt;/p&gt;
+&lt;p&gt;最后通过看 &lt;code&gt;api-server&lt;/code&gt; log 发现原来又是 Unable to authenticate the request due to an error: x509: certificate has expired or is not yet valid&lt;/p&gt;
+&lt;p&gt;root cause 还是我更新 cert 的时候又漏了某些步骤。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;事情的起因是 k8s 的 cert 过期了，在目录 &lt;code&gt;/etc/kubernetes/pki/&lt;/code&gt; 下面的这些 cert 都与 k8s 的核心服务息息相关，因此 cert 过期了，整个 k8s 集群就停止服务了。&lt;/p&gt;
+&lt;p&gt;这个集群是 kubernetes 1.14, 因此需要运行几个命令完成更新，而 1.15 版本以上这个过程简化了不少。 由于之前已经 renew cert 两次了，因此正常按部就班几个操作就完事了，但是这个因为一点小疏忽，加上系统死机重启了一次，花了很多时间去恢复各种服务。&lt;/p&gt;
+&lt;p&gt;本文记录 debug 的过程中遇到的一些症状，以及后来发现的解决方法，为以后遇到类似问题提供思路。&lt;/p&gt;
+&lt;h2 id=&#34;node-重启后-kubelet-没运行&#34;&gt;Node 重启后 kubelet 没运行&lt;/h2&gt;
+&lt;p&gt;前面提到，可能是因为 cert 过期后触发某些 bug 导致 Master Node 不能 ssh（之前 renew cert 没有类似问题），所以只能去机房按电源开关重启了。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Makefile 的几个语法坑</title>
       <link>https://runzhen.github.io/posts/makefile-syntax-pitfalls/</link>
       <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/makefile-syntax-pitfalls/</guid>
-      <description>Makefile 和 Bash script 在使用的过程中有很多奇奇怪怪的坑，本文做一下纪录。
-首先，有两个文件，一个叫 envs，里面定义了一个环境变量，比如
-$ cat envsexport GOPROXY=&amp;#34;test.local&amp;#34; 第二个文件就是 Makefile ，假如我这样写
-test: source ./envs echo ${GOPROXY} 所以，总的目标是，我希望在 Makefile 中导入另一个文件中事先定义好的环境变量。 然而这样的写法有很多问题。
-source 命令找不到 加入直接运行 make, 很有可能你会看到这样的错误
-$ make source ./envs make: source: Command not found 可是在 terminal 里面明明可以用 source 命令啊？ 于是，第一个坑出现:
-source is a (non-POSIX) shell builtin, not an executable program on any conventional UNIX-like system. If source is changed to ., make changes its strategy; instead of trying to find and execute a program, it just passes the rule body to the system shell.</description>
+      <description>&lt;p&gt;Makefile 和 Bash script 在使用的过程中有很多奇奇怪怪的坑，本文做一下纪录。&lt;/p&gt;
+&lt;p&gt;首先，有两个文件，一个叫 envs，里面定义了一个环境变量，比如&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat envs
+
+export GOPROXY=&amp;#34;test.local&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;第二个文件就是 Makefile ，假如我这样写&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-makefile&#34; data-lang=&#34;makefile&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;test&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;source&lt;/span&gt; ./envs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;GOPROXY&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;所以，总的目标是，我希望&lt;strong&gt;在 Makefile 中导入另一个文件中事先定义好的环境变量&lt;/strong&gt;。 然而这样的写法有很多问题。&lt;/p&gt;
+&lt;h3 id=&#34;source-命令找不到&#34;&gt;source 命令找不到&lt;/h3&gt;
+&lt;p&gt;加入直接运行 make, 很有可能你会看到这样的错误&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ make
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;source&lt;/span&gt; ./envs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make: source: Command not found
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;可是在 terminal 里面明明可以用 source 命令啊？ 于是，第一个坑出现:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;source is a (non-POSIX) shell builtin, not an executable program on any conventional UNIX-like system. If source is changed to ., make changes its strategy; instead of trying to find and execute a program, it just passes the rule body to the system shell.&lt;/p&gt;</description>
     </item>
     <item>
       <title>bbolt 的设计与实现</title>
       <link>https://runzhen.github.io/posts/bbolt/</link>
       <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/bbolt/</guid>
-      <description>关于 bbolt 的分析，网上已经有很多资料，本文只是对资料和源码的整理，主要是自己的学习笔记，文章最后的参考资料中有更多链接。
-bbolt DB 整体组织 首先，bbolt 的一个文件是一个 DB，DB 中可以有多个 table， 每一个 table 是一个 B+ 树。而这个 table 在源码中就是 bucket， 整个 DB 就是一个大 bucket，它的子节点有多个 bucket。整体结构如图所示：
-顶层 B+ 树，比较特殊，称为 root bucket，其所有叶子节点保存的都是子 bucket B+ 树根的 page id 其他 B+ 树，不妨称之为 data bucket，其叶子节点可能是正常用户数据，也可能是子 bucket B+ 树根的 page id。 这样，就清楚的知道了 bbolt 中 DB，table，和 data 是如何组织的了。
-bbolt 的源码很简洁，主要功能分布在以下几个文件：
-bucket.go：对 bucket 操作的高层封装。包括 kv 的增删改查、子 bucket 的增删改查以及 B+ 树拆分和合并。 node.go：对 node 所存元素和 node 间关系的相关操作。节点内所存元素的增删、加载和落盘，访问孩子兄弟元素、拆分与合并的详细逻辑。 cursor.go：实现了类似迭代器的功能，可以在 B+ 树上的叶子节点上进行随意游走。 page.go: page 是磁盘上一个 4kb 页的表示，注意，相比 page，第二行提到的 node 表示的是内存里的结构。 db.</description>
+      <description>&lt;p&gt;关于 bbolt 的分析，网上已经有很多资料，本文只是对资料和源码的整理，主要是自己的学习笔记，文章最后的参考资料中有更多链接。&lt;/p&gt;
+&lt;h2 id=&#34;bbolt-db-整体组织&#34;&gt;bbolt DB 整体组织&lt;/h2&gt;
+&lt;p&gt;首先，bbolt 的一个文件是一个 DB，DB 中可以有多个 table， 每一个 table 是一个 B+ 树。而这个 table 在源码中就是 bucket， 整个 DB 就是一个大 bucket，它的子节点有多个 bucket。整体结构如图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2021/bbolt/Untitled.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;顶层 B+ 树，比较特殊，称为 root bucket，其所有叶子节点保存的都是子 bucket B+ 树根的 page id&lt;/li&gt;
+&lt;li&gt;其他 B+ 树，不妨称之为 data bucket，其叶子节点可能是正常用户数据，也可能是子 bucket B+ 树根的 page id。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这样，就清楚的知道了 bbolt 中 DB，table，和 data 是如何组织的了。&lt;/p&gt;
+&lt;p&gt;bbolt 的源码很简洁，主要功能分布在以下几个文件：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;bucket.go&lt;/strong&gt;：对 bucket 操作的高层封装。包括 kv 的增删改查、子 bucket 的增删改查以及 B+ 树拆分和合并。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;node.go&lt;/strong&gt;：对 node 所存元素和 node 间关系的相关操作。节点内所存元素的增删、加载和落盘，访问孩子兄弟元素、拆分与合并的详细逻辑。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;cursor.go&lt;/strong&gt;：实现了类似迭代器的功能，可以在 B+ 树上的叶子节点上进行随意游走。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;page.go&lt;/strong&gt;:  page 是磁盘上一个 4kb 页的表示，注意，相比 page，第二行提到的 node 表示的是内存里的结构。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;db.go&lt;/strong&gt; :  bbolt 的主要源码&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;tx.go&lt;/strong&gt; :  bbolt 实现 MMVC 的主要代码。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;如何加载文件到内存成为一个db&#34;&gt;如何加载文件到内存，成为一个DB？&lt;/h2&gt;
+&lt;p&gt;假设有一个数据库文件 data，那么bbolt 的源码是如何读取这个文件，并且在在内存建立DB的呢？&lt;/p&gt;</description>
     </item>
     <item>
       <title>Bigtable 论文阅读笔记</title>
       <link>https://runzhen.github.io/posts/bigtable-sstable/</link>
       <pubDate>Sun, 20 Jun 2021 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/bigtable-sstable/</guid>
-      <description>最近因为工作需要用到 Bigtable，而设计一个好的数据库 Schema 对于性能至关重要，因此想找一些资料看看别人是如何根据自身业务特点设计 schema 的。
-在网上找到了一篇 GCP 自己的官方文档 , 里面提到了一些 best practice，也提到了哪些坑需要避免，然而还是看的云里雾里。 比如，
-Row keys to avoid
-Row keys that start with a timestamp. This will cause sequential writes to be pushed onto a single node, creating a hotspot. If you put a timestamp in a row key, you need to precede it with a high-cardinality value like a user ID to avoid hotspotting.
-Row keys that cause related data to not be grouped together.</description>
+      <description>&lt;p&gt;最近因为工作需要用到 Bigtable，而设计一个好的数据库 Schema 对于性能至关重要，因此想找一些资料看看别人是如何根据自身业务特点设计 schema 的。&lt;/p&gt;
+&lt;p&gt;在网上找到了一篇 GCP 自己的&lt;a href=&#34;https://cloud.google.com/bigtable/docs/schema-design&#34;&gt;官方文档&lt;/a&gt; , 里面提到了一些 best practice，也提到了哪些坑需要避免，然而还是看的云里雾里。 比如，&lt;/p&gt;
+&lt;p&gt;Row keys to avoid&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Row keys that start with a timestamp. This will cause sequential writes to be pushed onto a single node, creating a hotspot. If you put a timestamp in a row key, you need to precede it with a high-cardinality value like a user ID to avoid hotspotting.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Row keys that cause related data to not be grouped together. Avoid row keys that cause related data to be stored in non-contiguous row ranges, which are inefficient to read together.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Unicode 字符编码</title>
       <link>https://runzhen.github.io/posts/unicode-utf8-encode/</link>
       <pubDate>Sun, 16 Aug 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/unicode-utf8-encode/</guid>
-      <description>ASCII 我们熟悉的 ASCII 码可以说是字符编码的始祖了。它规定了常用的数字、符号、英文字母与二进制之间的对应关系。
-ASCII 的缺点是字符集太少了，只能表示英文和数字，无法表示像中文，日文这样的符号。因此人们就设计出了 Unicode 字符集，囊括了几乎所有人类语言文字的符号。
-Unicode Unicode 是一个字符集，而不是一种编码方式。 Unicode 相当于是给人类所有的符号一个独一无二的 ID，只要大家都是用这个 ID 表示字符，就不会出现乱码的问题。
-因为 Unicode 是一个字符集，因此它不存在所谓的 “用几个字节表示 unicode” 这样的问题，这是具体的编码方式需要处理的事。
-Unicode 把 ID 划分成了 17 组 (Plane)，每组有 65536 个字符，编号可以用 U+[XX]YYYY 这样的形式表示，每一位是一个十六进制数字，其中 XX 代表组编号，从 0 到 0x10，一共17个，YYYY 代表这一组中的字符编号，一共 65536 个。
-其中第 0 组叫 Basic Multilingual Plane，简称 BMP，它是 Unicode 中最基础和最常用的一部分，码点范围是U+0000 ~ U+FFFF，包含了我们常用的英文和汉字。
-UFT-8 UTF-8 是 Unicode 具体的编码方式，除此之外还要 UTF-16, UTF-32 等等。
-为什么需要编码方式呢？ 直接用 Unicode 的 ID 不就行了吗？ 因为我们需要节省存储空间。
-UTF-8 是一种变长的编码方式，它可以使用 1-4 个字节表示一个符号，编码规则如下</description>
+      <description>&lt;h2 id=&#34;ascii&#34;&gt;ASCII&lt;/h2&gt;
+&lt;p&gt;我们熟悉的 ASCII 码可以说是字符编码的始祖了。它规定了常用的数字、符号、英文字母与二进制之间的对应关系。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/ascii1.gif&#34; alt=&#34;dashboard&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;ASCII 的缺点是字符集太少了，只能表示英文和数字，无法表示像中文，日文这样的符号。因此人们就设计出了 Unicode 字符集，囊括了几乎所有人类语言文字的符号。&lt;/p&gt;
+&lt;h2 id=&#34;unicode&#34;&gt;Unicode&lt;/h2&gt;
+&lt;p&gt;Unicode 是一个字符集，而不是一种编码方式。 Unicode 相当于是给人类所有的符号一个独一无二的 ID，只要大家都是用这个 ID 表示字符，就不会出现乱码的问题。&lt;/p&gt;
+&lt;p&gt;因为 Unicode 是一个字符集，因此它不存在所谓的 “用几个字节表示 unicode” 这样的问题，这是具体的编码方式需要处理的事。&lt;/p&gt;
+&lt;p&gt;Unicode 把 ID 划分成了 17 组 (Plane)，每组有 65536 个字符，编号可以用 &lt;code&gt;U+[XX]YYYY&lt;/code&gt; 这样的形式表示，每一位是一个十六进制数字，其中 XX 代表组编号，从 0 到 &lt;code&gt;0x10&lt;/code&gt;，一共17个，YYYY 代表这一组中的字符编号，一共 65536 个。&lt;/p&gt;
+&lt;p&gt;其中第 0 组叫 Basic Multilingual Plane，简称 BMP，它是 Unicode 中最基础和最常用的一部分，码点范围是&lt;code&gt;U+0000 ~ U+FFFF&lt;/code&gt;，包含了我们常用的英文和汉字。&lt;/p&gt;
+&lt;h2 id=&#34;uft-8&#34;&gt;UFT-8&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;UTF-8&lt;/code&gt; 是 Unicode 具体的编码方式，除此之外还要 &lt;code&gt;UTF-16, UTF-32&lt;/code&gt; 等等。&lt;/p&gt;
+&lt;p&gt;为什么需要编码方式呢？ 直接用 Unicode 的 ID 不就行了吗？ 因为我们需要节省存储空间。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;UTF-8&lt;/code&gt; 是一种变长的编码方式，它可以使用 &lt;code&gt;1-4&lt;/code&gt; 个字节表示一个符号，编码规则如下&lt;/p&gt;</description>
     </item>
     <item>
       <title>用 Grafana 展示监控状态</title>
       <link>https://runzhen.github.io/posts/grafana-dashboard/</link>
       <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/grafana-dashboard/</guid>
-      <description>运维或者 SRE 部门经常会弄一个大屏幕展示各种系统状态，看上去很好玩，于是我也用类似的开源软件监控一下家里的主机。
-整个过程非常简单，主要是安装三个软件 Node exporter，Prometheus，Grafana。
-Node exporter 既然要展示系统状态，那么第一步就是要获得系统的状态数据，比如 CPU 使用率，内存使用率，网络流量等。
-Prometheus 官方提供了一个使用 go 语言编写的程序 node_exporter，直接下载项目主页上 release 里的二进制即可。node_exporter 最好直接安装在物理主机上，因为这样才能采集到最准确的数据。
-运行 node_exporter 以后，会自动启动一个 http server 并且监听 9100 端口，如果有 client 过来访问， server 返回主机的监控信息。比如：
-$ curl http://localhost:9100/metrics node_network_transmit_packets_total{device=&amp;#34;veth126cb08&amp;#34;} 28859 node_network_transmit_packets_total{device=&amp;#34;veth1276a16&amp;#34;} 1383 node_network_transmit_packets_total{device=&amp;#34;veth749c501&amp;#34;} 1.108492e+06 返回信息的格式是符合 Prometheus 定义的标准的，因此 Prometheus 能够处理并以简单的图标的形式展现这些数据。
-看到这里大家应该不难想到，如果我自己写一个程序 HelloWorld，并且把程序的状态按照一定的格式导出，那么同样可以通过 Prometheus + Grafana 展现。
-Prometheus Prometheus 是一个功能齐全的数据库，还提供了 PromSQL 语言方便用户查询，以及一个简单的网页前端。
-最简单快捷的方式当然是启动一个容器，唯一需要注意的是把配置文件 prometheus.yml 挂载到容器的 /etc/prometheus/ 目录下。
-$ docker run -d -p 9090:9090 \ -v /home/prometheus/:/etc/prometheus/ prom/prometheus 配置文件中需要在 scrape_configs 部分添加 noder exporter 的 IP 地址和端口。</description>
+      <description>&lt;p&gt;运维或者 SRE 部门经常会弄一个大屏幕展示各种系统状态，看上去很好玩，于是我也用类似的开源软件监控一下家里的主机。&lt;/p&gt;
+&lt;p&gt;整个过程非常简单，主要是安装三个软件 Node exporter，Prometheus，Grafana。&lt;/p&gt;
+&lt;h2 id=&#34;node-exporter&#34;&gt;Node exporter&lt;/h2&gt;
+&lt;p&gt;既然要展示系统状态，那么第一步就是要获得系统的状态数据，比如 CPU 使用率，内存使用率，网络流量等。&lt;/p&gt;
+&lt;p&gt;Prometheus 官方提供了一个使用 go 语言编写的程序 &lt;a href=&#34;https://github.com/prometheus/node_exporter&#34;&gt;node_exporter&lt;/a&gt;，直接下载项目主页上 release 里的二进制即可。node_exporter 最好直接安装在物理主机上，因为这样才能采集到最准确的数据。&lt;/p&gt;
+&lt;p&gt;运行 node_exporter 以后，会自动启动一个 http server 并且监听 9100 端口，如果有 client 过来访问， server 返回主机的监控信息。比如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ curl http://localhost:9100/metrics
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;node_network_transmit_packets_total&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;device&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;veth126cb08&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;28859&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;node_network_transmit_packets_total&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;device&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;veth1276a16&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;1383&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;node_network_transmit_packets_total&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;device&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;veth749c501&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; 1.108492e+06
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;返回信息的格式是符合 Prometheus 定义的标准的，因此 Prometheus 能够处理并以简单的图标的形式展现这些数据。&lt;/p&gt;
+&lt;p&gt;看到这里大家应该不难想到，如果我自己写一个程序 HelloWorld，并且把程序的状态按照一定的格式导出，那么同样可以通过 Prometheus + Grafana 展现。&lt;/p&gt;
+&lt;h2 id=&#34;prometheus&#34;&gt;Prometheus&lt;/h2&gt;
+&lt;p&gt;Prometheus 是一个功能齐全的数据库，还提供了 PromSQL 语言方便用户查询，以及一个简单的网页前端。&lt;/p&gt;
+&lt;p&gt;最简单快捷的方式当然是启动一个容器，唯一需要注意的是把配置文件 &lt;code&gt;prometheus.yml&lt;/code&gt; 挂载到容器的 &lt;code&gt;/etc/prometheus/&lt;/code&gt; 目录下。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ docker run -d -p 9090:9090 &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;    -v /home/prometheus/:/etc/prometheus/ prom/prometheus
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;配置文件中需要在 &lt;code&gt;scrape_configs&lt;/code&gt; 部分添加 noder exporter 的 IP 地址和端口。&lt;/p&gt;</description>
     </item>
     <item>
       <title>CPU affinity</title>
       <link>https://runzhen.github.io/posts/taskset/</link>
       <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/taskset/</guid>
-      <description>CPU affinity &amp;ndash; CPU 亲和性，指进程更希望运行在哪个 CPU core 上。
-指定 core 有什么好处呢？
-比如，可以自己决定哪些程序可以独占 CPU 资源，保证这个程序性能的最大化； 指定 CPU 以后可以提高 Cache 的命中率，常用于一些对性能非常高要求的程序，例如 nginx。 命令行指令 taskset 在 Linux 系统中，我们可以用 taskset 命令指定一个进程运行在哪个核心上。
-比如我们写一个程序用 while(1) 制造死循环，那么运行这个程序的时候 CPU 会飙到 100%
-用以下这条命令运行这个程序
-taskset -c 3 ./a.out 意思是把 a.out 运行在从 0 开始数起的第 3 个核心上。
-于是，用 htop 命令查看，会看到第 4 个核 CPU 使用率是 100%。
-编程的 API 那么在程序的代码里怎么用呢？ 先来看看 glibc 提供的系统 API
-#include &amp;lt;sched.h&amp;gt; int sched_setaffinity(pid_t pid, unsigned int cpusetsize, cpu_set_t *mask); int sched_getaffinity(pid_t pid, unsigned int cpusetsize, cpu_set_t *mask); void CPU_CLR(int cpu, cpu_set_t *set); int CPU_ISSET(int cpu, cpu_set_t *set); void CPU_SET(int cpu, cpu_set_t *set); void CPU_ZERO(cpu_set_t *set); nginx 的 config 文件中，可以为每个工作进程绑定CPU</description>
+      <description>&lt;p&gt;CPU affinity &amp;ndash; CPU 亲和性，指进程更希望运行在哪个 CPU core 上。&lt;/p&gt;
+&lt;p&gt;指定 core 有什么好处呢？&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;比如，可以自己决定哪些程序可以独占 CPU 资源，保证这个程序性能的最大化；&lt;/li&gt;
+&lt;li&gt;指定 CPU 以后可以提高 Cache 的命中率，常用于一些对性能非常高要求的程序，例如 nginx。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;命令行指令-taskset&#34;&gt;命令行指令 taskset&lt;/h2&gt;
+&lt;p&gt;在 Linux 系统中，我们可以用 taskset 命令指定一个进程运行在哪个核心上。&lt;/p&gt;
+&lt;p&gt;比如我们写一个程序用 while(1) 制造死循环，那么运行这个程序的时候 CPU 会飙到 100%&lt;/p&gt;
+&lt;p&gt;用以下这条命令运行这个程序&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;taskset -c &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; ./a.out
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;意思是把 a.out 运行在从 0 开始数起的第 3 个核心上。&lt;/p&gt;
+&lt;p&gt;于是，用 htop 命令查看，会看到第 4 个核 CPU 使用率是 100%。&lt;/p&gt;
+&lt;h2 id=&#34;编程的-api&#34;&gt;编程的 API&lt;/h2&gt;
+&lt;p&gt;那么在程序的代码里怎么用呢？ 先来看看 glibc 提供的系统 API&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sched.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;sched_setaffinity&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cpusetsize&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                      &lt;span class=&#34;kt&#34;&gt;cpu_set_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;sched_getaffinity&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cpusetsize&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                      &lt;span class=&#34;kt&#34;&gt;cpu_set_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;CPU_CLR&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cpu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;cpu_set_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;  &lt;span class=&#34;nf&#34;&gt;CPU_ISSET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cpu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;cpu_set_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;CPU_SET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cpu&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;cpu_set_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;CPU_ZERO&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;cpu_set_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;nginx 的 config 文件中，可以为每个工作进程绑定CPU&lt;/p&gt;</description>
     </item>
     <item>
       <title>How TCP backlog works in Linux</title>
       <link>https://runzhen.github.io/posts/tcp-backlog/</link>
       <pubDate>Thu, 15 Aug 2019 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/tcp-backlog/</guid>
-      <description>原文： http://veithen.io/2014/01/01/how-tcp-backlog-works-in-linux.html
-当一个应用程序使用 listen() 系统调用把一个 socket fd 设置成 LISTEN 状态时，也需要指定一个 backlog 值。通常我们可以认为这个 backlog 代表这个 socket fd 可以接受最大的连接请求数。
-#include &amp;lt;sys/types.h&amp;gt; #include &amp;lt;sys/socket.h&amp;gt; int listen(int sockfd, int backlog); 因为 TCP 的三次握手，在 server 端 accept() 系统调用返回，并且tcp 状态在变成 ESTABLISHED 之前，会有一个短暂的 SYN RECEIVED 状态。那么这个状态的 tcp 链接应该放在哪个 queue 里面呢？
-单个 queue，其大小就是 listen() 参数 backlog。当一个 SYN 包到达时，server 返回一个 SYN/ACK 给 client，并且把这个链接放入 queue。当 client 的 ACK 到达时，TCP 的状态变成 ESTABLISHED。这就意味着这一个 queue 有两种不同的状态：SYN RECEIVED 和 ESTABLISHED。只有在 ESTABLISHED 状态的链接才能被 accept() 返回给用户程序。</description>
+      <description>&lt;p&gt;原文： &lt;a href=&#34;http://veithen.io/2014/01/01/how-tcp-backlog-works-in-linux.html&#34;&gt;http://veithen.io/2014/01/01/how-tcp-backlog-works-in-linux.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;当一个应用程序使用 listen() 系统调用把一个 socket fd 设置成 LISTEN 状态时，也需要指定一个 backlog 值。通常我们可以认为这个 backlog 代表这个 socket fd 可以接受最大的连接请求数。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/types.h&amp;gt;         &lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;listen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sockfd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;backlog&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;因为 TCP 的三次握手，在 server 端 accept() 系统调用返回，并且tcp 状态在变成 ESTABLISHED 之前，会有一个短暂的 SYN RECEIVED 状态。那么这个状态的 tcp 链接应该放在哪个 queue 里面呢？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;单个 queue，其大小就是 listen() 参数 backlog。当一个 SYN 包到达时，server 返回一个 SYN/ACK 给 client，并且把这个链接放入 queue。当 client 的 ACK 到达时，TCP 的状态变成 ESTABLISHED。这就意味着这一个 queue 有两种不同的状态：SYN RECEIVED 和 ESTABLISHED。只有在 ESTABLISHED 状态的链接才能被 accept() 返回给用户程序。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;两个 queue，未完成的链接在 SYN queue，建立好的链接在 accept queue。也就是说 SYN REVEIVED 状态的链接会先被放到 SYN queue 里面，当它变成 ESTABLISHED 状态时再被移动到另一个 queue。所以，accept() 系统调用实现起来就简单了，它只从 accept queue 中获取链接返回给应用程序。这时，listen() 系统调用的 backlog 参数决定了 accept queue 的大小。&lt;/p&gt;</description>
     </item>
     <item>
       <title>ASLR 内核虚拟地址随机化</title>
       <link>https://runzhen.github.io/posts/address-space-layout-randomize/</link>
       <pubDate>Sun, 07 Jul 2019 14:01:40 -0700</pubDate>
       <guid>https://runzhen.github.io/posts/address-space-layout-randomize/</guid>
-      <description>ASLR 全称 Address Space Layout Randomization，是一项 Linux 内核的安全措施，使应用程序每次加载到内存后，函数地址都不同。
-试用一下 先来直观的感受下什么是 ASLR。目前大多数 linux 系统都默认开启了这个选项，可以用一下两个命令确认一下系统是否支持 ASLR。
-$ cat /proc/sys/kernel/randomize_va_space 2 $ sysctl kernel.randomize_va_space kernel.randomize_va_space = 2 其中 0 表示关闭，1 表示有约束的随机，2 表示完全随机化。
-然后随便找一个可执行程序，用 ldd 命令显示它加载的动态链接库，可以看到两次运行 ldd 结果各个库的地址不一样。
-$ ldd /bin/sleep linux-vdso.so.1 (0x00007ffd49764000) libc.so.6 =&amp;gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f02783ae000) /lib64/ld-linux-x86-64.so.2 (0x00007f02789a8000) $ ldd /bin/sleep linux-vdso.so.1 (0x00007ffc10996000) libc.so.6 =&amp;gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f12c3534000) /lib64/ld-linux-x86-64.so.2 (0x00007f12c3b2e000) 应用程序如何使用 ASLR 在这篇文章中提到，除了 kernel 开启以外，应用程序在编译的时候也必须添加编译选项 gcc -fPIE -pie test.c 。
-但是在我的实际测试中，似乎并不需要额外添加编译选项，看来 gcc 默认开启了 ASLR。</description>
+      <description>&lt;p&gt;ASLR 全称 Address Space Layout Randomization，是一项 Linux 内核的安全措施，使应用程序每次加载到内存后，函数地址都不同。&lt;/p&gt;
+&lt;h2 id=&#34;试用一下&#34;&gt;试用一下&lt;/h2&gt;
+&lt;p&gt;先来直观的感受下什么是 ASLR。目前大多数 linux 系统都默认开启了这个选项，可以用一下两个命令确认一下系统是否支持 ASLR。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ cat /proc/sys/kernel/randomize_va_space
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ sysctl kernel.randomize_va_space
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;kernel.randomize_va_space &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中 0 表示关闭，1 表示有约束的随机，2 表示完全随机化。&lt;/p&gt;
+&lt;p&gt;然后随便找一个可执行程序，用 ldd 命令显示它加载的动态链接库，可以看到两次运行 ldd 结果各个库的地址不一样。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ ldd /bin/sleep
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        linux-vdso.so.1 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;0x00007ffd49764000&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        libc.so.6 &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&amp;gt; /lib/x86_64-linux-gnu/libc.so.6 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;0x00007f02783ae000&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        /lib64/ld-linux-x86-64.so.2 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;0x00007f02789a8000&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ ldd /bin/sleep
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        linux-vdso.so.1 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;0x00007ffc10996000&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        libc.so.6 &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&amp;gt; /lib/x86_64-linux-gnu/libc.so.6 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;0x00007f12c3534000&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        /lib64/ld-linux-x86-64.so.2 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;0x00007f12c3b2e000&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;应用程序如何使用-aslr&#34;&gt;应用程序如何使用 ASLR&lt;/h2&gt;
+&lt;p&gt;在&lt;a href=&#34;https://www.theurbanpenguin.com/aslr-address-space-layout-randomization/&#34;&gt;这篇文章&lt;/a&gt;中提到，除了 kernel 开启以外，应用程序在编译的时候也必须添加编译选项 &lt;code&gt;gcc -fPIE -pie test.c&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;但是在我的实际测试中，似乎并不需要额外添加编译选项，看来 gcc 默认开启了 ASLR。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getAddr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;hello, world&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;getAddr at: %p&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;getAddr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;或者&lt;/p&gt;</description>
     </item>
     <item>
       <title>Orphan, Zombie and Docker</title>
       <link>https://runzhen.github.io/posts/orphan-zombie-and-docker/</link>
       <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/orphan-zombie-and-docker/</guid>
-      <description>孤儿进程的产生 孤儿进程： 父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。通常，孤儿进程将被进程号为1的进程(进程号为 1 的是 init 进程)所收养，并由该进程调用 wait 对孤儿进程收尸。
-#include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;errno.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; int main() { pid_t pid; pid = fork(); if (pid == 0) { printf(&amp;#34;I&amp;#39;m child process, pid:%d ppid:%d\n&amp;#34;, getpid(), getppid()); sleep(5); printf(&amp;#34;I&amp;#39;m child process, pid:%d ppid:%d\n&amp;#34;, getpid(), getppid()); } else { printf(&amp;#34;I&amp;#39;m father process, pid:%d ppid:%d\n&amp;#34;, getpid(), getppid()); sleep(1); printf(&amp;#34;father process is exited.\n&amp;#34;); } return 0; } 运行结果如下所示：
-I&amp;#39;m father process, pid:25354 ppid:13981I&amp;#39;m child process, pid:25355 ppid:25354father process is exited.</description>
+      <description>&lt;h2 id=&#34;孤儿进程的产生&#34;&gt;孤儿进程的产生&lt;/h2&gt;
+&lt;p&gt;孤儿进程： 父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。通常，孤儿进程将被进程号为1的进程(进程号为 1 的是 init 进程)所收养，并由该进程调用 wait 对孤儿进程收尸。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;I&amp;#39;m child process, pid:%d  ppid:%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getppid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;I&amp;#39;m child process, pid:%d  ppid:%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getppid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;I&amp;#39;m father process, pid:%d  ppid:%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getppid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;father process is  exited.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行结果如下所示：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;I&amp;#39;m father process, pid:25354  ppid:13981
+I&amp;#39;m child process, pid:25355  ppid:25354
+father process is  exited.
+
+I&amp;#39;m child process, pid:25355  ppid:1
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;一般来说，孤儿进程并没有什么危害，因为当孤儿进程结束的时候，init 进程会调用 wait 来处理。&lt;/p&gt;
+&lt;p&gt;但是当到了 Docker 环境下是不是还是这样呢？ 本文第三节再详细说明。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Wireshark/tcpdump 抓到的数据包可信吗？</title>
       <link>https://runzhen.github.io/posts/can-we-trust-wireshark/</link>
       <pubDate>Wed, 24 Oct 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/can-we-trust-wireshark/</guid>
-      <description>table {:toc} 问题的表面现象 问题的背景是这样的：
-一个应用程序监听某端口的 UDP 包，发送者发送的 UDP 包比较大，有 65535 个字节。显然，发送者的 UDP 包在经过 IP 层时，会被拆分层多个 1460 字节长度的 IP 分片，经过网络传输之后到达接收方，接收方的网卡收到包后，在内核协议栈的 IP 层又将分片重新组合，生成大的 UDP 包给应用程序。
-正常情况下，应用程序能准确无误的收到大 UDP 包，偶尔系统网络流量十分巨大的时候，会丢个别 UDP 包 ——这都在允许范围内。
-突然有一天，即便网络流量不是很大的时候，UDP 包的丢包十分严重，应用程序几乎收不到任何数据包。
-开始 debug 遇到这样的问题，第一反应有两种可能：
-网络不通，数据包没送到网卡。 个别 IP 分片在传输中丢失了，导致接收方无法重组成完整的 UDP 包。 于是用 tcpdump 在 interface eth0 上抓包，出乎意料的是，抓到的 pcap 有完整的 IP 分片。用 wireshark 打开 pcap，wireshark 会自动把 IP 分片重组成 UDP 数据包，检查这个 UDP 包，数据完整无误。
-那么现在能断定是应用程序自己出了问题吗？
-因为一直以来一个根深蒂固的想法是：既然抓到的 pcap 准确无误，所以数据包已经送到了接收方了，linux 内核只要把分片重组一下交给应用层就可以了，这个过程一般不会出错，所以应用程序没收到只能怪它自己咯？
-实际导致问题的原因 最终查明的原因是这台 linux 系统上有两个参数被修改了，当 IP 分片数量过大时，内核中分配给重组的缓冲区已满，导致之后的分片都被丢弃了。</description>
+      <description>&lt;ul&gt;
+&lt;li&gt;table
+{:toc}&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;问题的表面现象&#34;&gt;问题的表面现象&lt;/h1&gt;
+&lt;p&gt;问题的背景是这样的：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;一个应用程序监听某端口的 UDP 包，发送者发送的 UDP 包比较大，有 65535 个字节。显然，发送者的 UDP 包在经过 IP 层时，会被拆分层多个 1460 字节长度的 IP 分片，经过网络传输之后到达接收方，接收方的网卡收到包后，在内核协议栈的 IP 层又将分片重新组合，生成大的 UDP 包给应用程序。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;正常情况下，应用程序能准确无误的收到大 UDP 包，偶尔系统网络流量十分巨大的时候，会丢个别 UDP 包 ——这都在允许范围内。&lt;/p&gt;
+&lt;p&gt;突然有一天，即便网络流量不是很大的时候，UDP 包的丢包十分严重，应用程序几乎收不到任何数据包。&lt;/p&gt;
+&lt;h2 id=&#34;开始-debug&#34;&gt;开始 debug&lt;/h2&gt;
+&lt;p&gt;遇到这样的问题，第一反应有两种可能：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;网络不通，数据包没送到网卡。&lt;/li&gt;
+&lt;li&gt;个别 IP 分片在传输中丢失了，导致接收方无法重组成完整的 UDP 包。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;于是用 tcpdump 在 interface eth0 上抓包，出乎意料的是，&lt;code&gt;抓到的 pcap 有完整的 IP 分片&lt;/code&gt;。用 wireshark 打开 pcap，wireshark 会自动把 IP 分片重组成 UDP 数据包，检查这个 UDP 包，&lt;strong&gt;&lt;code&gt;数据完整无误&lt;/code&gt;&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;那么现在能断定是应用程序自己出了问题吗？&lt;/p&gt;
+&lt;p&gt;因为一直以来一个根深蒂固的想法是：既然抓到的 pcap 准确无误，所以数据包已经送到了接收方了，linux 内核只要把分片重组一下交给应用层就可以了，这个过程一般不会出错，所以应用程序没收到只能怪它自己咯？&lt;/p&gt;
+&lt;h1 id=&#34;实际导致问题的原因&#34;&gt;实际导致问题的原因&lt;/h1&gt;
+&lt;p&gt;最终查明的原因是这台 linux 系统上有两个参数被修改了，当 IP 分片数量过大时，内核中分配给重组的缓冲区已满，导致之后的分片都被丢弃了。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Linux 共享内存以及 nginx 中的实现</title>
       <link>https://runzhen.github.io/posts/share-memory/</link>
       <pubDate>Tue, 04 Sep 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/share-memory/</guid>
-      <description>共享内存方法简介 Linux/Unix系统中，共享内存可以通过两个系统调用来获得，mmap 和 shmget/shm_open，其中 shmget 和 shm_open 分别属于不同的标准：
-POSIX 共享内存（shm_open()、shm_unlink()） System V 共享内存（shmget()、shmat()、shmdt()） shmget 和 shm_open 类似的地方在于都是创建一个共享内存，挂载到 /dev/shm 目录下，并且返回一个文件描述符，fd。
-区别是 POSIX 没有提供将 fd 映射到进程地址空间的方法，而 System V 方式则直接提供了 shmat()，之后再 nginx 的实现中会再次看到。
-mmap 语义上比 shmget 更通用，因为它最一般的做法，是将一个打开的实体文件，映射到一段连续的内存中，各个进程可以根据各自的权限对该段内存进行相应的读写操作，其他进程则可以看到其他进程写入的结果。
-而 shmget 在语义上相当于是匿名的 mmap，即不关注实体文件，直接在内存中开辟这块共享区域，mmap 通过设置调用时的参数，也可达到这种效果，一种方法是映射/dev/zero 设备,另一种是使用MAP_ANON选项。
-mmap() 的函数原型如下，具体参数含义在最后的参考资料中给出。
-void *mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset);
-nginx 中的实现 nginx 中是怎么实现的呢？ 我们看一下源码 src/os/unix/ngx_shmem.c。
-一目了然，简单粗暴有木有！ 分三种情况
-如果mmap系统调用支持 MAP_ANON选项，则使用 MAP_ANON 如果1不满足，如果mmap系统调用支持映射/dev/zero设备，则映射/dev/zero来实现。 如果1和2都不满足，且如果支持shmget的话，则使用该shmget来实现。 #if (NGX_HAVE_MAP_ANON) ngx_int_t ngx_shm_alloc(ngx_shm_t *shm) { shm-&amp;gt;addr = (u_char *) mmap(NULL, shm-&amp;gt;size, PROT_READ|PROT_WRITE, MAP_ANON|MAP_SHARED, -1, 0); return NGX_OK; } #elif (NGX_HAVE_MAP_DEVZERO) ngx_int_t ngx_shm_alloc(ngx_shm_t *shm) { fd = open(&amp;#34;/dev/zero&amp;#34;, O_RDWR); shm-&amp;gt;addr = (u_char *) mmap(NULL, shm-&amp;gt;size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0); return (shm-&amp;gt;addr == MAP_FAILED) ?</description>
+      <description>&lt;h2 id=&#34;共享内存方法简介&#34;&gt;共享内存方法简介&lt;/h2&gt;
+&lt;p&gt;Linux/Unix系统中，共享内存可以通过两个系统调用来获得，mmap 和 shmget/shm_open，其中 shmget 和 shm_open 分别属于不同的标准：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;POSIX 共享内存（shm_open()、shm_unlink()）&lt;/li&gt;
+&lt;li&gt;System V 共享内存（shmget()、shmat()、shmdt()）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;shmget 和 shm_open 类似的地方在于都是创建一个共享内存，挂载到 &lt;code&gt;/dev/shm&lt;/code&gt; 目录下，并且返回一个文件描述符，fd。&lt;/p&gt;
+&lt;p&gt;区别是 POSIX 没有提供将 fd 映射到进程地址空间的方法，而 System V 方式则直接提供了 shmat()，之后再 nginx 的实现中会再次看到。&lt;/p&gt;
+&lt;p&gt;mmap 语义上比 shmget 更通用，因为它最一般的做法，是将一个打开的实体文件，映射到一段连续的内存中，各个进程可以根据各自的权限对该段内存进行相应的读写操作，其他进程则可以看到其他进程写入的结果。&lt;/p&gt;
+&lt;p&gt;而 shmget 在语义上相当于是匿名的 mmap，即不关注实体文件，直接在内存中开辟这块共享区域，mmap 通过设置调用时的参数，也可达到这种效果，一种方法是映射&lt;code&gt;/dev/zero&lt;/code&gt; 设备,另一种是使用&lt;code&gt;MAP_ANON&lt;/code&gt;选项。&lt;/p&gt;
+&lt;p&gt;mmap() 的函数原型如下，具体参数含义在最后的参考资料中给出。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;void *mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset);&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&#34;nginx-中的实现&#34;&gt;nginx 中的实现&lt;/h2&gt;
+&lt;p&gt;nginx 中是怎么实现的呢？ 我们看一下源码 &lt;code&gt;src/os/unix/ngx_shmem.c&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;一目了然，简单粗暴有木有！ 分三种情况&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;如果mmap系统调用支持 MAP_ANON选项，则使用 MAP_ANON&lt;/li&gt;
+&lt;li&gt;如果1不满足，如果mmap系统调用支持映射/dev/zero设备，则映射/dev/zero来实现。&lt;/li&gt;
+&lt;li&gt;如果1和2都不满足，且如果支持shmget的话，则使用该shmget来实现。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#if (NGX_HAVE_MAP_ANON)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;ngx_int_t&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;ngx_shm_alloc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;ngx_shm_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;addr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;u_char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;mmap&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                &lt;span class=&#34;n&#34;&gt;PROT_READ&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;PROT_WRITE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                &lt;span class=&#34;n&#34;&gt;MAP_ANON&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;MAP_SHARED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NGX_OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#elif (NGX_HAVE_MAP_DEVZERO)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;ngx_int_t&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;ngx_shm_alloc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;ngx_shm_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/dev/zero&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;O_RDWR&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;addr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;u_char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;mmap&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PROT_READ&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;PROT_WRITE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                &lt;span class=&#34;n&#34;&gt;MAP_SHARED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;addr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MAP_FAILED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;?&lt;/span&gt; &lt;span class=&#34;nl&#34;&gt;NGX_ERROR&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NGX_OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#elif (NGX_HAVE_SYSVSHM)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;ngx_int_t&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;ngx_shm_alloc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;ngx_shm_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;id&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;shmget&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IPC_PRIVATE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;SHM_R&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;SHM_W&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IPC_CREAT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;addr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;shmat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;shmctl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IPC_RMID&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;shm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;addr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;?&lt;/span&gt; &lt;span class=&#34;nl&#34;&gt;NGX_ERROR&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NGX_OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;上面代码中的宏定义（比如 NGX_HAVE_MAP_ANON ）是怎么来的呢？编译 nginx 源码之前的一步是运行 configure 文件，它会调用 auto/unix 脚本 ，该脚本会写一端测试程序来判断相应的系统调用是否支持，如果支持，则在自动生成的 objs/ngx_auto_config.h 文件中定义对应的宏。&lt;/p&gt;</description>
     </item>
     <item>
       <title>使用 socketpair 实现进程间通信</title>
       <link>https://runzhen.github.io/posts/socketpair/</link>
       <pubDate>Tue, 28 Aug 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/socketpair/</guid>
-      <description>socketpair 牛刀小试 int socketpair(int d, int type, int protocol, int sv[2]);第1个参数d，表示协议族，只能为 AF_LOCAL 或者 AF_UNIX；第2个参数 type，表示类型，只能为0。第3个参数 protocol，表示协议，可以是 SOCK_STREAM 或者 SOCK_DGRAM AF_UNIX 指的就是 Unix Domain socket，那么它与通常网络编程里面的 TCP socket 有什么区别呢？ 查阅了资料后发现：
-Unix Domain socket 是同一台机器上不同进程间的通信机制。 IP(TCP/IP) socket 是网络上不同主机之间进程的通讯机制。 socketpair() 只支持 AF_LOCAL 或者 AF_UNIX，不支持 TCP/IP，也就是 AF_INET， 所以用 socketpair() 的话无法进行跨主机的进程间通信。
-先看一个简单的示例：
-int main() { int fd[2], retpid; int pid , status; char input[MAX_LEN]; if (socketpair(AF_UNIX, SOCK_STREAM, 0, fd) &amp;lt; 0) { printf(&amp;#34;call socketpair() failed, exit\n&amp;#34;); return -1; } pid = fork(); if (pid) { /* parent */ printf(&amp;#34;Parent process, pid = %d\n&amp;#34;, getpid()); while (1) { fgets(input, MAX_LEN, stdin); write(fd[0], input, MAX_LEN); } } else { /* child */ printf(&amp;#34;Child process, pid = %d\n&amp;#34;, getpid()); int nread = 0; while (1) { nread = read(fd[1], input, MAX_LEN); input[nread] = &amp;#39;\0&amp;#39;; printf(&amp;#34;Child: nread = %d, data = %s\n&amp;#34;, nread, input); } } retpid = wait(&amp;amp;status); if (retpid) { printf(&amp;#34;Parent: reap child process pid = %d\n&amp;#34;, retpid); } return 0; } 编译后运行，可以看到每次在终端输入信息，子进程都会回显到屏幕上。</description>
+      <description>&lt;h2 id=&#34;socketpair-牛刀小试&#34;&gt;socketpair 牛刀小试&lt;/h2&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;int socketpair(int d, int type, int protocol, int sv[2]);
+
+第1个参数d，表示协议族，只能为 AF_LOCAL 或者 AF_UNIX；
+
+第2个参数 type，表示类型，只能为0。
+
+第3个参数 protocol，表示协议，可以是 SOCK_STREAM 或者 SOCK_DGRAM 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;AF_UNIX 指的就是 Unix Domain socket，那么它与通常网络编程里面的 TCP socket 有什么区别呢？ 查阅了资料后发现：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Unix Domain socket 是同一台机器上不同进程间的通信机制。&lt;/li&gt;
+&lt;li&gt;IP(TCP/IP) socket 是网络上不同主机之间进程的通讯机制。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;socketpair() 只支持 AF_LOCAL 或者 AF_UNIX，不支持 TCP/IP，也就是 AF_INET， 所以用 socketpair() 的话无法进行跨主机的进程间通信。&lt;/p&gt;
+&lt;p&gt;先看一个简单的示例：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;retpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;input&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;MAX_LEN&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;socketpair&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;AF_UNIX&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SOCK_STREAM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;call socketpair() failed, exit&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;cm&#34;&gt;/* parent */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Parent process, pid = %d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;fgets&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;input&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MAX_LEN&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;stdin&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;write&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;input&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MAX_LEN&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;cm&#34;&gt;/* child */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Child process, pid = %d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nread&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;nread&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;read&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;input&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MAX_LEN&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;input&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;nread&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;\0&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Child: nread = %d, data = %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nread&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;input&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;retpid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;wait&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;retpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Parent: reap child process pid = %d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;retpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;编译后运行，可以看到每次在终端输入信息，子进程都会回显到屏幕上。&lt;/p&gt;</description>
     </item>
     <item>
       <title>BPF -- Linux 中的 DTrace</title>
       <link>https://runzhen.github.io/posts/linux-bpf/</link>
       <pubDate>Thu, 09 Aug 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/linux-bpf/</guid>
-      <description>记得 5 年前刚接触 perf 的时候，还特意调研了一下不同系统上的动态和静态追踪工具，知道了 Linux 上的 SystemTap，perf。Solaris 上的 DTrace。看到绝大多数资料都说 DTrace 多么的强大好用，但是 Linux 却没有与之相提并论的工具。
-最近看到 BPF 这三个字被提及的很频繁，搜索了一下发现它号称 “Linux 中的 DTrace”， 于是试着玩了一下。
-BPF 全称是 &amp;ldquo;Berkeley Packet Filter&amp;rdquo;，字面意思是包过滤器，那么问题来了：我一个包过滤器，怎么就成了追踪调试工具呢？ 这主要是因为一些历史的进程：原先开发 BPF 的目的是在内核重定向数据包，接着增加了对事件的追踪功能，然后又增加了基于时间的采样，于是久而久之 BPF 就成了一个功能强大的调试工具。
-安装 首先，内核版本最好大于 4.9 ， 可以用 uname -a 命令查看。
-其次，查看一下内核在编译的时候是否开启了 BPF 选项，一般在 /boot/ 目录下有对应内核版本的 config 文件，比如在我的机器上是 /boot/config-4.15.0-30-generic。 如果看到 CONFIG_BPF_SYSCALL=y 说明可以用 BPF 的基本功能。
-前面提到 BPF 号称 Linux 中的 DTrace，为什么呢？ 因为 DTrace 包含了一个类似脚本语言的 D 语言，用户可以用简单的几句 D 语言完成复杂的调试追踪任务，这一点是 perf 做不到，而 BPF 做到了。
-确认了内核支持 BPF 之后，我们可以安装一个叫做 bcc 的工具，通过它可以方便的使用 BPF。</description>
+      <description>&lt;p&gt;记得 5 年前刚接触 perf 的时候，还特意调研了一下不同系统上的动态和静态追踪工具，知道了 Linux 上的 SystemTap，perf。Solaris 上的 DTrace。看到绝大多数资料都说 DTrace 多么的强大好用，但是 Linux 却没有与之相提并论的工具。&lt;/p&gt;
+&lt;p&gt;最近看到 BPF 这三个字被提及的很频繁，搜索了一下发现它号称 “Linux 中的 DTrace”， 于是试着玩了一下。&lt;/p&gt;
+&lt;p&gt;BPF 全称是 &amp;ldquo;Berkeley Packet Filter&amp;rdquo;，字面意思是包过滤器，那么问题来了：&lt;strong&gt;我一个包过滤器，怎么就成了追踪调试工具呢？&lt;/strong&gt; 这主要是因为一些历史的进程：原先开发 BPF 的目的是在内核重定向数据包，接着增加了对事件的追踪功能，然后又增加了基于时间的采样，于是久而久之 BPF 就成了一个功能强大的调试工具。&lt;/p&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
+&lt;p&gt;首先，内核版本最好大于 4.9 ， 可以用 &lt;code&gt;uname -a&lt;/code&gt; 命令查看。&lt;/p&gt;
+&lt;p&gt;其次，查看一下内核在编译的时候是否开启了 BPF 选项，一般在 /boot/ 目录下有对应内核版本的 config 文件，比如在我的机器上是  &lt;code&gt;/boot/config-4.15.0-30-generic&lt;/code&gt;。 如果看到 &lt;code&gt;CONFIG_BPF_SYSCALL=y&lt;/code&gt; 说明可以用 BPF 的基本功能。&lt;/p&gt;
+&lt;p&gt;前面提到 BPF 号称 Linux 中的 DTrace，为什么呢？ 因为 DTrace 包含了一个类似脚本语言的 D 语言，用户可以用简单的几句 D 语言完成复杂的调试追踪任务，这一点是 perf 做不到，而 BPF 做到了。&lt;/p&gt;
+&lt;p&gt;确认了内核支持 BPF 之后，我们可以安装一个叫做 bcc 的工具，通过它可以方便的使用 BPF。&lt;/p&gt;</description>
     </item>
     <item>
       <title>SO_REUSEPORT 和 epoll 的 Thundering Herd</title>
       <link>https://runzhen.github.io/posts/port-reuse/</link>
       <pubDate>Sat, 23 Jun 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/port-reuse/</guid>
-      <description>SO_REUSEPORT 顾名思义就是重用端口，是指不同的 socket 可以 bind 到同一个端口上。 Linux 内核 3.9 版本引入了这个新特性，有兴趣的同学可以移步到这个链接查看更加详细的内容。 https://lwn.net/Articles/542629/
-Reuse Port 我们先通过一段简单的代码来看看怎么使用这个选项（完整的代码在这里下载）。
-int serv_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // 一定要在 bind() 函数之前设定好 SO_REUSEPORT setsockopt(serv_sock, SOL_SOCKET, SO_REUSEPORT, &amp;amp;enable, sizeof(int)); bind(serv_sock, (struct sockaddr*)&amp;amp;serv_addr, sizeof(serv_addr)); listen(serv_sock, 20); accept(serv_sock, (struct sockaddr*)&amp;amp;clnt_addr, &amp;amp;clnt_addr_size); 将上面的代码编译生成两个可执行文件，分别启动运行，并监听相同的端口。
-./port_reuse1 127.0.0.1 1234
-再用 telnet/nc 等工具发送请求到 1234 端口上，多重复几次，会看到两个进程轮流的处理客户端发来的请求。
-这里说一个题外话，上面的例子是手动启动两个进程。而我发现如果是进程自动 fork() 生成 2 个进程的话，似乎不用设置 SO_REUSEPORT 也能自动监听同一个端口。这是为什么？
-Thundering Herd / 惊群现象 The thundering herd problem occurs when a large number of processes waiting for an event are awoken when that event occurs, but only one process is able to proceed at a time.</description>
+      <description>&lt;p&gt;&lt;code&gt;SO_REUSEPORT&lt;/code&gt; 顾名思义就是重用端口，是指不同的 socket 可以 bind 到同一个端口上。 Linux 内核 3.9 版本引入了这个新特性，有兴趣的同学可以移步到这个链接查看更加详细的内容。 &lt;a href=&#34;https://lwn.net/Articles/542629/&#34;&gt;https://lwn.net/Articles/542629/&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;reuse-port&#34;&gt;Reuse Port&lt;/h2&gt;
+&lt;p&gt;我们先通过一段简单的代码来看看怎么使用这个选项（完整的代码在&lt;a href=&#34;https://runzhen.github.io/image/2018/server.c&#34;&gt;这里下载&lt;/a&gt;）。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;serv_sock&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;socket&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;AF_INET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SOCK_STREAM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IPPROTO_TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// 一定要在 bind() 函数之前设定好 SO_REUSEPORT
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;nf&#34;&gt;setsockopt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serv_sock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SOL_SOCKET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SO_REUSEPORT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;enable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;sizeof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;bind&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serv_sock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sockaddr&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serv_addr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;sizeof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serv_addr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;listen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serv_sock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;accept&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serv_sock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sockaddr&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clnt_addr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clnt_addr_size&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;将上面的代码编译生成两个可执行文件，分别启动运行，并监听相同的端口。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;./port_reuse1 127.0.0.1 1234&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;再用 telnet/nc 等工具发送请求到 1234 端口上，多重复几次，会看到两个进程轮流的处理客户端发来的请求。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这里说一个题外话，上面的例子是手动启动两个进程。而我发现如果是进程自动 fork() 生成 2 个进程的话，似乎不用设置 SO_REUSEPORT 也能自动监听同一个端口。这是为什么？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;thundering-herd--惊群现象&#34;&gt;Thundering Herd / 惊群现象&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The thundering herd problem occurs when a large number of processes waiting for an event are awoken when that event occurs, but only one process is able to proceed at a time. After the processes wake up, they all demand the resource and a decision must be made as to which process can continue. After the decision is made, the remaining processes are put back to sleep, only to all wake up again to request access to the resource.&lt;/p&gt;</description>
     </item>
     <item>
       <title>如何拦截库函数调用 ? </title>
       <link>https://runzhen.github.io/posts/hook-syscall/</link>
       <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/hook-syscall/</guid>
-      <description>LD_PRELOAD 环境变量 : 直接作用在可执行文件上 (准确的说是拦截库函数) 。 ptrace() : 拦截子进程的系统调用。 1. LD_PRELOAD LD_PRELOAD 的优势:
-使用简单。 不需要修改被拦截程序的源码。 例如我想拦截程序 A 所有调用 malloc() 的地方，那么程序 A 不需要任何修改，只要准备好自己的 malloc() 函数，编译成动态链接库 .so 文件，然后在运行 A 之前先用 LD_PRELOAD 设定好环境变量就可以了。
-LD_PRELOAD 的原理就是链接器在动态链接的时刻，优先链接 LD_PRELOAD 指定的函数。准确的说 LD_PRELOAD 拦截的是动态库中的函数，但是一般我们写的应用程序都是通过库函数来调用系统调用 API，所以 LD_PRELOAD 也间接的拦截了系统调用。
-说到这里，LD_PRELOAD 的缺点也非常明显，它只能作用于动态链接库，要是静态链接的就没戏了。
-腾讯的 C++ 协程库 libco，以及 tcmalloc 的 TC_MALLOC 都用到了这种方式。
-2. ptrace() ptrace 是 linux 内核原生提供的一个功能，因此功能比 LD_PRELOAD 强大的多。它最初的目的是用来 debug，例如大名鼎鼎的 gdb 就是依赖于 ptrace。
-要使用 ptrace 拦截程序 A 的系统调用，有两种方法：
-ptrace 一个新进程：在代码中 fork 一个子进程，子进程执行 ptrace(PTRACE_TRACEME, 0, 0, 0)函数，然后通过 execv() 调用程序 A。 attach 到已运行的程序 A ：执行ptrace(PTRACE_ATTACH, pid, 0, 0)。 以上两种方式，ptrace 都会拦截发送到 A 进程的所有信号（除 SIGKILL 外），然后我们需要自己选择哪些系统调用需要拦截，并在拦截后转到我们自己的处理函数。</description>
+      <description>&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LD_PRELOAD 环境变量&lt;/code&gt; : 直接作用在可执行文件上 (准确的说是&lt;strong&gt;拦截库函数&lt;/strong&gt;) 。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ptrace()&lt;/code&gt; : 拦截子进程的系统调用。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;1-ld_preload&#34;&gt;1. LD_PRELOAD&lt;/h2&gt;
+&lt;p&gt;LD_PRELOAD 的优势:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用简单。&lt;/li&gt;
+&lt;li&gt;不需要修改被拦截程序的源码。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;例如我想拦截程序 A 所有调用 malloc() 的地方，那么程序 A 不需要任何修改，只要准备好自己的 malloc() 函数，编译成动态链接库 .so 文件，然后在运行 A 之前先用 LD_PRELOAD 设定好环境变量就可以了。&lt;/p&gt;
+&lt;p&gt;LD_PRELOAD 的原理就是链接器在动态链接的时刻，优先链接 LD_PRELOAD 指定的函数。准确的说 LD_PRELOAD 拦截的是动态库中的函数，但是一般我们写的应用程序都是通过库函数来调用系统调用 API，所以 LD_PRELOAD 也间接的拦截了系统调用。&lt;/p&gt;
+&lt;p&gt;说到这里，LD_PRELOAD 的缺点也非常明显，它&lt;code&gt;只能作用于动态链接库&lt;/code&gt;，要是静态链接的就没戏了。&lt;/p&gt;
+&lt;p&gt;腾讯的 C++ 协程库 &lt;a href=&#34;https://github.com/Tencent/libco&#34;&gt;libco&lt;/a&gt;，以及 tcmalloc 的 TC_MALLOC 都用到了这种方式。&lt;/p&gt;
+&lt;h2 id=&#34;2-ptrace&#34;&gt;2. ptrace()&lt;/h2&gt;
+&lt;p&gt;ptrace 是 linux 内核原生提供的一个功能，因此功能比 LD_PRELOAD 强大的多。它最初的目的是用来 debug，例如大名鼎鼎的 gdb 就是依赖于 ptrace。&lt;/p&gt;
+&lt;p&gt;要使用 ptrace 拦截程序 A 的系统调用，有两种方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ptrace 一个新进程：在代码中 fork 一个子进程，子进程执行 ptrace(PTRACE_TRACEME, 0, 0, 0)函数，然后通过 execv() 调用程序 A。&lt;/li&gt;
+&lt;li&gt;attach 到已运行的程序 A ：执行ptrace(PTRACE_ATTACH, pid, 0, 0)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以上两种方式，ptrace 都会拦截发送到 A 进程的所有信号（除 SIGKILL 外），然后我们需要自己选择哪些系统调用需要拦截，并在拦截后转到我们自己的处理函数。&lt;/p&gt;</description>
     </item>
     <item>
       <title>TCP 的 FIN_WAIT1 状态</title>
       <link>https://runzhen.github.io/posts/tcp-fin-wait/</link>
       <pubDate>Wed, 09 Aug 2017 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/tcp-fin-wait/</guid>
-      <description>最近看到了一篇有关 TCP 关闭连接时 FIN-WAIT1 状态的文章（见参考资料），觉得很有意思，于是也在自己的电脑上验证了一下。
-首先，开局一张图：
-{:height=&amp;ldquo;300&amp;rdquo; width=&amp;ldquo;300&amp;rdquo;}
-FIN-WAIT1 状态出现在 主动关闭链接方发出 FIN 报文后，收到对应 ACK 之前。通常 Server 在收到 FIN 报文之后，会在很短的时间内回复 ACK（这个 ACK 可能携带数据，也可能只是一个纯 ACK），所以 FIN-WAIT1 状态存在的时间非常短暂，很难被观察到。
-于是准备两台虚拟机，我们可以设计这样一个实验：
-1）服务端监听 1234 端口：nc -l 1234
-2）客户端连接服务端：nc 192.168.122.183 1234， 此时 TCP 的状态为 ESTABLISHED
-$ sudo netstat -anp | grep tcptcp 0 0 192.168.122.167:60482 192.168.122.183:1234 ESTABLISHED 3712/nc 3）服务端配置 iptables，拦截从服务端发送到客户端的任何报文：iptables -A OUTPUT -d 192.168.122.167 -j DROP
-4）客户端按下 ctrl + c 断开连接，这一步的目的是让操作系统自动发送 FIN 报文给服务端。
-在完成第 4 步之后，客户端就会进入 FIN-WAIT-1 状态，服务端也会收到 FIN 报文，并且马上会发出一个 ACK，但是因为配置了 iptables，因此客户端会一直等待服务端的 ACK。</description>
+      <description>&lt;p&gt;最近看到了一篇有关 TCP 关闭连接时 FIN-WAIT1 状态的文章（见参考资料），觉得很有意思，于是也在自己的电脑上验证了一下。&lt;/p&gt;
+&lt;p&gt;首先，开局一张图：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2017/tcpclose.png&#34; alt=&#34;&#34;  /&gt;
+{:height=&amp;ldquo;300&amp;rdquo; width=&amp;ldquo;300&amp;rdquo;}&lt;/p&gt;
+&lt;p&gt;FIN-WAIT1 状态出现在 &lt;code&gt;主动关闭链接方&lt;/code&gt;发出 FIN 报文后，收到对应 ACK 之前。通常 Server 在收到 FIN 报文之后，会在很短的时间内回复 ACK（这个 ACK 可能携带数据，也可能只是一个纯 ACK），所以 FIN-WAIT1 状态存在的时间非常短暂，很难被观察到。&lt;/p&gt;
+&lt;p&gt;于是准备两台虚拟机，我们可以设计这样一个实验：&lt;/p&gt;
+&lt;p&gt;1）服务端监听 1234 端口：nc -l 1234&lt;/p&gt;
+&lt;p&gt;2）客户端连接服务端：nc 192.168.122.183 1234， 此时 TCP 的状态为 &lt;strong&gt;ESTABLISHED&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ sudo netstat -anp | grep tcp
+tcp        0      0 192.168.122.167:60482   192.168.122.183:1234    ESTABLISHED 3712/nc
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;3）服务端配置 iptables，拦截从服务端发送到客户端的任何报文：&lt;code&gt;iptables -A OUTPUT -d 192.168.122.167 -j DROP&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;4）客户端按下 ctrl + c 断开连接，这一步的目的是让操作系统自动发送 FIN 报文给服务端。&lt;/p&gt;
+&lt;p&gt;在完成第 4 步之后，客户端就会进入 &lt;code&gt;FIN-WAIT-1&lt;/code&gt; 状态，服务端也会收到 FIN 报文，并且马上会发出一个 ACK，但是因为配置了 iptables，因此客户端会一直等待服务端的 ACK。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Linux 内核在 x86-64 上的内存分区</title>
       <link>https://runzhen.github.io/posts/zone-highmem/</link>
       <pubDate>Thu, 02 Jan 2014 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/zone-highmem/</guid>
-      <description>如果稍微了解过 Linux 内核的内存管理，那么对内存分区的概念一定不陌生，Linux内核把物理内存分成了3个区，
-0 – 16M 为ZONE_DMA区, 16M – 896M 为ZONE_NORMAL区， 高于896M 为ZONE_HIGHMEM区 我没有去考证过为什么要取896这个数字，但是可以肯定的是这样的划分在当时看来是合理的，然而计算机发展今非昔比，现在4G的物理内存已经成为PC的标配了，CPU也进入了64位时代，很多事情都发生着改变。
-在CPU还是32位的时代，CPU最大的物理寻址范围是0-4G， 在这里为了方便讨论，我们不考虑物理地址扩展（PAE）。进程的虚拟地址空间也是 4G，Linux内核把 0-3G虚拟地址空间作为用户空间，3G-4G虚拟地址空间作为内核空间。
-目前几乎所有介绍Linux内存管理的书籍还是停留在32位寻址的时代，所以大家对下面这张图一定很熟悉！ （这个图画得非常详细，本篇文章我们关注的重点是 3个分区 以及最右边的线性地址空间，也就是虚拟地址空间之间的关系，另外，应该是ZONE_DMA， ZONE_NORMAL, ZONE_HIGHMEM, 图中把ZONE 写成了ZUNE）
-然而，现在是64位的时代了, 64位CPU的寻址空间是多大呢？ 16EB， 1EB = 1024 TB = 1024 * 1024 GB，我想很多人这辈子还没见过大于1TB的内存吧，事实上也是这样，几乎没有哪个服务器能有16EB的内存，实现64位长的地址只会增加系统的复杂度和地址转换的成本，所以目前的x86_64架构CPU都遵循AMD的 Canonical Form, 即只有虚拟地址的最低48位才会在地址转换时被使用, 且任何虚拟地址的48位至63位必须与47位一致, 也就是说总的虚拟地址空间为256TB。
-那么在64位架构下，如何分配虚拟地址空间的呢？
-0000000000000000 – 00007fffffffffff(128TB)为用户空间, ffff800000000000 – ffffffffffffffff(128TB)为内核空间。 而且内核空间中有很多空洞, 越过第一个空洞后, ffff880000000000 – ffffc7ffffffffff(64TB) 才是直接映射物理内存的区域, 也就是说默认的PAGE_OFFSET为 ffff880000000000.
-请关注下图的最左边，这就是目前64位的虚拟地址布局。
-在本文的一开头提到的物理内存分区 ZONE_DMA， ZONE_NORMAL， ZONE_HIGHMEM 就是与内核虚拟地址的直接映射有关的，如果读者不了解 内核直接映射物理地址这个概念的话，建议你去google一下，这个很简单的一一映射的概念。
-既然现在内核直接映射的物理内存区域有64TB， 而且一般情况下，极少有计算机的内存能达到64TB（别说64TB了，1TB内存的也很少很少），所以整个内核虚拟地址空间都能够一一映射到计算机的物理内存上，因此，不再需要 ZONE_HIGHMEM这个分区了，现在对物理内存的划分，只有ZONE_DMA， ZONE_NORMAL。
-如果你想有个更加直观的了解的话，请打开 /boot/config*** 文件，例如我的是 /boot/config-3.</description>
+      <description>&lt;p&gt;如果稍微了解过 Linux 内核的内存管理，那么对内存分区的概念一定不陌生，Linux内核把物理内存分成了3个区，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;0 – 16M 为ZONE_DMA区,&lt;/li&gt;
+&lt;li&gt;16M – 896M 为ZONE_NORMAL区，&lt;/li&gt;
+&lt;li&gt;高于896M 为ZONE_HIGHMEM区&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我没有去考证过为什么要取896这个数字，但是可以肯定的是这样的划分在当时看来是合理的，然而计算机发展今非昔比，现在4G的物理内存已经成为PC的标配了，CPU也进入了64位时代，很多事情都发生着改变。&lt;/p&gt;
+&lt;p&gt;在CPU还是32位的时代，CPU最大的物理寻址范围是0-4G， 在这里为了方便讨论，我们不考虑物理地址扩展（PAE）。进程的虚拟地址空间也是 4G，Linux内核把 0-3G虚拟地址空间作为用户空间，3G-4G虚拟地址空间作为内核空间。&lt;/p&gt;
+&lt;p&gt;目前几乎所有介绍Linux内存管理的书籍还是停留在32位寻址的时代，所以大家对下面这张图一定很熟悉！
+（这个图画得非常详细，本篇文章我们关注的重点是 3个分区 以及最右边的线性地址空间，也就是虚拟地址空间之间的关系，另外，应该是ZONE_DMA， ZONE_NORMAL, ZONE_HIGHMEM, 图中把ZONE 写成了ZUNE）&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2014/zone1.gif&#34; alt=&#34;zone1&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;然而，现在是64位的时代了, 64位CPU的寻址空间是多大呢？ &lt;code&gt;16EB， 1EB = 1024 TB = 1024 * 1024 GB&lt;/code&gt;，我想很多人这辈子还没见过大于1TB的内存吧，事实上也是这样，几乎没有哪个服务器能有16EB的内存，实现64位长的地址只会增加系统的复杂度和地址转换的成本，所以目前的&lt;code&gt;x86_64&lt;/code&gt;架构CPU都遵循AMD的 Canonical Form, &lt;code&gt;即只有虚拟地址的最低48位才会在地址转换时被使用, 且任何虚拟地址的48位至63位必须与47位一致&lt;/code&gt;, 也就是说总的虚拟地址空间为&lt;strong&gt;256TB&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;那么在64位架构下，如何分配虚拟地址空间的呢？&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;0000000000000000 – 00007fffffffffff(128TB)为用户空间,&lt;/li&gt;
+&lt;li&gt;ffff800000000000 – ffffffffffffffff(128TB)为内核空间。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;而且内核空间中有很多空洞, 越过第一个空洞后, &lt;code&gt;ffff880000000000 – ffffc7ffffffffff(64TB)&lt;/code&gt; 才是直接映射物理内存的区域, 也就是说默认的PAGE_OFFSET为 ffff880000000000.&lt;/p&gt;
+&lt;p&gt;请关注下图的最左边，这就是目前64位的虚拟地址布局。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2014/x86mem.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;在本文的一开头提到的物理内存分区 ZONE_DMA， ZONE_NORMAL， ZONE_HIGHMEM 就是与内核虚拟地址的直接映射有关的，如果读者不了解 内核直接映射物理地址这个概念的话，建议你去google一下，这个很简单的一一映射的概念。&lt;/p&gt;
+&lt;p&gt;既然现在内核直接映射的物理内存区域有64TB， 而且一般情况下，极少有计算机的内存能达到64TB（别说64TB了，1TB内存的也很少很少），所以整个内核虚拟地址空间都能够一一映射到计算机的物理内存上，因此，不再需要 ZONE_HIGHMEM这个分区了，现在对物理内存的划分，只有ZONE_DMA， ZONE_NORMAL。&lt;/p&gt;</description>
     </item>
     <item>
       <title>用GDB追踪glibc代码执行过程</title>
       <link>https://runzhen.github.io/posts/trace-glibc-by-using-gdb/</link>
       <pubDate>Tue, 27 Mar 2012 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/trace-glibc-by-using-gdb/</guid>
-      <description>首先需要安装一下额外的工具包，一个是 libc6-dbg，这是带有debug symbol信息的 libc.so；另一个是libc6-dev，这是glibc的源代码，获取之后我们就可以在gdb中查看代码了。
-在Ubuntu/Debian 系统上，我们可以通过以下2条命令获得：
-$sudo apt-get install libc6-dbg
-$sudo apt-get source libc6-dev
-在Fedora/Red Hat 系的OS上，需要安装的软件包的名字不叫 libc6-dbg，libc6-dev，貌似应该是glibc-debuginfo。
-之后，以一段小程序为例来演示整个过程，小程序包含了一个系统调用fork()，一个库函数printf()
-int main(){ pid_t son; if((son=fork())==0) printf(&amp;#34;I am son\n&amp;#34;); else printf(&amp;#34;I am farther\n&amp;#34;); return 0; } 接着，编译产生带有调试信息的可执行文件 $gcc -g -o f fork.c 然后开启gdb调试 $gdb fork
-在开始调试之前，需要指定一下刚刚获得的带有libc6-dev源码文件夹的路径，比如我把这些源码放在了 ~/glibc/lib 文件夹下，通常一般程序需要的是stdio-common这个目录内的文件，
-于是输入 (gdb) directory ~/glibc/lib/stdio-common
-注意看其中几条命令的用法。
-程序在调用fork函数后，其实执行的是glibc包装过的__libc_fork ，并且我们可以查看其源代码。 这里有几个常用命令：
-s 单步执行； list 查看源代码； start 程序开始执行，并在main函数处停下，相当于在main处加断点。 但是在执行了几步之后出现了这样的错误：
-_IO_list_lock () at genops.c:1299 1299 genops.c: No such file or directory.</description>
+      <description>&lt;p&gt;首先需要安装一下额外的工具包，一个是 libc6-dbg，这是带有debug symbol信息的 libc.so；另一个是libc6-dev，这是glibc的源代码，获取之后我们就可以在gdb中查看代码了。&lt;/p&gt;
+&lt;p&gt;在Ubuntu/Debian 系统上，我们可以通过以下2条命令获得：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$sudo apt-get install libc6-dbg&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$sudo apt-get source libc6-dev&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;在Fedora/Red Hat 系的OS上，需要安装的软件包的名字不叫 libc6-dbg，libc6-dev，貌似应该是glibc-debuginfo。&lt;/p&gt;
+&lt;p&gt;之后，以一段小程序为例来演示整个过程，小程序包含了一个系统调用fork()，一个库函数printf()&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;int main(){
+    pid_t son;
+    if((son=fork())==0)
+       printf(&amp;#34;I am son\n&amp;#34;);
+    else
+       printf(&amp;#34;I am farther\n&amp;#34;);
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;接着，编译产生带有调试信息的可执行文件 &lt;code&gt;$gcc -g -o f fork.c&lt;/code&gt;
+然后开启gdb调试 $gdb fork&lt;/p&gt;
+&lt;p&gt;在开始调试之前，需要指定一下刚刚获得的带有libc6-dev源码文件夹的路径，比如我把这些源码放在了 ~/glibc/lib 文件夹下，通常一般程序需要的是stdio-common这个目录内的文件，&lt;/p&gt;
+&lt;p&gt;于是输入 &lt;code&gt;(gdb) directory ~/glibc/lib/stdio-common&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2012/gdb.png&#34; alt=&#34;gdb&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;注意看其中几条命令的用法。&lt;/p&gt;
+&lt;p&gt;程序在调用fork函数后，其实执行的是glibc包装过的__libc_fork ，并且我们可以查看其源代码。
+这里有几个常用命令：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;s 单步执行；&lt;/li&gt;
+&lt;li&gt;list 查看源代码；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;start 程序开始执行，并在main函数处停下，相当于在main处加断点。
+但是在执行了几步之后出现了这样的错误：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;_IO_list_lock () at genops.c:1299 &lt;br&gt;
+1299 genops.c: No such file or directory.&lt;br&gt;
+in genops.c&lt;/p&gt;</description>
     </item>
     <item>
       <title>从书上的一个错误说 Buffer Overflow</title>
       <link>https://runzhen.github.io/posts/buffer-overflow/</link>
       <pubDate>Sat, 01 Oct 2011 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/buffer-overflow/</guid>
-      <description>时间倒回到2011年5月的一天，大学的最后一门课《计算机信息安全技术》，讲到《缓冲区溢出》这一章，并且给出了一段示例代码来演示缓冲区溢出，回到宿舍后出于好奇我运行了一下这段代码，发现结果并不是书上所说的那样，当时在人人网也发过一篇吐槽的日志，但是一直拖到现在都没有仔细的去研究过，正好现在十一放假没事，就花点时间搞搞啦。
-书第136页-137页。代码如下，出于简单考虑（其实书上的C++代码格式也是错的），我除去了头文件和cout函数，这样就跟纯C语言代码是一样了。
-void function(int a){char buffer[5];char *ret;ret = buffer + 12;*ret += 8;}int main(){int x;x = 10;function(7);x = 1;return 0;} 书上说最后x的值是10，不是1，而我的结果恰恰相反。 接着用gcc产生汇编代码，在这里用 gcc -O0 -S命令告诉编译器不采用任何优化措施，产生最原始的汇编代码，这样有利于我们分析，即使是采用-O1级优化的时候，汇编代码已经很难读了，大家可以试一试。
-function:pushl %ebpmovl %esp, %ebpsubl $16, %espleal -9(%ebp), %eaxaddl $12, %eaxmovl %eax, -4(%ebp)movl -4(%ebp), %eaxmovzbl (%eax), %eaxaddl $8, %eaxmovl %eax, %edxmovl -4(%ebp), %eaxmovb %dl, (%eax)leavemain:pushl %ebpmovl %esp, %ebpsubl $20, %espmovl $10, -4(%ebp)movl $7, (%esp)call functionmovl $1, -4(%ebp)leaveret 书上详细的解释了为什么结果是10，下面我来逐条分析。首先画一张内存图，同样处于简洁考虑，只画function函数附近的内存分布，不影响分析。</description>
+      <description>&lt;p&gt;时间倒回到2011年5月的一天，大学的最后一门课《计算机信息安全技术》，讲到《缓冲区溢出》这一章，并且给出了一段示例代码来演示缓冲区溢出，回到宿舍后出于好奇我运行了一下这段代码，发现结果并不是书上所说的那样，当时在人人网也发过一篇吐槽的日志，但是一直拖到现在都没有仔细的去研究过，正好现在十一放假没事，就花点时间搞搞啦。&lt;/p&gt;
+&lt;p&gt;书第136页-137页。代码如下，出于简单考虑（其实书上的C++代码格式也是错的），我除去了头文件和cout函数，这样就跟纯C语言代码是一样了。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void function(int a)
+{
+    char buffer[5];
+    char *ret;
+    ret = buffer + 12;
+    *ret += 8;
+}
+
+int main()
+{
+    int x;
+    x = 10;
+    function(7);
+    x = 1;
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;书上说最后x的值是10，不是1，而我的结果恰恰相反。
+接着用gcc产生汇编代码，在这里用 &lt;code&gt;gcc -O0 -S&lt;/code&gt;命令告诉编译器不采用任何优化措施，产生最原始的汇编代码，这样有利于我们分析，即使是采用-O1级优化的时候，汇编代码已经很难读了，大家可以试一试。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;function:
+    pushl %ebp
+    movl %esp, %ebp
+    subl $16, %esp
+    leal -9(%ebp), %eax
+    addl $12, %eax
+    movl %eax, -4(%ebp)
+    movl -4(%ebp), %eax
+    movzbl (%eax), %eax
+    addl $8, %eax
+    movl %eax, %edx
+    movl -4(%ebp), %eax
+    movb %dl, (%eax)
+    leave
+
+main:
+    pushl %ebp
+    movl %esp, %ebp
+    subl $20, %esp
+    movl $10, -4(%ebp)
+    movl $7, (%esp)
+    call function
+    movl $1, -4(%ebp)
+    leave
+    ret
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;书上详细的解释了为什么结果是10，下面我来逐条分析。首先画一张内存图，同样处于简洁考虑，只画function函数附近的内存分布，不影响分析。&lt;/p&gt;</description>
     </item>
     <item>
       <title>《编程珠玑》Maximum Subarray </title>
       <link>https://runzhen.github.io/posts/maximum-subarray/</link>
       <pubDate>Tue, 19 Jul 2011 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/maximum-subarray/</guid>
-      <description>Table {:toc} 问题 有一个数组 31,-41,59,26,-53,58,97,-93,-23,84 。现在要求出它的连续子串的最大值。 比如，31,-41,59,26是它的一个连续的子串，他们的和为75。但是75并不是最大值，有一个子串 59,26,-53,58,97它们的和187才是最大的。
-解答 《Programming Pearls》第77页开始一共给出了4种解法，前两种非常简单，是大多数人思考几分钟就能想出的方法，但是复杂度却很高，分别为O(n^3)和O(n^2)。后两种解法则非常巧妙，更神奇的是第四种方法居然只有线性复杂度O(n)
-解法1、解法2略。
-解法 3：分治法 复杂度为O(nlogn)。 分治法在结构上是递归的，在保证不改变原问题的条件下，将问题的规模减小，生成多个子问题，并多次递归调用自身来解决子问题，之后再将子问题的求解结果合并成原问题的解。
-对于case1，我们只要比较 ma 和 mb 的大小就可以得出原数组的最大子串的和了。 对于case2, 只要把ma和mb相加即可。以上只是将问题一次分解的过程，我们还需要将问题再分解直到不能在分解或是能直接得出结果为止。
-什么时候能直接得出结果？当子数组只有一个元素的时候，此时ma就是它本身（为负数时我们让它为0）。 因此，原数组的最大和 = 2个子数组中最大和的较大者，或者，包括中间分界线的一段连续区域的和。
-即，maxsum(orignial)=max(mc，maxsum(a)，maxsum(b))
-递归结束的条件是，子数组只有一个元素，如果是正返回它本身，为负返回0
-代码如下。
-int maxSubArray(std::vector&amp;lt;int&amp;gt;&amp;amp; nums) {return maxsum(nums, 0, nums.size()-1);}int maxsum(std::vector&amp;lt;int&amp;gt; &amp;amp;nums, int left, int right) {if (left &amp;gt; right) {return 0;}if (left == right) {return nums[left];}int mid = (left + right)/2;int left_max = INT_MIN, right_max = INT_MIN;int tmp_max = 0;for (int i = mid; i &amp;gt;= left; i--) {tmp_max += nums[i];left_max = std::max(left_max, tmp_max);}tmp_max = 0;for (int i = mid+1; i &amp;lt;= right; i++) {tmp_max += nums[i];right_max = std::max(right_max, tmp_max);}return std::max(left_max+right_max,std::max(maxsum(nums, left, mid),maxsum(nums, mid+1, right)));} 解法4：扫描法 一次扫描数组即可得出答案，复杂度O(n)。这种方法用文字描述不容易说清楚，下面用每一步运算的图示来表达。伪代码如下：</description>
+      <description>&lt;ul&gt;
+&lt;li&gt;Table
+{:toc}&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
+&lt;p&gt;有一个数组 31,-41,59,26,-53,58,97,-93,-23,84 。现在要求出它的连续子串的最大值。
+比如，31,-41,59,26是它的一个连续的子串，他们的和为75。但是75并不是最大值，有一个子串 59,26,-53,58,97它们的和187才是最大的。&lt;/p&gt;
+&lt;h2 id=&#34;解答&#34;&gt;解答&lt;/h2&gt;
+&lt;p&gt;《Programming Pearls》第77页开始一共给出了4种解法，前两种非常简单，是大多数人思考几分钟就能想出的方法，但是复杂度却很高，分别为O(n^3)和O(n^2)。后两种解法则非常巧妙，更神奇的是第四种方法居然只有线性复杂度O(n)&lt;/p&gt;
+&lt;p&gt;解法1、解法2略。&lt;/p&gt;
+&lt;h3 id=&#34;解法-3分治法&#34;&gt;解法 3：分治法&lt;/h3&gt;
+&lt;p&gt;复杂度为O(nlogn)。 分治法在结构上是递归的，在保证不改变原问题的条件下，将问题的规模减小，生成多个子问题，并多次递归调用自身来解决子问题，之后再将子问题的求解结果合并成原问题的解。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2011/subarray1.jpg&#34; alt=&#34;sub&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;对于case1，我们只要比较 &lt;code&gt;ma&lt;/code&gt; 和 &lt;code&gt;mb&lt;/code&gt; 的大小就可以得出原数组的最大子串的和了。 &lt;br&gt;
+对于case2, 只要把ma和mb相加即可。以上只是将问题一次分解的过程，我们还需要将问题再分解直到不能在分解或是能直接得出结果为止。&lt;/p&gt;
+&lt;p&gt;什么时候能直接得出结果？当子数组只有一个元素的时候，此时&lt;code&gt;ma&lt;/code&gt;就是它本身（为负数时我们让它为0）。 &lt;br&gt;
+因此，原数组的最大和 = 2个子数组中最大和的较大者，或者，包括中间分界线的一段连续区域的和。&lt;/p&gt;
+&lt;p&gt;即，&lt;code&gt;maxsum(orignial)=max(mc，maxsum(a)，maxsum(b))&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;递归结束的条件是，子数组只有一个元素，&lt;del&gt;如果是正返回它本身，为负返回0&lt;/del&gt;&lt;/p&gt;
+&lt;p&gt;代码如下。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;    int maxSubArray(std::vector&amp;lt;int&amp;gt;&amp;amp; nums) {
+        return maxsum(nums, 0, nums.size()-1);
+    }
+
+    int maxsum(std::vector&amp;lt;int&amp;gt; &amp;amp;nums, int left, int right) {
+
+        if (left &amp;gt; right) {
+            return 0;
+        }
+
+        if (left == right) {
+            return nums[left];
+        }
+
+        int mid = (left + right)/2;
+
+        int left_max = INT_MIN, right_max = INT_MIN;
+        int tmp_max = 0;
+
+        for (int i = mid; i &amp;gt;= left; i--) {
+            tmp_max += nums[i];
+            left_max = std::max(left_max, tmp_max);
+        }
+
+        tmp_max = 0;
+        for (int i = mid+1; i &amp;lt;= right; i++) {
+            tmp_max += nums[i];
+            right_max = std::max(right_max, tmp_max);
+        }
+
+        return std::max(left_max+right_max,
+                        std::max(maxsum(nums, left, mid),
+                        maxsum(nums, mid+1, right)));
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;解法4扫描法&#34;&gt;解法4：扫描法&lt;/h3&gt;
+&lt;p&gt;一次扫描数组即可得出答案，复杂度O(n)。这种方法用文字描述不容易说清楚，下面用每一步运算的图示来表达。伪代码如下：&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

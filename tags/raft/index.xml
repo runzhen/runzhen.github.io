@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 22 May 2022 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/raft/index.xml" rel="self" type="application/rss+xml" />
@@ -18,35 +18,118 @@
       <link>https://runzhen.github.io/posts/etcd-raft-raftlog/</link>
       <pubDate>Sun, 22 May 2022 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/etcd-raft-raftlog/</guid>
-      <description>etcd-raft 有关 log 的实现在分布在log.go，log_unstable.go，storage.go 三个文件中。首先看一下 raftLog 结构体。
-raftLog 结构体 type raftLog struct { // storage contains all stable entries since the last snapshot. storage Storage // unstable contains all unstable entries and snapshot. // they will be saved into storage. unstable unstable // committed is the highest log position that is known to be in // stable storage on a quorum of nodes. committed uint64 // applied is the highest log position that the application has // been instructed to apply to its state machine.</description>
+      <description>&lt;p&gt;etcd-raft 有关 log 的实现在分布在&lt;code&gt;log.go&lt;/code&gt;，&lt;code&gt;log_unstable.go&lt;/code&gt;，&lt;code&gt;storage.go&lt;/code&gt; 三个文件中。首先看一下 raftLog 结构体。&lt;/p&gt;
+&lt;h2 id=&#34;raftlog-结构体&#34;&gt;raftLog 结构体&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;raftLog&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;// storage contains all stable entries since the last snapshot.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;nx&#34;&gt;storage&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;Storage&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;// unstable contains all unstable entries and snapshot.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// they will be saved into storage.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;nx&#34;&gt;unstable&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;unstable&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;// committed is the highest log position that is known to be in
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// stable storage on a quorum of nodes.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;nx&#34;&gt;committed&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;// applied is the highest log position that the application has
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// been instructed to apply to its state machine.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// Invariant: applied &amp;lt;= committed
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;nx&#34;&gt;applied&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;其中 Storage 存放 stable 的 log，它是一个接口，具体实现可由应用层控制，在 raftexample 和 etcd server 中都是用了 默认的实现 &lt;code&gt;MemoryStorage&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;unstable 存放的是还未放到 stable 中的 log，可见实际上无论是 stable 还是 unstable，他们都是存在内存中的，那么不怕断点导致的丢失吗？ 其实真正生产环境中使用的 etcd server 在写入 MemoryStorage 前还要写入 WAL 和 snapshot，也就是说，etcd的稳定存储是通过快照、预写日志、MemoryStorage 三者共同实现的。具体细节本文先不讨论。&lt;/li&gt;
+&lt;li&gt;committed 表示该节点所知数量达到quorum的节点保存到了 &lt;strong&gt;stable&lt;/strong&gt; 中的日志里，index最高的日志的index&lt;/li&gt;
+&lt;li&gt;applied 表示该节点的应用程序已应用到其状态机的日志里，index最高的日志的index。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;由此可见，&lt;strong&gt;committed 和 applied 都是在 stable 中，不在 unstable&lt;/strong&gt;。 他们的关系如下所示&lt;/p&gt;</description>
     </item>
     <item>
       <title>etcd-raft 源码阅读之 Leader 的选举</title>
       <link>https://runzhen.github.io/posts/etcd-raft-leader-election/</link>
       <pubDate>Sun, 15 May 2022 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/etcd-raft-leader-election/</guid>
-      <description>首先看一下 raft node 之间传递的基本消息（比如 leader 选举，AppendLog）类型 Message protobuf 定义
-message Message { optional MessageType type = 1 ; optional uint64 to = 2 ; optional uint64 from = 3 ; // 整个消息发出去时，所处的任期 optional uint64 term = 4 ; // logTerm is generally used for appending Raft logs to followers. For example, // (type=MsgApp,index=100,logTerm=5) means leader appends entries starting at // index=101, and the term of entry at index 100 is 5.</description>
+      <description>&lt;p&gt;首先看一下 raft node 之间传递的基本消息（比如 leader 选举，AppendLog）类型 &lt;code&gt;Message&lt;/code&gt; protobuf 定义&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;message&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;Message&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;MessageType&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;type&lt;/span&gt;        &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;      &lt;span class=&#34;nx&#34;&gt;to&lt;/span&gt;          &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;      &lt;span class=&#34;nx&#34;&gt;from&lt;/span&gt;        &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;c1&#34;&gt;// 整个消息发出去时，所处的任期
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;      &lt;span class=&#34;nx&#34;&gt;term&lt;/span&gt;        &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;// logTerm is generally used for appending Raft logs to followers. For example,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// (type=MsgApp,index=100,logTerm=5) means leader appends entries starting at
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// index=101, and the term of entry at index 100 is 5.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// (type=MsgAppResp,reject=true,index=100,logTerm=5) means follower rejects some
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// entries from its leader as it already has an entry with term 5 at index 100.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;c1&#34;&gt;// 该消息携带的第一条Entry记录的的Term值
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;      &lt;span class=&#34;nx&#34;&gt;logTerm&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// 索引值，该索引值和消息的类型有关,不同的消息类型代表的含义不同
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;      &lt;span class=&#34;nx&#34;&gt;index&lt;/span&gt;       &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;6&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;repeated&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;Entry&lt;/span&gt;       &lt;span class=&#34;nx&#34;&gt;entries&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;7&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// 已经提交的日志的索引值，用来向别人同步日志的提交信息。
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;      &lt;span class=&#34;nx&#34;&gt;commit&lt;/span&gt;      &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// 在传输快照时，该字段保存了快照数据
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;Snapshot&lt;/span&gt;    &lt;span class=&#34;nx&#34;&gt;snapshot&lt;/span&gt;    &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;9&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;bool&lt;/span&gt;        &lt;span class=&#34;nx&#34;&gt;reject&lt;/span&gt;      &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;      &lt;span class=&#34;nx&#34;&gt;rejectHint&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;11&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;bytes&lt;/span&gt;       &lt;span class=&#34;nx&#34;&gt;context&lt;/span&gt;     &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;12&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;message&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;Entry&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;     &lt;span class=&#34;nx&#34;&gt;Term&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// Index:当前这个entry在整个raft日志中的位置索引,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// 有了Term和Index之后，一个`log entry`就能被唯一标识。
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;uint64&lt;/span&gt;     &lt;span class=&#34;nx&#34;&gt;Index&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;EntryType&lt;/span&gt;  &lt;span class=&#34;nx&#34;&gt;Type&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;bytes&lt;/span&gt;      &lt;span class=&#34;nx&#34;&gt;Data&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;raftexample 目录提供了一个如何使用 raft library 的例子， 首先从 main.go 来看如何启动一个 raft node。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Raft 一致性算法实现 1</title>
       <link>https://runzhen.github.io/posts/2009-09-01-raft-implementation-leader/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/2009-09-01-raft-implementation-leader/</guid>
-      <description>在实现的时候发现这张状态转换图非常重要。整个 raft 的运行就是围绕着这张图发生一系列状态转换。 因此，第一步实现一个状态机就成了关键。
-参考资料 Go 并发、管道</description>
+      <description>&lt;p&gt;在实现的时候发现这张状态转换图非常重要。整个 raft 的运行就是围绕着这张图发生一系列状态转换。
+因此，第一步实现一个状态机就成了关键。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft6.png&#34; alt=&#34;状态转换图&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;参考资料&#34;&gt;参考资料&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.woola.net/detail/2017-04-27-goroutines.html&#34;&gt;Go 并发、管道&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>Raft 算法实现 2：日志的复制</title>
       <link>https://runzhen.github.io/posts/2009-09-01-raft-implementation-log-replication/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/2009-09-01-raft-implementation-log-replication/</guid>
-      <description>投票的过程 日志的复制 一旦选举成功，所有的 Client 请求最终都会交给 Leader 处理。
-当 Client 请求到 Leader后，Leader 首先将该请求转化成 LogEntry，然后添加到自己的 log[] 中，并且把对应的 index 值存到 LogEntry 的 index 中，这样 LogEntry 中就包含了当前 Leader 的 term 信息和在 log[] 中的index信息，这两个信息在发给 Follower 以后会用到。
-所以一旦一个节点成为 Leader 以后，那么它的 log[] 保存的这一组 LogEntry 就代表了整个集群中的最终一致的数据。用 raft 论文的话来说就是，节点是一个状态机，LogEntry 是指令集，任何一个节点，只要逐个执行这一串指令，最后状态机的状态都一样。
-先看看与日志复制相关的几个数据结构，首先是 raft 结构，其中相关的有以下几个变量：
-type Raft struct {....log []LogEntrycommitIndex int // 所有机器lastApplied int nextIndex []int // 只在 leadermatchIndex []int .....} nextIndex 和 matchIndex，这两个数组只有当这个 raft 是 Leader 的时候才有效，否则这两个数组的内容无效。</description>
+      <description>&lt;h1 id=&#34;投票的过程&#34;&gt;投票的过程&lt;/h1&gt;
+&lt;h1 id=&#34;日志的复制&#34;&gt;日志的复制&lt;/h1&gt;
+&lt;p&gt;一旦选举成功，所有的 Client 请求最终都会交给 Leader 处理。&lt;/p&gt;
+&lt;p&gt;当 Client 请求到 Leader后，Leader 首先将该请求转化成 LogEntry，然后添加到自己的 log[] 中，并且把对应的 index 值存到 LogEntry 的 index 中，&lt;strong&gt;这样 LogEntry 中就包含了当前 Leader 的 term 信息和在 log[] 中的index信息&lt;/strong&gt;，这两个信息在发给 Follower 以后会用到。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;所以一旦一个节点成为 Leader 以后，那么它的 log[] 保存的这一组 LogEntry 就代表了整个集群中的最终一致的数据。用 raft 论文的话来说就是，节点是一个状态机，LogEntry 是指令集，任何一个节点，只要逐个执行这一串指令，最后状态机的状态都一样。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;先看看与日志复制相关的几个数据结构，首先是 raft 结构，其中相关的有以下几个变量：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;type Raft struct {
+	....
+    log         []LogEntry
+
+    commitIndex int  // 所有机器
+    lastApplied int 
+
+    nextIndex  []int // 只在 leader
+    matchIndex []int 
+    .....
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;nextIndex 和 matchIndex，这两个数组只有当这个 raft 是 Leader 的时候才有效，否则这两个数组的内容无效。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

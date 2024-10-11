@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <atom:link href="https://runzhen.github.io/tags/paper/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -17,30 +17,48 @@
       <link>https://runzhen.github.io/posts/2018-06-03-dune/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/2018-06-03-dune/</guid>
-      <description>论文的原文在这里 Dune: Safe User-level Access to Privileged CPU Features
-1. Introduction Dune 的目标是让用户态程序直接使用硬件特性（例如，获得更好的硬件加速等），不过所谓的 “直接” 还是在虚拟化的环境中。Dune 利用现代 CPU 的虚拟化功能，提供给用户一个 进程的抽象， 而不是一个 虚拟机的抽象。
-Dune 是一个内核模块，可以在需要的时候加载到标准的 linux 内核中。 于是一个普通进程可以进入 “Dune Mode”，在这个模式下的进程可以直接访问页表、中断、系统调用表等等。
-特点：
-Dune 进程是一个普通的 linux 进程，唯一的区别是它用 VMCALL 指令进入系统调用。 Dune 内核模块只提供进程级别的抽象，因此相对于 KVM 来说要简单得多。 3. Kernel Support for Dune Dune mode 下的进程运行在 VMX non-root 模式，可以安全的访问特权级硬件。然后看一下 Dune 的整个架构图。
-{:height=&amp;ldquo;300&amp;rdquo; width=&amp;ldquo;300&amp;rdquo;}
-如果说前面 1、2 小节读下来仍然云里雾里的话，一看到这个图立刻觉得特别清晰了，因为太像 KVM 的架构了！ 同样也是利用 CPU 提供的 VT-x 技术，Dune 更像是一个轻量级的 KVM。
-在后续的章节中，作者也提到了 Dune 项目的原型就是在 KVM 的基础上修改的，特别是对 VT-x 操作的部分。</description>
+      <description>&lt;p&gt;论文的原文在这里 &lt;a href=&#34;https://runzhen.github.io/papers/osdi12-final-117.pdf&#34;&gt;Dune: Safe User-level Access to Privileged CPU Features&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;1-introduction&#34;&gt;1. Introduction&lt;/h3&gt;
+&lt;p&gt;Dune 的目标是让用户态程序直接使用硬件特性（例如，获得更好的硬件加速等），不过所谓的 “直接” 还是在虚拟化的环境中。Dune 利用现代 CPU 的虚拟化功能，提供给用户一个 &lt;code&gt;进程的抽象&lt;/code&gt;， 而不是一个 &lt;code&gt;虚拟机的抽象&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;Dune 是一个内核模块，可以在需要的时候加载到标准的 linux 内核中。 于是一个普通进程可以进入 “Dune Mode”，在这个模式下的进程可以直接访问页表、中断、系统调用表等等。&lt;/p&gt;
+&lt;p&gt;特点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Dune 进程是一个普通的 linux 进程，唯一的区别是它用 &lt;code&gt;VMCALL&lt;/code&gt; 指令进入系统调用。&lt;/li&gt;
+&lt;li&gt;Dune 内核模块只提供进程级别的抽象，因此相对于 KVM 来说要简单得多。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;3-kernel-support-for-dune&#34;&gt;3. Kernel Support for Dune&lt;/h3&gt;
+&lt;p&gt;Dune mode 下的进程运行在 VMX non-root 模式，可以安全的访问特权级硬件。然后看一下 Dune 的整个架构图。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/dune.png&#34; alt=&#34;Dune Architecture&#34;  /&gt;
+{:height=&amp;ldquo;300&amp;rdquo; width=&amp;ldquo;300&amp;rdquo;}&lt;/p&gt;
+&lt;p&gt;如果说前面 1、2 小节读下来仍然云里雾里的话，一看到这个图立刻觉得特别清晰了，因为&lt;code&gt;太像 KVM 的架构了&lt;/code&gt;！ 同样也是利用 CPU 提供的 VT-x 技术，Dune 更像是一个轻量级的 KVM。&lt;/p&gt;
+&lt;p&gt;在后续的章节中，作者也提到了 Dune 项目的原型就是在 KVM 的基础上修改的，特别是对 VT-x 操作的部分。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Raft 一致性算法读书笔记</title>
       <link>https://runzhen.github.io/posts/2018-02-24-raft-paper/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/2018-02-24-raft-paper/</guid>
-      <description>论文原文链接 In Search of an Understandable Consensus Algorithm
-Raft 保证一致性的 4 个重要组成部分： 领导人的选举，日志复制，安全性，集群成员的变化。
-Raft 是一个强领导者算法，意思就是所有的数据以当前领导者（Leader）上的为准，领导者上有的就是正确的，领导者上没有的就是错误的。
-5.1 Raft 的基本术语和概念 任期的概念：任期(term) 用来区分时间轴上不同的领导者，当领导者换了，日期也也立刻变更。raft 算法用 term 来表示一个 逻辑时钟，而不是用传统的几月几日几点几分几秒，term 是一个递增的整数，当领导者变了，term 也 +1。
-集群中的每一个服务器都存储了一个 currentTerm，任意两个 server 要相互通信时都需要包含各自的 currentTerm。如果一个 server 的 currentTerm 值小于对方，那么它需要更新自己的值。如果 candidate 或者 leader 发现他们自己的 currentTerm 比其他人的要小，那个立马变成 follower。如果收到的请求包含一个旧的 currentTerm，直接忽略。
-原论文的图 2 包含了大量的信息，我自己制作了下面四个图片。
-5.2 领导人的选举 领导人不断的向集群中其他人发送心跳包，当集群中一个 server 在一段时间里没有收到领导人的心跳包，那么他就要起义，自己竞选当领导人。
-开始一次选举 Follower 把自己的 term+1，身份转变成 Candidate，向集群中其他 server 发起请求投票 RPC，当他获得大多数选票时，就成功当选。
-问题：他怎么知道 “大多数” 是多少？（etcd 的实现似乎是每个 server 知道集群里面有多少台服务器）
-在竞选的过程中， candidate 一直保持着 candidate 的身份直到下面三个事件中的任何一个发生：</description>
+      <description>&lt;p&gt;论文原文链接 &lt;a href=&#34;https://runzhen.github.io/papers/raft-extended.pdf&#34;&gt;In Search of an Understandable Consensus Algorithm&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Raft 保证一致性的 4 个重要组成部分： &lt;strong&gt;领导人的选举&lt;/strong&gt;，&lt;strong&gt;日志复制&lt;/strong&gt;，&lt;strong&gt;安全性&lt;/strong&gt;，&lt;strong&gt;集群成员的变化&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;Raft 是一个强领导者算法，意思就是所有的数据以当前领导者（Leader）上的为准，领导者上有的就是正确的，领导者上没有的就是错误的。&lt;/p&gt;
+&lt;h2 id=&#34;51-raft-的基本术语和概念&#34;&gt;5.1 Raft 的基本术语和概念&lt;/h2&gt;
+&lt;p&gt;任期的概念：任期(term) 用来区分时间轴上不同的领导者，当领导者换了，日期也也立刻变更。raft 算法用 term 来表示一个 &lt;code&gt;逻辑时钟&lt;/code&gt;，而不是用传统的几月几日几点几分几秒，term 是一个递增的整数，当领导者变了，term 也 +1。&lt;/p&gt;
+&lt;p&gt;集群中的每一个服务器都存储了一个 currentTerm，任意两个 server 要相互通信时都需要包含各自的 currentTerm。如果一个 server 的 currentTerm 值小于对方，那么它需要更新自己的值。如果 candidate 或者 leader 发现他们自己的 currentTerm 比其他人的要小，那个立马变成 follower。如果收到的请求包含一个旧的 currentTerm，直接忽略。&lt;/p&gt;
+&lt;p&gt;原论文的图 2 包含了大量的信息，我自己制作了下面四个图片。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft1.png&#34; alt=&#34;状态&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft2.png&#34; alt=&#34;请求投票 RPC&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft3.png&#34; alt=&#34;附加日志条目 RPC&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft4.png&#34; alt=&#34;所有服务器的规则&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;52-领导人的选举&#34;&gt;5.2 领导人的选举&lt;/h2&gt;
+&lt;p&gt;领导人不断的向集群中其他人发送心跳包，当集群中一个 server 在一段时间里没有收到领导人的心跳包，那么他就要起义，自己竞选当领导人。&lt;/p&gt;
+&lt;h4 id=&#34;开始一次选举&#34;&gt;开始一次选举&lt;/h4&gt;
+&lt;p&gt;Follower 把自己的 term+1，身份转变成 Candidate，向集群中其他 server 发起请求投票 RPC，当他获得大多数选票时，就成功当选。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;问题：他怎么知道 “大多数” 是多少？（etcd 的实现似乎是每个 server 知道集群里面有多少台服务器）&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

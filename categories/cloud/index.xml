@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 25 Aug 2019 14:49:42 -0700</lastBuildDate>
     <atom:link href="https://runzhen.github.io/categories/cloud/index.xml" rel="self" type="application/rss+xml" />
@@ -18,13 +18,16 @@
       <link>https://runzhen.github.io/posts/gke-access-memorystore/</link>
       <pubDate>Sun, 25 Aug 2019 14:49:42 -0700</pubDate>
       <guid>https://runzhen.github.io/posts/gke-access-memorystore/</guid>
-      <description>Memorystore 是 Google Cloud 在 2018 年推出的托管 Redis 服务，让用户一键生成 Redis 实例，必要的时候再一键 scale，省去了维护 Redis 的烦恼。
-本文在 k8s 中部署一个简单的小程序访问 Memorystore 数据库，获取 counter 值，并开启一个 http server 对外提供这个值。
-准备 GCP 提供了一个命令行工具 gcloud，几乎所有的 web 操作都有对应的 CLI，非常方便。不同操作系统对应的安装包可以在这里下载
-我的笔记本就叫它 “local host”，安装好 gcloud 之后，以下所有的操作都在 local 进行，命令执行的结果直接部署到 cloud 中。
-现在开始前期准备工作。首先，在 GCP web 界面一键创建 Memorystore，之后我们能在 MemoryStore 的 Instances 里面看到这个实例，它的 IP 地址是 10.0.16.3 端口 6379。
-很显然，10.0.16.3 这个 IP 是无法直接访问的，而如果你在相同的 GCP Project 里面创建了一个 VM instance，GCP 会自动创建一条路由，让你的 VM 可以 telnet 10.0.16.3 6379。
-然后，创建一个 k8s 集群，这一步也同样可以在 web 界面里做，如果要用 GCP 提供的 gcloud 命令行的话如下：</description>
+      <description>&lt;p&gt;Memorystore 是 Google Cloud 在 2018 年推出的托管 Redis 服务，让用户一键生成 Redis 实例，必要的时候再一键 scale，省去了维护 Redis 的烦恼。&lt;/p&gt;
+&lt;p&gt;本文在 k8s 中部署一个简单的小程序访问 Memorystore 数据库，获取 counter 值，并开启一个 http server 对外提供这个值。&lt;/p&gt;
+&lt;h2 id=&#34;准备&#34;&gt;准备&lt;/h2&gt;
+&lt;p&gt;GCP 提供了一个命令行工具 gcloud，几乎所有的 web 操作都有对应的 CLI，非常方便。不同操作系统对应的安装包可以在&lt;a href=&#34;https://cloud.google.com/sdk/install&#34;&gt;这里下载&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;我的笔记本就叫它 “local host”，安装好 gcloud 之后，以下所有的操作都在 local 进行，命令执行的结果直接部署到 cloud 中。&lt;/p&gt;
+&lt;p&gt;现在开始前期准备工作。首先，在 GCP web 界面一键创建 Memorystore，之后我们能在 MemoryStore 的 Instances 里面看到这个实例，它的 IP 地址是 10.0.16.3 端口 6379。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;很显然，10.0.16.3 这个 IP 是无法直接访问的，而如果你在相同的 GCP Project 里面创建了一个 VM instance，GCP 会自动创建一条路由，让你的 VM 可以 telnet 10.0.16.3 6379。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;然后，创建一个 k8s 集群，这一步也同样可以在 web 界面里做，如果要用 GCP 提供的 gcloud 命令行的话如下：&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

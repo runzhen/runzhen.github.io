@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 19 Jun 2016 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/tls/index.xml" rel="self" type="application/rss+xml" />
@@ -18,20 +18,120 @@
       <link>https://runzhen.github.io/posts/tls2-packets/</link>
       <pubDate>Sun, 19 Jun 2016 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/tls2-packets/</guid>
-      <description>本文是《Traffic Analysis of an SSL/TLS Session》的笔记，原文见此处。
-在 TLS 协议格式 中详细分析了协议数据的各个字段， 现在就来实战 ——用 Wireshark 抓包并观察数据。
-第一发（Client -&amp;gt; Server） Full contents of the packet0000 02 00 00 00 45 00 00 98 13 ed 40 00 40 06 00 00 ....E.....@.@...0010 7f 00 00 01 7f 00 00 01 ec 26 01 bb 43 7c ee 74 .........&amp;amp;..C|.t0020 60 b5 50 0a 80 18 31 d7 fe 8c 00 00 01 01 08 0a `.</description>
+      <description>&lt;p&gt;本文是《Traffic Analysis of an SSL/TLS Session》的笔记，原文见&lt;a href=&#34;http://blog.fourthbit.com/2014/12/23/traffic-analysis-of-an-ssl-slash-tls-session&#34;&gt;此处&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;在 &lt;a href=&#34;https://runzhen.github.io/2016/06/tls/&#34;&gt;TLS 协议格式&lt;/a&gt; 中详细分析了协议数据的各个字段，
+现在就来实战 ——用 Wireshark 抓包并观察数据。&lt;/p&gt;
+&lt;h1 id=&#34;第一发client---server&#34;&gt;第一发（Client -&amp;gt; Server）&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt; Full contents of the packet
+
+ 0000   02 00 00 00 45 00 00 98 13 ed 40 00 40 06 00 00  ....E.....@.@...
+ 0010   7f 00 00 01 7f 00 00 01 ec 26 01 bb 43 7c ee 74  .........&amp;amp;..C|.t
+ 0020   60 b5 50 0a 80 18 31 d7 fe 8c 00 00 01 01 08 0a  `.P...1.........
+ 0030   21 62 1e 1e 21 62 1e 1e 16 03 01 00 5f 01 00 00  !b..!b......_...
+ 0040   5b 03 01 54 9a ab 72 98 65 11 2f da 9e cf c9 db  [..T..r.e./.....
+ 0050   6c bd 4b 4c 56 4b 0c a5 68 2b aa 60 1f 38 66 e7  l.KLVK..h+.`.8f.
+ 0060   87 46 b2 00 00 2e 00 39 00 38 00 35 00 16 00 13  .F.....9.8.5....
+ 0070   00 0a 00 33 00 32 00 2f 00 9a 00 99 00 96 00 05  ...3.2./........
+ 0080   00 04 00 15 00 12 00 09 00 14 00 11 00 08 00 06  ................
+ 0090   00 03 00 ff 01 00 00 04 00 23 00 00              .........#..
+
+ ------------
+
+ Family: IP
+
+ 0000   02 00 00 00                                      ....
+
+ IP protocol    &amp;lt;--- IP协议首部 20 个字节，无“选项”字段。
+
+ 0000   45 00 00 98 13 ed 40 00 40 06 00 00 7f 00 00 01  E.....@.@.......
+ 0010   7f 00 00 01                                      ....
+
+ TCP protocol  &amp;lt;-- TCP 协议首部标准的为 20 个字节，这里一共32个字节，说明有“选项”字段。 
+
+ 0000   ec 26 01 bb 43 7c ee 74 60 b5 50 0a 80 18 31 d7  .&amp;amp;..C|.t`.P...1.
+ 0010   fe 8c 00 00 01 01 08 0a 21 62 1e 1e 21 62 1e 1e  ........!b..!b..
+
+ ------------
+
+ TLSv1 protocol
+
+ 0000   16 03 01 00 5f 01 00 00 5b 03 01 54 9a ab 72 98  ...._...[..T..r.
+ 0010   65 11 2f da 9e cf c9 db 6c bd 4b 4c 56 4b 0c a5  e./.....l.KLVK..
+ 0020   68 2b aa 60 1f 38 66 e7 87 46 b2 00 00 2e 00 39  h+.`.8f..F.....9
+ 0030   00 38 00 35 00 16 00 13 00 0a 00 33 00 32 00 2f  .8.5.......3.2./
+ 0040   00 9a 00 99 00 96 00 05 00 04 00 15 00 12 00 09  ................
+ 0050   00 14 00 11 00 08 00 06 00 03 00 ff 01 00 00 04  ................
+ 0060   00 23 00 00                                      .#..
+
+ TLSv1 Record protocol
+
+ 0000   16 03 01 00 5f                                   ...._
+
+        16             Handshake protocol type
+        03 01          SSL version (TLS 1.0)
+        00 5f          Record length (95 bytes)
+
+ TLSv1 Handshake protocol
+
+ 0000   01 00 00 5b 03 01 54 9a ab 72 98 65 11 2f da 9e  ...[..T..r.e./..
+ 0010   cf c9 db 6c bd 4b 4c 56 4b 0c a5 68 2b aa 60 1f  ...l.KLVK..h+.`.
+ 0020   38 66 e7 87 46 b2 00 00 2e 00 39 00 38 00 35 00  8f..F.....9.8.5.
+ 0030   16 00 13 00 0a 00 33 00 32 00 2f 00 9a 00 99 00  ......3.2./.....
+ 0040   96 00 05 00 04 00 15 00 12 00 09 00 14 00 11 00  ................
+ 0050   08 00 06 00 03 00 ff 01 00 00 04 00 23 00 00     ............#..
+
+        01             ClientHello message type
+        00 00 5b       Message length           &amp;lt;---- 这里消息长度为3字节，大于记录协议的2字节，
+		                                              也就是说，一个记录块放不下可以放到下一个？
+        03 01          SSL version (TLS 1.0)
+        54 .. b2       32-bytes random number
+        00             Session Id length
+        00 2e          Cipher Suites length (46 bytes, 23 suites)
+        00 39 .. ff    23 2-byte Cipher Suite Id numbers
+        01             Compression methods length (1 byte)
+        00             Compression method (null)
+        00 04          Extensions length (4 bytes)
+        00 23          SessionTicket TLS extension Id
+        00 00          Extension data length (0)
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;第二发server---client&#34;&gt;第二发（Server -&amp;gt; Client）&lt;/h1&gt;
+&lt;p&gt;这个例子中，服务端发送了三种消息，ServerHello，Certificate，ServerHelloDone。这是一种最简单的方式，服务端没有要求验证客户端证书。&lt;/p&gt;</description>
     </item>
     <item>
       <title>TLS 1.2 协议格式</title>
       <link>https://runzhen.github.io/posts/tls-basic/</link>
       <pubDate>Sat, 18 Jun 2016 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/tls-basic/</guid>
-      <description>本文内容来自《Traffic Analysis of an SSL/TLS Session》的阅读笔记，原文见此处。
-TLS 全称为 Transport Layer Security，它本身也分为了 Lower 和 Higher 两层协议。
-Lower Layer Lower Layer 协议在 TCP 协议之上，提供面向连接的可靠传输，在这一层的协议主要是记录协议（TLS Record Protocol）。 记录协议首先把上层协议传来的数据分成小于2^14字节的数据块，如果设置了压缩选项，则第二步为压缩数据，然后在数据块的末尾增加 MAC（Message Authentication Code），第三步将数据块加密，最后增加记录头。该过程如下所示。
-each block is packed into a structure that does not preserve client message boundaries, meaning that mulitiple message of the same type maybe coalesced into a single structure
------------+ data --+--------------&amp;gt; 1. Fragment data -----------+ +------------------------+ | | | | +------------------------+ 2. Compress data (generally no compression applied) +------------------------+----+ | |MAC | Add a Message Authentication Code | | | +------------------------+----+ 3.</description>
+      <description>&lt;p&gt;本文内容来自《Traffic Analysis of an SSL/TLS Session》的阅读笔记，原文见&lt;a href=&#34;http://blog.fourthbit.com/2014/12/23/traffic-analysis-of-an-ssl-slash-tls-session&#34;&gt;此处&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;TLS 全称为 Transport Layer Security，它本身也分为了 Lower 和 Higher 两层协议。&lt;/p&gt;
+&lt;h2 id=&#34;lower-layer&#34;&gt;Lower Layer&lt;/h2&gt;
+&lt;p&gt;Lower Layer 协议在 TCP 协议之上，提供面向连接的可靠传输，在这一层的协议主要是记录协议（TLS Record Protocol）。
+记录协议首先把上层协议传来的数据分成小于2^14字节的数据块，如果设置了压缩选项，则第二步为压缩数据，然后在数据块的末尾增加
+MAC（Message Authentication Code），第三步将数据块加密，最后增加记录头。该过程如下所示。&lt;/p&gt;
+&lt;p&gt;each block is packed into a structure that does not preserve client message boundaries, meaning that mulitiple message of the same type maybe coalesced into a single structure&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;-----------+
+  data   --+--------------&amp;gt; 1. Fragment data
+-----------+
+                            +------------------------+
+                            |                        |
+                            |                        |
+                            +------------------------+
+                            2. Compress data (generally no compression applied)
+                            +------------------------+----+
+                            |                        |MAC | Add a Message Authentication Code
+                            |                        |    |
+                            +------------------------+----+
+                            3. Encrypt data
+                            +-----------------------------+
+                            |ciphertext                   |
+                            |                             |
+                            +-----------------------------+
+                            4. Add header
+                       +----+-----------------------------+
+            TLS Record |    |ciphertext                   | Add a TLS Record header
+              header   |    |                             |
+                       +----+-----------------------------+
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;higher-layer&#34;&gt;Higher Layer&lt;/h2&gt;
+&lt;p&gt;主要有四种协议。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

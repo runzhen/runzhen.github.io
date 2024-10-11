@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 20 Feb 2022 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/categories/ddia/index.xml" rel="self" type="application/rss+xml" />
@@ -18,12 +18,35 @@
       <link>https://runzhen.github.io/posts/ddia-ch9-consistency-and-consensus/</link>
       <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/ddia-ch9-consistency-and-consensus/</guid>
-      <description>一致性保证 本章主要包含了以下话题：
-常用的强一致性模型：线性一致性，的优点和缺点。 分布式系统中的事件顺序，特别是因果关系和全局顺序的问题。 如何原子的提交分布式事务，也就是说如何解决共识问题。 线性一致性 哪些地方依赖于线性一致性呢 ？
-Locking 服务和 leader election，比如加锁出错了会导致两个人同时写同一个文件。 账户余额，产品库存信息，比如产品超卖。 如何实现一个线性一致性系统 在分布式系统里面，产生不一致的根本原因是因为数据有多个副本，而更新这些副本不是原子操作。
-以下是几种多副本系统，能否实现线性一致性的比较：
-Single-leader replication (可能线性一致) 这里我猜作者说的是传统 MySQL 这样的主从复制技术。 Consensus Algorithms (线性一致) 这里应该就是常说的 Panox 和 Raft 了。 Multi-leader replication (非线性一致) Leaderless replication (也许不是线性一致的) Dynamo 风格 和 Cassandra 风格。 线性一致的代价 假设两个 datacenter 之间网络断了的情况下，
-如果是 multi-leader 系统，那么每个 datacenter 仍然可以独立运行，datacenter 之间的数据是异步同步的，所以不会受到影响。 如果是 single-leader 系统，如果 client 连到了全是 follower 的 datacenter，那么所有 write 和 linerizable read 都受影响，如果 client 连到的是 leader 所在的 datacenter，则不受影响。 CAP Consistency, Availability, Partition Tolerance.</description>
+      <description>&lt;h2 id=&#34;一致性保证&#34;&gt;一致性保证&lt;/h2&gt;
+&lt;p&gt;本章主要包含了以下话题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;常用的强一致性模型：线性一致性，的优点和缺点。&lt;/li&gt;
+&lt;li&gt;分布式系统中的事件顺序，特别是因果关系和全局顺序的问题。&lt;/li&gt;
+&lt;li&gt;如何原子的提交分布式事务，也就是说如何解决共识问题。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;线性一致性&#34;&gt;线性一致性&lt;/h2&gt;
+&lt;p&gt;哪些地方依赖于线性一致性呢 ？&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Locking 服务和 leader election，比如加锁出错了会导致两个人同时写同一个文件。&lt;/li&gt;
+&lt;li&gt;账户余额，产品库存信息，比如产品超卖。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;如何实现一个线性一致性系统&#34;&gt;如何实现一个线性一致性系统&lt;/h3&gt;
+&lt;p&gt;在分布式系统里面，产生不一致的根本原因是因为数据有多个副本，而更新这些副本不是原子操作。&lt;/p&gt;
+&lt;p&gt;以下是几种多副本系统，能否实现线性一致性的比较：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Single-leader replication (可能线性一致) 这里我猜作者说的是传统 MySQL 这样的主从复制技术。&lt;/li&gt;
+&lt;li&gt;Consensus Algorithms (线性一致) 这里应该就是常说的 Panox 和 Raft 了。&lt;/li&gt;
+&lt;li&gt;Multi-leader replication (非线性一致)&lt;/li&gt;
+&lt;li&gt;Leaderless replication (也许不是线性一致的) Dynamo 风格 和 Cassandra 风格。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;线性一致的代价&#34;&gt;线性一致的代价&lt;/h3&gt;
+&lt;p&gt;假设两个 datacenter 之间网络断了的情况下，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;如果是 multi-leader 系统，那么每个 datacenter 仍然可以独立运行，datacenter 之间的数据是异步同步的，所以不会受到影响。&lt;/li&gt;
+&lt;li&gt;如果是 single-leader 系统，如果 client 连到了全是 follower 的 datacenter，那么所有 write 和 linerizable read 都受影响，如果 client 连到的是 leader 所在的 datacenter，则不受影响。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;CAP &lt;strong&gt;Consistency, Availability, Partition Tolerance&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

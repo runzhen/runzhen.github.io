@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Sat, 24 Oct 2020 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/p2p/index.xml" rel="self" type="application/rss+xml" />
@@ -18,14 +18,30 @@
       <link>https://runzhen.github.io/posts/how-bt-torrent-works/</link>
       <pubDate>Sat, 24 Oct 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/how-bt-torrent-works/</guid>
-      <description>在 2000 年左右开始接触互联网的同学都应该记得用 BT 种子下载电影和小电影那段的时光。之前只是大概知道 BT 的工作原理，但并没有仔细研究过，所以一直很好奇。
-随便在网上搜索下，可以知道 BT 大概是这样工作的:
-BitTorrent 协议把提供下载的文件虚拟分成大小相等的块，块大小必须为 2k 的整数次方，并把每个块的索引信息和 Hash 验证码 写入 .torrent 文件（即种子文件，也简称为“种子”）中，作为被下载文件的“索引”。 下载者要下载文件内容，需要先得到相应的 .torrent 文件，然后使用 BT 客户端软件进行下载。
-下载时，BT 客户端首先解析 .torrent 文件得到 Tracker 地址，然后连接 Tracker 服务器。Tracker 服务器回应下载者的请求，提供下载者其他下载者（包括发布者）的 IP。或者，BT客户端也可解析 .torrent 文件得到 nodes 路由表，然后连接路由表中的有效节点，由网络节点提供下载者其他下载者的 IP。
-torrent 文件包含了什么 根据 bittorrent.org官方文档，种子文件也被称为metainfo files, 主要包含以下信息：
-announce, The URL of the tracker. info, This maps to a dictionary. 所以种子文件就是告诉你，去 announce 这个地址找文件，具体文件信息包含在 info 里面。
-Info 结构体有以下基本内容：
-name key maps to a UTF-8 encoded string.</description>
+      <description>&lt;p&gt;在 2000 年左右开始接触互联网的同学都应该记得用 BT 种子下载电影和小电影那段的时光。之前只是大概知道 BT 的工作原理，但并没有仔细研究过，所以一直很好奇。&lt;/p&gt;
+&lt;p&gt;随便在网上搜索下，可以知道 BT 大概是这样工作的:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;BitTorrent 协议把提供下载的文件虚拟分成大小相等的块，块大小必须为 2k 的整数次方，并把每个块的索引信息和 Hash 验证码
+写入 .torrent 文件（即种子文件，也简称为“种子”）中，作为被下载文件的“索引”。 下载者要下载文件内容，需要先得到相应的 .torrent 文件，然后使用 BT 客户端软件进行下载。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;下载时，BT 客户端首先解析 .torrent 文件得到 Tracker 地址，然后连接 Tracker 服务器。Tracker 服务器回应下载者的请求，提供下载者其他下载者（包括发布者）的 IP。或者，BT客户端也可解析 .torrent 文件得到 nodes 路由表，然后连接路由表中的有效节点，由网络节点提供下载者其他下载者的 IP。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;torrent-文件包含了什么&#34;&gt;torrent 文件包含了什么&lt;/h2&gt;
+&lt;p&gt;根据 &lt;a href=&#34;http://bittorrent.org/beps/bep_0003.html&#34;&gt;bittorrent.org官方文档&lt;/a&gt;，种子文件也被称为&lt;code&gt;metainfo files&lt;/code&gt;, 主要包含以下信息：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;announce&lt;/code&gt;, The URL of the tracker.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;info&lt;/code&gt;, This maps to a dictionary.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;所以种子文件就是告诉你，去 announce 这个地址找文件，具体文件信息包含在 info 里面。&lt;/p&gt;
+&lt;p&gt;Info 结构体有以下基本内容：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;name&lt;/code&gt; key maps to a UTF-8 encoded string.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;piece length&lt;/code&gt; maps to the number of bytes in each piece the file is split into.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pieces&lt;/code&gt; maps to a string whose length is a multiple of 20. 其实就是文件被切成很多片，这个变量保存了所有片的 SHA1 值。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;length&lt;/code&gt; - The length of the file, in bytes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以上4个是最基本的结构体信息，只支持下载单个文件，如果是表示多个文件或文件夹，还需要增加一些额外信息，具体见官方文档。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

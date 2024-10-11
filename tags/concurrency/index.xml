@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Tue, 13 Oct 2020 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/concurrency/index.xml" rel="self" type="application/rss+xml" />
@@ -18,10 +18,27 @@
       <link>https://runzhen.github.io/posts/goroutine-pool/</link>
       <pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/goroutine-pool/</guid>
-      <description>本文是读完 Handling 1 Million Requests per Minute with Go 之后，根据自己的理解，对文中提到的并发模型和实现再梳理一遍。
-前言 假设有一个 http server 接收 client 发来的 request，如果用下面的这样的代码，会有什么问题呢？
-func payloadHandler(w http.ResponseWriter, r *http.Request) { // Go through each payload and queue items individually to be posted to S3 for _, payload := range content.Payloads { go payload.UploadToS3() // &amp;lt;----- DON&amp;#39;T DO THIS } } 显而易见，有 2 个问题：
-接收一个 request 就开启一个 goroutine 处理，当 request 数量在短时间内暴增的话，光是 goroutine 的数量都足以让 server 崩溃。 每个 goroutine 都会与后端建立 TCP 连接，既耗费三次握手的时间，也会造成后端有大量 TCP 连接 所以，我们的目标是 没有蛀牙</description>
+      <description>&lt;p&gt;本文是读完 &lt;a href=&#34;http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang/&#34;&gt;Handling 1 Million Requests per Minute with Go&lt;/a&gt; 之后，根据自己的理解，对文中提到的并发模型和实现再梳理一遍。&lt;/p&gt;
+&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;假设有一个 http server 接收 client 发来的 request，如果用下面的这样的代码，会有什么问题呢？&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;payloadHandler&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;w&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;http&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;ResponseWriter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;r&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;http&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Request&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// Go through each payload and queue items individually to be posted to S3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;_&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;payload&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;range&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;content&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;Payloads&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;go&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;payload&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;UploadToS3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;   &lt;span class=&#34;c1&#34;&gt;// &amp;lt;----- DON&amp;#39;T DO THIS
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;显而易见，有 2 个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;接收一个 request 就开启一个 goroutine 处理，当 request 数量在短时间内暴增的话，光是 goroutine 的数量都足以让 server 崩溃。&lt;/li&gt;
+&lt;li&gt;每个 goroutine 都会与后端建立 TCP 连接，既耗费三次握手的时间，也会造成后端有大量 TCP 连接&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;所以，我们的目标是 &lt;del&gt;没有蛀牙&lt;/del&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;可以控制 goroutine 的总数，方法是事先创建好一定数量的 goroutine，加入到一个 Pool 中&lt;/li&gt;
+&lt;li&gt;goroutine 启动时与后端建立 TCP 长连接，之后的通信都基于这个连接&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;根据原文作者给出的方法，整体的架构如下：&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

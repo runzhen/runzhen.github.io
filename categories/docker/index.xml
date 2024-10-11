@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 18 Oct 2020 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
@@ -18,55 +18,110 @@
       <link>https://runzhen.github.io/posts/docker-privileged/</link>
       <pubDate>Sun, 18 Oct 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/docker-privileged/</guid>
-      <description>无论是 docker 启动一个 container 还是在 k8s 中 deploy 一个 Pod 都可以指定 privileged 参数，之前在 Pod 的 spec YAML file 也里曾经用过，但是一直没有仔细想过加上这个参数后有什么不一样，今天就来研究一下。
-首先来看一个最直观的对比，先运行一个没有 privileged 的容器：
-$ docker run --rm -it ubuntu:18.04 bash root@e6f5f42c5b7e:/# ls /dev/ console core fd full mqueue null ptmx pts root@e6f5f42c5b7e:/# fdisk -l 再来看看如果加上了 privileged 会有什么不一样：
-$ docker run --rm -it --privileged ubuntu:18.04 bash root@8e28f79eec9e:/# ls /dev/ tty11 tty2 tty28 tty36 tty44 tty52 tty60 ... ... root@8e28f79eec9e:/# fdisk -l Disk /dev/loop0: 97.</description>
+      <description>&lt;p&gt;无论是 docker 启动一个 container 还是在 k8s 中 deploy 一个 Pod 都可以指定 privileged 参数，之前在 Pod 的 spec YAML file 也里曾经用过，但是一直没有仔细想过加上这个参数后有什么不一样，今天就来研究一下。&lt;/p&gt;
+&lt;p&gt;首先来看一个最直观的对比，先运行一个没有 privileged 的容器：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ docker run --rm -it ubuntu:18.04 bash
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@e6f5f42c5b7e:/# ls /dev/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;console  core  fd  full  mqueue  null  ptmx  pts  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@e6f5f42c5b7e:/# fdisk -l
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;再来看看如果加上了 privileged 会有什么不一样：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ docker run --rm -it --privileged ubuntu:18.04 bash
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@8e28f79eec9e:/# ls /dev/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tty11  tty2   tty28  tty36  tty44  tty52  tty60  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@8e28f79eec9e:/# fdisk -l
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Disk /dev/loop0: 97.1 MiB, &lt;span class=&#34;m&#34;&gt;101777408&lt;/span&gt; bytes, &lt;span class=&#34;m&#34;&gt;198784&lt;/span&gt; sectors
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Units: sectors of &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; * &lt;span class=&#34;nv&#34;&gt;512&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Sector size &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;logical/physical&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;: &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes / &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;I/O size &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;: &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes / &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;不止能看到设备文件，甚至还能 mount 宿主机的文件系统，&lt;/p&gt;</description>
     </item>
     <item>
       <title>Orphan, Zombie and Docker</title>
       <link>https://runzhen.github.io/posts/orphan-zombie-and-docker/</link>
       <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/orphan-zombie-and-docker/</guid>
-      <description>孤儿进程的产生 孤儿进程： 父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。通常，孤儿进程将被进程号为1的进程(进程号为 1 的是 init 进程)所收养，并由该进程调用 wait 对孤儿进程收尸。
-#include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;errno.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; int main() { pid_t pid; pid = fork(); if (pid == 0) { printf(&amp;#34;I&amp;#39;m child process, pid:%d ppid:%d\n&amp;#34;, getpid(), getppid()); sleep(5); printf(&amp;#34;I&amp;#39;m child process, pid:%d ppid:%d\n&amp;#34;, getpid(), getppid()); } else { printf(&amp;#34;I&amp;#39;m father process, pid:%d ppid:%d\n&amp;#34;, getpid(), getppid()); sleep(1); printf(&amp;#34;father process is exited.\n&amp;#34;); } return 0; } 运行结果如下所示：
-I&amp;#39;m father process, pid:25354 ppid:13981I&amp;#39;m child process, pid:25355 ppid:25354father process is exited.</description>
+      <description>&lt;h2 id=&#34;孤儿进程的产生&#34;&gt;孤儿进程的产生&lt;/h2&gt;
+&lt;p&gt;孤儿进程： 父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。通常，孤儿进程将被进程号为1的进程(进程号为 1 的是 init 进程)所收养，并由该进程调用 wait 对孤儿进程收尸。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;I&amp;#39;m child process, pid:%d  ppid:%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getppid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;I&amp;#39;m child process, pid:%d  ppid:%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getppid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;I&amp;#39;m father process, pid:%d  ppid:%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getppid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;father process is  exited.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行结果如下所示：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;I&amp;#39;m father process, pid:25354  ppid:13981
+I&amp;#39;m child process, pid:25355  ppid:25354
+father process is  exited.
+
+I&amp;#39;m child process, pid:25355  ppid:1
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;一般来说，孤儿进程并没有什么危害，因为当孤儿进程结束的时候，init 进程会调用 wait 来处理。&lt;/p&gt;
+&lt;p&gt;但是当到了 Docker 环境下是不是还是这样呢？ 本文第三节再详细说明。&lt;/p&gt;</description>
     </item>
     <item>
       <title>容器化博客的编译环境</title>
       <link>https://runzhen.github.io/posts/dockerize-blog/</link>
       <pubDate>Wed, 16 May 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/dockerize-blog/</guid>
-      <description>前言 在上一篇博客 从 Wordpress 到 Jekyll 中，提到了把博客从原来的 Workpress 迁移到了 Jekyll, 开始用 Markdown 语法写博客正文，用 jekyll build 生成博客内容并部署到 Web 服务器。
-最近这两天在考虑把 &amp;ldquo;jekyll build&amp;rdquo; 这个过程容器化，达到传说中 一次部署到处运行 的终极目标。 :-)
-目标 废话不多说，开始折腾。 首先要制定一下具体的目标：
-jekyll build 是将 Markdown 语法写成的纯文本文件生成 html 文件，这也是我希望将它容器化的部分，因为我并不希望再次搭建 jekyll 的环境，只要有一个稳定能用的编译环境就可以了。
-生成了 html 文件以后，拷贝到 nginx 的目录下，这样就可以通过浏览器访问博客内容了，一般来说也可以将 nginx 运行在容器里面。
-但是我目前在学习 nginx 源码，希望时不时的能把我修改过的 nginx 部署到博客上，因此，不容器化 nginx 。
-步骤 首先去 docker hub 上找了一个可用的镜像 jekyll/jekyll，这个镜像已经部署好了一个基本的 jekyll 环境。
-docker pull jekyll/jekyll:latest
-然后启动这个镜像并进入到容器中。
-这一步如果非常清楚需要安装哪些软件的话可以用 Dockerfile 代替完成。我在这里直接进入到容器中是因为并不清楚需要安装哪些依赖软件，需要一步一步 debug。
-docker run --rm --volume=/LOCAL_DIR:/srv/jekyll -it jekyll/jekyll /bin/bash</description>
+      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;在上一篇博客 &lt;a href=&#34;posts/wordpress-to-jekyll/&#34;&gt;从 Wordpress 到 Jekyll&lt;/a&gt; 中，提到了把博客从原来的 Workpress 迁移到了 Jekyll, 开始用 Markdown 语法写博客正文，用 &lt;code&gt;jekyll build&lt;/code&gt; 生成博客内容并部署到 Web 服务器。&lt;/p&gt;
+&lt;p&gt;最近这两天在考虑把 &amp;ldquo;jekyll build&amp;rdquo; 这个过程容器化，达到传说中 &lt;strong&gt;一次部署到处运行&lt;/strong&gt; 的终极目标。 :-)&lt;/p&gt;
+&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
+&lt;p&gt;废话不多说，开始折腾。 首先要制定一下具体的目标：&lt;/p&gt;
+&lt;p&gt;jekyll build 是将 Markdown 语法写成的纯文本文件生成 html 文件，这也是我希望将它容器化的部分，因为我并不希望再次搭建 jekyll 的环境，只要有一个稳定能用的编译环境就可以了。&lt;/p&gt;
+&lt;p&gt;生成了 html 文件以后，拷贝到 nginx 的目录下，这样就可以通过浏览器访问博客内容了，一般来说也可以将 nginx 运行在容器里面。&lt;/p&gt;
+&lt;p&gt;但是我目前在学习 nginx 源码，希望时不时的能把我修改过的 nginx 部署到博客上，因此，&lt;code&gt;不容器化 nginx&lt;/code&gt; 。&lt;/p&gt;
+&lt;h2 id=&#34;步骤&#34;&gt;步骤&lt;/h2&gt;
+&lt;p&gt;首先去 &lt;a href=&#34;https://hub.docker.com/r/runzhen/&#34;&gt;docker hub&lt;/a&gt; 上找了一个可用的镜像 jekyll/jekyll，这个镜像已经部署好了一个基本的 jekyll 环境。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;docker pull jekyll/jekyll:latest&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;然后启动这个镜像并进入到容器中。&lt;/p&gt;
+&lt;p&gt;这一步如果非常清楚需要安装哪些软件的话可以用 Dockerfile 代替完成。我在这里直接进入到容器中是因为并不清楚需要安装哪些依赖软件，需要一步一步 debug。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;docker run --rm --volume=/LOCAL_DIR:/srv/jekyll -it jekyll/jekyll  /bin/bash&lt;/code&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>博客十年的变迁: 从 Wordpress 到 Jekyll</title>
       <link>https://runzhen.github.io/posts/wordpress-to-jekyll/</link>
       <pubDate>Sun, 04 Mar 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/wordpress-to-jekyll/</guid>
-      <description>前言 印象中我的第一个博客是在大约2007年左右创建的，那个时候是个人博客非常流行的几年，各个网站都推出了自己的博客服务，如今已经是2018年，转眼间10年过去了，个人博客不如以前那么盛行了，现在流行的是微博自媒体和微信公众号。但是作为一个程序员，总觉得还是自己的博客比较 “geek”，所以一直还在折腾。
-一开始的博客是建立在《电脑爱好者》网站推出的“博墅”服务上的，跟所有提供博客服务的网站一样，用户只要在网上点几下鼠标博客就建立好了。
-然后就折腾更加高级的：自己买域名，买主机空间，自己建数据库，自己安装博客程序（也就是当时最流行的博客程序 WordPress）。
-Wordpress 是我目前用的最长的博客系统了，从2009年左右一直到现在2018年，当初买的域名，买的主机空间，一直续费到现在，算一算有近10年了。
-现在，准备把 wordpress 博客停用了，换成更 “geek” 的方式，用 Markdown 语法写内容，用 Jekyll 程序生成博客。生成的博客可以托管在 github pages 上，也可以放在云主机上。
-博客源代码 博客的源码已经放在了我的 github 上，通过 github pages 服务这个博客已经可以通过浏览器访问了。
-但是还是想在自己的云主机上也创建一个（太喜欢折腾了&amp;hellip;），因此同样的一个博客内容在 xxx.github.io 上和云主机上各有一份，我的博客域名 blog.nlogn.cn 随意指向其中一个（看我心情咯）。
-Ubuntu 部署 Jekyll 1. 安装 ruby sudo apt install ruby-full ruby-bundler
-2. 安装 jekyll sudo gem install jekyll bundler minima
-3. git clone github.io 上博客源码。
-4. jekyll build 博客 jekyll build --destination /usr/local/nginx/html/myblog
-自动将生成的博客部署到指定目录下。至此，一个静态博客就部署完成了。
-云主机上我用的是自己编译的 nginx 服务器，通过设置 nginx 的配置文件，指定一个针对域名 &amp;ldquo;blog.</description>
+      <description>&lt;h3 id=&#34;前言&#34;&gt;前言&lt;/h3&gt;
+&lt;p&gt;印象中我的第一个博客是在大约2007年左右创建的，那个时候是个人博客非常流行的几年，各个网站都推出了自己的博客服务，如今已经是2018年，转眼间10年过去了，个人博客不如以前那么盛行了，现在流行的是微博自媒体和微信公众号。但是作为一个程序员，总觉得还是自己的博客比较 “geek”，所以一直还在折腾。&lt;/p&gt;
+&lt;p&gt;一开始的博客是建立在《电脑爱好者》网站推出的“博墅”服务上的，跟所有提供博客服务的网站一样，用户只要在网上点几下鼠标博客就建立好了。&lt;/p&gt;
+&lt;p&gt;然后就折腾更加高级的：自己买域名，买主机空间，自己建数据库，自己安装博客程序（也就是当时最流行的博客程序 WordPress）。&lt;/p&gt;
+&lt;p&gt;Wordpress 是我目前用的最长的博客系统了，从2009年左右一直到现在2018年，当初买的域名，买的主机空间，一直续费到现在，&lt;strong&gt;算一算有近10年了&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;现在，准备把 wordpress 博客停用了，换成更 “geek” 的方式，用 &lt;strong&gt;Markdown&lt;/strong&gt; 语法写内容，用 &lt;strong&gt;Jekyll&lt;/strong&gt; 程序生成博客。生成的博客可以托管在 github pages 上，也可以放在云主机上。&lt;/p&gt;
+&lt;h3 id=&#34;博客源代码&#34;&gt;博客源代码&lt;/h3&gt;
+&lt;p&gt;博客的源码已经放在了我的 github 上，通过 github pages 服务这个博客已经可以通过浏览器访问了。&lt;/p&gt;
+&lt;p&gt;但是还是想在自己的云主机上也创建一个（太喜欢折腾了&amp;hellip;），因此同样的一个博客内容在 xxx.github.io 上和云主机上各有一份，我的博客域名 	&lt;code&gt;blog.nlogn.cn&lt;/code&gt; 随意指向其中一个（看我心情咯）。&lt;/p&gt;
+&lt;h3 id=&#34;ubuntu-部署-jekyll&#34;&gt;Ubuntu 部署 Jekyll&lt;/h3&gt;
+&lt;p&gt;1.  安装 ruby &lt;br&gt;
+&lt;code&gt;sudo apt install ruby-full ruby-bundler&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;2.  安装 jekyll  &lt;br&gt;
+&lt;code&gt;sudo gem install jekyll bundler minima&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;3.  git clone github.io 上博客源码。&lt;/p&gt;
+&lt;p&gt;4.  jekyll build 博客   &lt;br&gt;
+&lt;code&gt;jekyll build --destination /usr/local/nginx/html/myblog&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;自动将生成的博客部署到指定目录下。至此，一个静态博客就部署完成了。&lt;/p&gt;
+&lt;p&gt;云主机上我用的是自己编译的 nginx 服务器，通过设置 nginx 的配置文件，指定一个针对域名 &amp;ldquo;blog.nlogn.cn&amp;rdquo; 的虚拟主机，并把博客网站根目录指定为 &amp;ldquo;html/myblog&amp;rdquo; 就 OK 了。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Fri, 02 Aug 2019 00:33:33 -0700</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/share-memory/index.xml" rel="self" type="application/rss+xml" />
@@ -18,15 +18,29 @@
       <link>https://runzhen.github.io/posts/share-memory-golang/</link>
       <pubDate>Fri, 02 Aug 2019 00:33:33 -0700</pubDate>
       <guid>https://runzhen.github.io/posts/share-memory-golang/</guid>
-      <description>前言 进程间通信的方式有很多种，如果两个进程分别在不同的机器上，那么使用 socket 通信；如果在同一台机器上，共享内存机制是一种快速高效的方式。
-本文实现一个 go 语言二进制程序和 C 语言二进制程序通过共享内存交换数据。
-提到共享内存主要有两种：
-System V 标准的 shmget/shmdt 等接口 POSIX 标准的 shm_open 等接口 另外 Linux 下 mmap() 匿名映射也是最常用的进程间共享内存方法。
-创建了共享内存以后，一般会显示在系统的 /dev/shm 目录下。Linux 默认 /dev/shm 为实际物理内存的1/2, 比如我的机器上物理内存为 16G，运行 df 命令后可以看到 /dev/shm 的大小为 7.8G 。
-$ df -h Filesystem Size Used Avail Use% Mounted on tmpfs 1.6G 3.2M 1.6G 1% /run tmpfs 7.8G 4.0K 7.8G 1% /dev/shm tmpfs, ramfs 和 ramdisk
-tmpfs是一个虚拟内存文件系统，在Linux内核中，虚拟内存资源由物理内存(RAM)和交换分区组成，Tmpfs可以使用物理内存，也可以使用交换分区。
-ramdisk 是一个块设备，只不过它是存在于内存上的。
-ramfs 也是文件系统，不过已经被 tmpfs 替代了。</description>
+      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+&lt;p&gt;进程间通信的方式有很多种，如果两个进程分别在不同的机器上，那么使用 socket 通信；如果在同一台机器上，共享内存机制是一种快速高效的方式。&lt;/p&gt;
+&lt;p&gt;本文实现一个 go 语言二进制程序和 C 语言二进制程序通过共享内存交换数据。&lt;/p&gt;
+&lt;p&gt;提到共享内存主要有两种：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;System V 标准的 shmget/shmdt 等接口&lt;/li&gt;
+&lt;li&gt;POSIX 标准的 shm_open 等接口&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;另外 Linux 下 mmap() 匿名映射也是最常用的进程间共享内存方法。&lt;/p&gt;
+&lt;p&gt;创建了共享内存以后，一般会显示在系统的 /dev/shm 目录下。Linux 默认 /dev/shm 为实际物理内存的1/2, 比如我的机器上物理内存为 16G，运行 df 命令后可以看到 /dev/shm 的大小为 7.8G 。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ df -h
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Filesystem      Size  Used Avail Use% Mounted on
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tmpfs           1.6G  3.2M  1.6G   1% /run
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tmpfs           7.8G  4.0K  7.8G   1% /dev/shm
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;tmpfs, ramfs 和 ramdisk&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;tmpfs是一个虚拟内存文件系统，在Linux内核中，虚拟内存资源由物理内存(RAM)和交换分区组成，Tmpfs可以使用物理内存，也可以使用交换分区。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;ramdisk 是一个块设备，只不过它是存在于内存上的。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;ramfs 也是文件系统，不过已经被 tmpfs 替代了。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

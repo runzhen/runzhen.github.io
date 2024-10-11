@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Sat, 05 Nov 2022 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/hackintosh/index.xml" rel="self" type="application/rss+xml" />
@@ -18,14 +18,31 @@
       <link>https://runzhen.github.io/posts/hackintosh/</link>
       <pubDate>Sat, 05 Nov 2022 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/hackintosh/</guid>
-      <description>主机配置
-CPU：i7-9700k CPU 集显：Intel UHD 630 主板：MSI B365M Pro-VDH 黑苹果镜像来源于黑果小兵的 Monterey 12.6，下载链接 , 安装的过程就不赘述了，网上有很多资料。
-安装之后最大的问题就是显卡只显示 14 MB 显存，意思就是 MacOS 没有正确的驱动 CPU 的集成显卡，需要改 config.plist 文件。
-以上都是安装黑苹果大多数人都会遇到的问题，网上也有很多教程教你把 AAPL,ig-platform-id 的值改成 07009B3E，以及其他的一系列参数等等，但是问题是按照他们的参数设置后，显卡依然无法正常工作。
-尝试了很多参数，遇到的问题主要是以下两种
-显存依然是 14 MB，但其他正常。但是因为无法驱动导致显示性能所限，无法打开消耗GPU性能的应用，比如 Docker 无法启动，因为 Mac 版的 Docker 初试启动需要开启一个桌面，无法打开。VS Code 也无法使用。 Goland 可以使用。 显存显示正常 1560 MB，但是屏幕的色彩全变了，蓝色显示为橘黄，红色显示为蓝色。 这是困扰我最大的问题，尝试了几天都没有找到解决办法。 最后，通过这个 Youtube 视频介绍的方法 https://www.youtube.com/watch?v=4EU8oT0-Ea8 居然试验成功了！！
-为什么成功了呢？ 我只做了以下几个操作，可能是其中一个，或者全部组合起了作用。
-在 ACPI -&amp;gt; Patch 里面添加了 2 项。 NVRAM “7C436110” 那一项的 boot-args 参数里面加了 -cdfon 在 PlatformInfo SMBIOS 里面选择了 iMac19,1 注意：</description>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2022/hackintosh1.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;主机配置&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CPU：i7-9700k&lt;/li&gt;
+&lt;li&gt;CPU 集显：Intel UHD 630&lt;/li&gt;
+&lt;li&gt;主板：MSI B365M Pro-VDH&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;黑苹果镜像来源于黑果小兵的 Monterey 12.6，&lt;a href=&#34;https://mp.weixin.qq.com/s/TvdwuTv4-joprP1Y56WDPQ&#34;&gt;下载链接&lt;/a&gt; , 安装的过程就不赘述了，网上有很多资料。&lt;/p&gt;
+&lt;p&gt;安装之后最大的问题就是显卡只显示 14 MB 显存，意思就是 MacOS 没有正确的驱动 CPU 的集成显卡，需要改 config.plist 文件。&lt;/p&gt;
+&lt;p&gt;以上都是安装黑苹果大多数人都会遇到的问题，网上也有很多教程教你把 &lt;code&gt;AAPL,ig-platform-id&lt;/code&gt; 的值改成 &lt;code&gt;07009B3E&lt;/code&gt;，以及其他的一系列参数等等，但是问题是按照他们的参数设置后，显卡依然无法正常工作。&lt;/p&gt;
+&lt;p&gt;尝试了很多参数，遇到的问题主要是以下两种&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;显存依然是 14 MB，但其他正常。但是因为无法驱动导致显示性能所限，无法打开消耗GPU性能的应用，比如 Docker 无法启动，因为 Mac 版的 Docker 初试启动需要开启一个桌面，无法打开。VS Code 也无法使用。 Goland 可以使用。&lt;/li&gt;
+&lt;li&gt;显存显示正常 1560 MB，但是屏幕的色彩全变了，蓝色显示为橘黄，红色显示为蓝色。 这是困扰我最大的问题，尝试了几天都没有找到解决办法。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;最后，通过这个 Youtube 视频介绍的方法 &lt;a href=&#34;https://www.youtube.com/watch?v=4EU8oT0-Ea8&#34;&gt;https://www.youtube.com/watch?v=4EU8oT0-Ea8&lt;/a&gt; 居然试验成功了！！&lt;/p&gt;
+&lt;p&gt;为什么成功了呢？ 我只做了以下几个操作，可能是其中一个，或者全部组合起了作用。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在 ACPI -&amp;gt; Patch 里面添加了 2 项。&lt;/li&gt;
+&lt;li&gt;NVRAM “7C436110” 那一项的 &lt;code&gt;boot-args&lt;/code&gt; 参数里面加了 &lt;code&gt;-cdfon&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;在 PlatformInfo SMBIOS 里面选择了 &lt;code&gt;iMac19,1&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2022/hackintosh2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

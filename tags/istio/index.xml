@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.125.5</generator>
+    <generator>Hugo -- 0.135.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 15 Mar 2020 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/istio/index.xml" rel="self" type="application/rss+xml" />
@@ -18,12 +18,16 @@
       <link>https://runzhen.github.io/posts/use-istio/</link>
       <pubDate>Sun, 15 Mar 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/use-istio/</guid>
-      <description>概念 首先介绍几个概念，Ingress 指的是进入到 k8s 集群中的 traffic，比如一个 client 发起的 HTTP 请求，经过层层网络最终到达了 k8s cluster 的外部，那么让不让它进入到 cluster 内部就是 ingress controller 做的事。
-Kubernetes 原生提供了自己的 Ingress Controller，此外还有很多第三方的 Ingress Controller，istio 就是其中之一。需要注意的是，本文所有部署都是基于 GKE，其他的云平台可能略有不同。
-在 k8s 中安装了 istio 之后，就可以用 istio 来控制所有进入 cluster 的流量。如何安装 istio 不在本文的范围，读者可以参考 istio 官方文档。
-安装 istio 完成之后，kubectl get namespace 命令可以看到有个名叫 istio-system 的空间，所有 istio 组件的 pod 都在这个空间中。
-然后用如下命令查看 istio ingressgateway
-$ kubectl -n istio-system get svc NAME TYPE CLUSTER-IP EXTERNAL-IP PORT istio-ingressgateway LoadBalancer 10.0.23.180 35.222.xxx.xxx 15020:32011/TCP,80:30444/TCP 我们会看到这个名叫 istio-ingressgateway 的 LoadBalancer 它有公网 IP 地址 35.</description>
+      <description>&lt;h2 id=&#34;概念&#34;&gt;概念&lt;/h2&gt;
+&lt;p&gt;首先介绍几个概念，Ingress 指的是进入到 k8s 集群中的 traffic，比如一个 client 发起的 HTTP 请求，经过层层网络最终到达了 k8s cluster 的外部，那么让不让它进入到 cluster 内部就是 ingress controller 做的事。&lt;/p&gt;
+&lt;p&gt;Kubernetes 原生提供了自己的 Ingress Controller，此外还有很多第三方的 Ingress Controller，istio 就是其中之一。需要注意的是，本文所有部署都是基于 GKE，其他的云平台可能略有不同。&lt;/p&gt;
+&lt;p&gt;在 k8s 中安装了 istio 之后，就可以用 istio 来控制所有进入 cluster 的流量。如何安装 istio 不在本文的范围，读者可以参考 istio &lt;a href=&#34;https://istio.io/docs/setup/install/&#34;&gt;官方文档&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;安装 istio 完成之后，&lt;code&gt;kubectl get namespace&lt;/code&gt; 命令可以看到有个名叫 &lt;code&gt;istio-system&lt;/code&gt; 的空间，所有 istio 组件的 pod 都在这个空间中。&lt;/p&gt;
+&lt;p&gt;然后用如下命令查看 istio ingressgateway&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ kubectl -n istio-system get svc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NAME                   TYPE           CLUSTER-IP    EXTERNAL-IP      PORT   
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;istio-ingressgateway   LoadBalancer   10.0.23.180   35.222.xxx.xxx   15020:32011/TCP,80:30444/TCP
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们会看到这个名叫 &lt;code&gt;istio-ingressgateway&lt;/code&gt; 的 LoadBalancer 它有公网 IP 地址 35.222.xxx.xxx，也就是说任何人都可以 ping 这个地址。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
