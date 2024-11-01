@@ -32,8 +32,8 @@
 &lt;p&gt;回忆一下 Go 并发的 GPM 模型：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;G&lt;/code&gt;代表 goroutine，即用户创建的 goroutines&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;P&lt;/code&gt;代表 Logical Processor，是类似于 CPU 核心的概念，其用来控制并发的 M 数量&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;M&lt;/code&gt;是操作系统线程。在绝大多数时候，&lt;code&gt;P&lt;/code&gt;的数量和&lt;code&gt;M&lt;/code&gt;的数量是相等的。每创建一个&lt;code&gt;P&lt;/code&gt;, 就会创建一个对应的&lt;code&gt;M&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;P&lt;/code&gt;代表逻辑处理器 Logical Processor，默认情况下 P 的数量等于 Host 上 CPU core 的个数，&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;M&lt;/code&gt;是操作系统线程。M 必须绑定到一个 P 才能运行。M P 绑定后从队列中找一个 G，你创建的 goroutine 就执行了。M 的个数和 P 的个数不一定一样多（比如休眠的 M）。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;而 go 的 runtime GOMAXPROCS 代表的就是 P 的数量，其底层就是 runtime 直接调用 Linux 系统调用 &lt;code&gt;sched_getaffinity()&lt;/code&gt;&lt;/p&gt;</description>
     </item>
