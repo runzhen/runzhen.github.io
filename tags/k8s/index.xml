@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>K8s on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/k8s/</link>
+    <link>https://runzhen.github.io/tags/k8s/</link>
     <description>Recent content in K8s on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Wed, 27 Apr 2022 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/k8s/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/k8s/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用 Kubernetes 遇到的一些问题和解决思路</title>
-      <link>http://localhost:1313/posts/k8s-debug-stories/</link>
+      <link>https://runzhen.github.io/posts/k8s-debug-stories/</link>
       <pubDate>Wed, 27 Apr 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/k8s-debug-stories/</guid>
+      <guid>https://runzhen.github.io/posts/k8s-debug-stories/</guid>
       <description>&lt;p&gt;update on 2022-05-21&lt;/p&gt;
 &lt;p&gt;今天在 homelab 的 k8s 集群上发生了同样的情况，我想删除一个 namespace，再确认已经把 namespace 里面所有其他资源都删除的情况下，namespace 始终是 Terminating, 找了很多资料，方法也&lt;a href=&#34;https://github.com/kubernetes/kubernetes/issues/60807#issuecomment-524772920&#34;&gt;众说纷纭&lt;/a&gt; 。&lt;/p&gt;
 &lt;p&gt;最后通过看 &lt;code&gt;api-server&lt;/code&gt; log 发现原来又是 Unable to authenticate the request due to an error: x509: certificate has expired or is not yet valid&lt;/p&gt;
@@ -31,9 +31,9 @@
     </item>
     <item>
       <title>使用 nsenter 从 k8s Pod 逃逸到 Host</title>
-      <link>http://localhost:1313/posts/nsenter-escape-from-pod-to-host/</link>
+      <link>https://runzhen.github.io/posts/nsenter-escape-from-pod-to-host/</link>
       <pubDate>Sun, 03 Apr 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/nsenter-escape-from-pod-to-host/</guid>
+      <guid>https://runzhen.github.io/posts/nsenter-escape-from-pod-to-host/</guid>
       <description>&lt;p&gt;本文是读完 &lt;a href=&#34;https://isovalent.com/blog/post/2021-11-container-escape&#34;&gt;Detecting a Container Escape with Cilium and eBPF&lt;/a&gt; 和 &lt;a href=&#34;https://atbug.com/enhance-kubernetes-network-security-with-cilium/&#34;&gt;使用 Cilium 增强 Kubernetes 网络安全&lt;/a&gt; 的一个简单总结。&lt;/p&gt;
 &lt;h2 id=&#34;如何从-pod-逃逸到-host&#34;&gt;如何从 Pod 逃逸到 Host&lt;/h2&gt;
 &lt;p&gt;通常为了安全起见，生产环境的 docker image 都要求不使用 root，一般都是在 Dockerfile 中指定 &lt;code&gt;USER xxx&lt;/code&gt;，这样启动的 container/pod 是使用非特权的 user，这样的 user 是没法用 sudo 安装软件的。&lt;/p&gt;
@@ -59,9 +59,9 @@
     </item>
     <item>
       <title>k8s 切换 namespace 以及命令补全</title>
-      <link>http://localhost:1313/posts/k8s-set-namespace-tool/</link>
+      <link>https://runzhen.github.io/posts/k8s-set-namespace-tool/</link>
       <pubDate>Sun, 01 Aug 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/k8s-set-namespace-tool/</guid>
+      <guid>https://runzhen.github.io/posts/k8s-set-namespace-tool/</guid>
       <description>&lt;p&gt;本文可以学到&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;code&gt;.kube/config&lt;/code&gt; 文件中有哪些内容&lt;/li&gt;
@@ -110,9 +110,9 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>如何实现一个 kubectl-debug</title>
-      <link>http://localhost:1313/posts/how-to-implement-kubectl-debug/</link>
+      <link>https://runzhen.github.io/posts/how-to-implement-kubectl-debug/</link>
       <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/how-to-implement-kubectl-debug/</guid>
+      <guid>https://runzhen.github.io/posts/how-to-implement-kubectl-debug/</guid>
       <description>&lt;ol start=&#34;0&#34;&gt;
 &lt;li&gt;借助 k8s &lt;code&gt;client-go&lt;/code&gt; 连接 API Server，并进行简单的 list 操作，创建 deployment&lt;/li&gt;
 &lt;li&gt;如何在 pod 内创建 container&lt;/li&gt;
@@ -129,9 +129,9 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>Kubernetes Scheduler 设计与实现 (一)</title>
-      <link>http://localhost:1313/posts/k8s-scheduler-beginning/</link>
+      <link>https://runzhen.github.io/posts/k8s-scheduler-beginning/</link>
       <pubDate>Sat, 17 Apr 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/k8s-scheduler-beginning/</guid>
+      <guid>https://runzhen.github.io/posts/k8s-scheduler-beginning/</guid>
       <description>&lt;p&gt;Scheduler 的工作就是决定让一个 pod 在哪个 node 上运行。 scheduler 从 API Server 获得 pod 和 node 的信息，然后把它的决策信息写会 API Server, 它自己不参与具体的调度，而是运行在每个 node 上的 kubelet 主动获取更新，然后启动 pod。&lt;/p&gt;
 &lt;p&gt;scheduler 的入口函数在 &lt;code&gt;cmd/kube-schduler/server.go&lt;/code&gt;，但实际工作都是在 &lt;code&gt;pkg/scheduler/scheduler.go&lt;/code&gt; 里面的 Run 函数开始的。&lt;/p&gt;
 &lt;p&gt;打开 scheduler.go 文件找到结构体 &lt;code&gt;Scheduler&lt;/code&gt; ，会发现它有很多私有函数，但只有唯一一个公开的 &lt;code&gt;Run()&lt;/code&gt; 函数。&lt;/p&gt;
@@ -158,9 +158,9 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>Kubernetes 中的 DNS </title>
-      <link>http://localhost:1313/posts/k8s-kubedns-coredns/</link>
+      <link>https://runzhen.github.io/posts/k8s-kubedns-coredns/</link>
       <pubDate>Wed, 10 Mar 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/k8s-kubedns-coredns/</guid>
+      <guid>https://runzhen.github.io/posts/k8s-kubedns-coredns/</guid>
       <description>&lt;p&gt;该文件指定如何解析主机名&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cat  /etc/host.conf
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;order hosts, &lt;span class=&#34;nb&#34;&gt;bind&lt;/span&gt;
@@ -173,9 +173,9 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>Kubernetes 的 Volume 和 StorageClass</title>
-      <link>http://localhost:1313/posts/kubernetes-volume-pv-pvc/</link>
+      <link>https://runzhen.github.io/posts/kubernetes-volume-pv-pvc/</link>
       <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/kubernetes-volume-pv-pvc/</guid>
+      <guid>https://runzhen.github.io/posts/kubernetes-volume-pv-pvc/</guid>
       <description>&lt;p&gt;Kubernetes 的 Pod 可以 mount 很多种 Volume，常见的 volume 有&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;emptyDir&lt;/li&gt;
@@ -196,9 +196,9 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>Kubernetes Headless Service</title>
-      <link>http://localhost:1313/posts/kubernetes-headless-service/</link>
+      <link>https://runzhen.github.io/posts/kubernetes-headless-service/</link>
       <pubDate>Sun, 20 Sep 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/kubernetes-headless-service/</guid>
+      <guid>https://runzhen.github.io/posts/kubernetes-headless-service/</guid>
       <description>&lt;p&gt;问题起源于我用 envoy 对 grpc 做 Layer 7 负载均衡的时候，发现 traffic 永远被转发到了一个特定的 Pod，显然是配置出错了。&lt;/p&gt;
 &lt;p&gt;环境如下：&lt;/p&gt;
 &lt;p&gt;同一个 namespace 下部署了 2 个 grpc server，一个 envoy&lt;/p&gt;
@@ -229,9 +229,9 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>Kubernetes Pod 中的 Pause 容器</title>
-      <link>http://localhost:1313/posts/k8s-pod-pause-container/</link>
+      <link>https://runzhen.github.io/posts/k8s-pod-pause-container/</link>
       <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/k8s-pod-pause-container/</guid>
+      <guid>https://runzhen.github.io/posts/k8s-pod-pause-container/</guid>
       <description>&lt;p&gt;在一个运行 kubernetes 的节点上，我们能看到很多名叫 “pause” 的 container。比如&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ sudo docker ps &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep pause
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
@@ -279,9 +279,9 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>Kubernetes Dashboard 添加 Auth</title>
-      <link>http://localhost:1313/posts/k8s-dashboard-auth/</link>
+      <link>https://runzhen.github.io/posts/k8s-dashboard-auth/</link>
       <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/k8s-dashboard-auth/</guid>
+      <guid>https://runzhen.github.io/posts/k8s-dashboard-auth/</guid>
       <description>&lt;p&gt;组里的 k8s cluster Dashboard 一直没有设置登录，导致所有可以 ping IP 的人都可以登录管理界面，这样显然是不合理的，应该要设置几个不同权限的账户，并且开启 Dashboard 的 Basic Auth。&lt;/p&gt;
 &lt;p&gt;关于开启 Dashboard Basic Auth 网上有不少资料，但是在实际操作中还是遇到几个莫名其妙的坑。&lt;/p&gt;
 &lt;h3 id=&#34;创建用户文件&#34;&gt;创建用户文件&lt;/h3&gt;
@@ -305,9 +305,9 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>在虚拟机中使用 GPU 计算</title>
-      <link>http://localhost:1313/posts/nvidia-gpu-pass-through/</link>
+      <link>https://runzhen.github.io/posts/nvidia-gpu-pass-through/</link>
       <pubDate>Sat, 13 Jun 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/nvidia-gpu-pass-through/</guid>
+      <guid>https://runzhen.github.io/posts/nvidia-gpu-pass-through/</guid>
       <description>&lt;p&gt;本文介绍如何在 Linux 虚拟机中直接使用 GPU 做科学计算，要达到这个目的，需要满足下面几个条件：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;物理主机使用 VMWare ESXi 作为虚拟化的 VMM，并且版本最好大于等于 6.5&lt;/li&gt;
@@ -316,14 +316,14 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
 &lt;/ol&gt;
 &lt;h2 id=&#34;esxi-开启显卡直通&#34;&gt;ESXi 开启显卡直通&lt;/h2&gt;
 &lt;p&gt;假设已经安装好了 ESXi，通过 WebUI 进入 Host 的 Manage 界面，点击 Hardware，如图&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2020/esxi1.png&#34; alt=&#34;esxi1&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/esxi1.png&#34; alt=&#34;esxi1&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;把 nVidia 开头的这几个全部选中，然后 “Active”， 表示开启 PCI 设备的直通 (passthrough)。&lt;/p&gt;
 &lt;p&gt;重启物理主机。&lt;/p&gt;
 &lt;h2 id=&#34;配置虚拟机&#34;&gt;配置虚拟机&lt;/h2&gt;
 &lt;p&gt;创建一个新虚拟机，或者修改已有的虚拟机，&lt;/p&gt;
 &lt;p&gt;点击 Edit，&lt;code&gt;VM Options&lt;/code&gt; ，在 &lt;code&gt;Advanced&lt;/code&gt; 里面点击 &lt;code&gt;Edit configuration&lt;/code&gt; 。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2020/esxi2.png&#34; alt=&#34;esxi2&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/esxi2.png&#34; alt=&#34;esxi2&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;增加一条配置参数 &lt;code&gt;hypervisor.cpuid.v0&lt;/code&gt;, 对应的值为 &lt;code&gt;FALSE&lt;/code&gt;，这一步的目的是让驱动把虚拟机当做物理机来处理。&lt;/p&gt;
 &lt;p&gt;另一需要修改的地方让虚拟机硬件配置内存大小下面勾选 “Reserve all guest memory (All locked)”，让虚拟机启动时一次性获取物理主机内存，而不是按需获取。&lt;/p&gt;
@@ -333,9 +333,9 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>从 Kubernetes 中访问 Memorystore</title>
-      <link>http://localhost:1313/posts/gke-access-memorystore/</link>
+      <link>https://runzhen.github.io/posts/gke-access-memorystore/</link>
       <pubDate>Sun, 25 Aug 2019 14:49:42 -0700</pubDate>
-      <guid>http://localhost:1313/posts/gke-access-memorystore/</guid>
+      <guid>https://runzhen.github.io/posts/gke-access-memorystore/</guid>
       <description>&lt;p&gt;Memorystore 是 Google Cloud 在 2018 年推出的托管 Redis 服务，让用户一键生成 Redis 实例，必要的时候再一键 scale，省去了维护 Redis 的烦恼。&lt;/p&gt;
 &lt;p&gt;本文在 k8s 中部署一个简单的小程序访问 Memorystore 数据库，获取 counter 值，并开启一个 http server 对外提供这个值。&lt;/p&gt;
 &lt;h2 id=&#34;准备&#34;&gt;准备&lt;/h2&gt;
@@ -348,16 +348,16 @@ ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便
     </item>
     <item>
       <title>minikube, 单机版 kubernetes</title>
-      <link>http://localhost:1313/posts/ubuntu-install-k8s/</link>
+      <link>https://runzhen.github.io/posts/ubuntu-install-k8s/</link>
       <pubDate>Tue, 13 Aug 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/ubuntu-install-k8s/</guid>
+      <guid>https://runzhen.github.io/posts/ubuntu-install-k8s/</guid>
       <description>&lt;p&gt;本来想在我的 linux 主机上创建 3 个虚拟机，然后手工搭建一个拥有 3 个节点的 k8s 集群。&lt;/p&gt;
 &lt;p&gt;但是翻了翻网上的各种教程，发现每个教程都是巨复杂，给我一种 “即使我跟着教程千辛万苦敲完所有命令，也不一定能运行” 的感觉。最后，我发现了 minikube 这个东西，可以方便的搭建一个单机版 k8s。&lt;/p&gt;
 &lt;p&gt;麻雀虽小五脏俱全，即便是这样一个简单的 k8s，目前也足够我学习一些基本知识了。&lt;/p&gt;
 &lt;p&gt;本文记录一下安装 minikube 的具体步骤，并在 k8s 中部署一个简单的服务。&lt;/p&gt;
 &lt;h2 id=&#34;安装-minikube&#34;&gt;安装 minikube&lt;/h2&gt;
 &lt;p&gt;开局一张图，先展示一下 minikube 的整个架构。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2019/k8s.jpeg&#34; alt=&#34;zone1&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2019/k8s.jpeg&#34; alt=&#34;zone1&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;首先是准备工作，更新系统，安装必要组件。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt-get update

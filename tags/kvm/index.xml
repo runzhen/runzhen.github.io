@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Kvm on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/kvm/</link>
+    <link>https://runzhen.github.io/tags/kvm/</link>
     <description>Recent content in Kvm on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sat, 15 Dec 2012 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/kvm/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/kvm/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>KVM 入门 (一) </title>
-      <link>http://localhost:1313/posts/kvm-basic/</link>
+      <link>https://runzhen.github.io/posts/kvm-basic/</link>
       <pubDate>Sat, 15 Dec 2012 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/kvm-basic/</guid>
+      <guid>https://runzhen.github.io/posts/kvm-basic/</guid>
       <description>&lt;p&gt;最近用一些零碎的时间学习KVM，算算大概也快有一个月了吧，进度还是很缓慢的，感觉该写一些类似读书笔记的东西了。欢迎大家来讨论。&lt;/p&gt;
 &lt;p&gt;KVM 即 Kernel Based Virtual Machine, 是一个内核模块，使用它需要CPU支持虚拟化。加载KVM模块后，系统中会有一个 /dev/kvm 设备，这个设备提供 ioctl 和 mmap操作。&lt;/p&gt;
 &lt;p&gt;目前，KVM还必须和修改过的Qemu配合起来使用（这样说是不准确的，因为已经有一个叫 native kvm tool的东东了），KVM 使用Qemu做I/O模拟，虽然Qemu也提供CPU的模拟，但是KVM没有使用，也许这正是KVM+Qemu比单纯用Qemu进行虚拟化性能高的原因吧。&lt;/p&gt;

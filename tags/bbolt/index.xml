@@ -2,26 +2,26 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Bbolt on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/bbolt/</link>
+    <link>https://runzhen.github.io/tags/bbolt/</link>
     <description>Recent content in Bbolt on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Wed, 07 Jul 2021 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/bbolt/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/bbolt/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>bbolt 的设计与实现</title>
-      <link>http://localhost:1313/posts/bbolt/</link>
+      <link>https://runzhen.github.io/posts/bbolt/</link>
       <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/bbolt/</guid>
+      <guid>https://runzhen.github.io/posts/bbolt/</guid>
       <description>&lt;p&gt;关于 bbolt 的分析，网上已经有很多资料，本文只是对资料和源码的整理，主要是自己的学习笔记，文章最后的参考资料中有更多链接。&lt;/p&gt;
 &lt;h2 id=&#34;bbolt-db-整体组织&#34;&gt;bbolt DB 整体组织&lt;/h2&gt;
 &lt;p&gt;首先，bbolt 的一个文件是一个 DB，DB 中可以有多个 table， 每一个 table 是一个 B+ 树。而这个 table 在源码中就是 bucket， 整个 DB 就是一个大 bucket，它的子节点有多个 bucket。整体结构如图所示：&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2021/bbolt/Untitled.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2021/bbolt/Untitled.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;顶层 B+ 树，比较特殊，称为 root bucket，其所有叶子节点保存的都是子 bucket B+ 树根的 page id&lt;/li&gt;

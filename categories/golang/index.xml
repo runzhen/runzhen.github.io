@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Golang on Mind in the Wind</title>
-    <link>http://localhost:1313/categories/golang/</link>
+    <link>https://runzhen.github.io/categories/golang/</link>
     <description>Recent content in Golang on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Fri, 29 Jul 2022 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/categories/golang/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go 中 for range 和 slice 的坑</title>
-      <link>http://localhost:1313/posts/go-for-range-and-slice/</link>
+      <link>https://runzhen.github.io/posts/go-for-range-and-slice/</link>
       <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/go-for-range-and-slice/</guid>
+      <guid>https://runzhen.github.io/posts/go-for-range-and-slice/</guid>
       <description>&lt;h1 id=&#34;for-range-的实现&#34;&gt;for range 的实现&lt;/h1&gt;
 &lt;p&gt;下面这段代码会永无止境的循环吗 ？&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;package&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;main&lt;/span&gt;
@@ -75,9 +75,9 @@
     </item>
     <item>
       <title>记一次 go-redis 的 debug 过程</title>
-      <link>http://localhost:1313/posts/go-redis-latency-debug/</link>
+      <link>https://runzhen.github.io/posts/go-redis-latency-debug/</link>
       <pubDate>Sun, 01 May 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/go-redis-latency-debug/</guid>
+      <guid>https://runzhen.github.io/posts/go-redis-latency-debug/</guid>
       <description>&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
 &lt;p&gt;本文背景是这样的: 有一个线上服务使用了 &lt;code&gt;go-redis&lt;/code&gt; 库连接 redis，目前 QPS 也不是很高，大约每秒一次的样子，但是通过 log 发现每次 redis 操作花费的时间如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;redis call cost: &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; ms
@@ -101,10 +101,10 @@
     </item>
     <item>
       <title>gRPC client 如何实现 TCP 重连</title>
-      <link>http://localhost:1313/posts/how-does-grpc-client-reconnect-tcp/</link>
+      <link>https://runzhen.github.io/posts/how-does-grpc-client-reconnect-tcp/</link>
       <pubDate>Mon, 04 Apr 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/how-does-grpc-client-reconnect-tcp/</guid>
-      <description>&lt;p&gt;之前写过一篇 &lt;a href=&#34;http://localhost:1313/posts/grpc-client-tcp-connection/&#34;&gt;gRPC-go 建立 TCP 连接的过程&lt;/a&gt; 博客，主要研究了 client 程序启动后，如何与 server 建立 TCP 连接。&lt;/p&gt;
+      <guid>https://runzhen.github.io/posts/how-does-grpc-client-reconnect-tcp/</guid>
+      <description>&lt;p&gt;之前写过一篇 &lt;a href=&#34;https://runzhen.github.io/posts/grpc-client-tcp-connection/&#34;&gt;gRPC-go 建立 TCP 连接的过程&lt;/a&gt; 博客，主要研究了 client 程序启动后，如何与 server 建立 TCP 连接。&lt;/p&gt;
 &lt;p&gt;今天，在思考 &lt;code&gt;redis-go&lt;/code&gt; 的连接池实现的时候，突然想到：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;当 gRPC 的 TCP 连接断开后，能自动重连吗？&lt;/li&gt;
@@ -138,9 +138,9 @@
     </item>
     <item>
       <title>Gin HTTP 框架学习笔记</title>
-      <link>http://localhost:1313/posts/gin-framework/</link>
+      <link>https://runzhen.github.io/posts/gin-framework/</link>
       <pubDate>Fri, 03 Sep 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/gin-framework/</guid>
+      <guid>https://runzhen.github.io/posts/gin-framework/</guid>
       <description>&lt;p&gt;最近要做一个 REST API server，在网上搜索了一遍以后，发现常用的是 Gin 和 Echo，并且很多人都说 golang 本身提供的 http server 已经足够强大，gin 和 echo 也只是在外包了一层。&lt;/p&gt;
 &lt;p&gt;我看 Gin 的源码行数比 Echo 少很多，而且测试覆盖率也高很多，因此决定学习一下 Gin，本文目标有以下这些&lt;/p&gt;
 &lt;ol&gt;
@@ -161,9 +161,9 @@
     </item>
     <item>
       <title>错误使用 time.After() 导致内存泄漏</title>
-      <link>http://localhost:1313/posts/golang-timer-leak/</link>
+      <link>https://runzhen.github.io/posts/golang-timer-leak/</link>
       <pubDate>Sun, 08 Aug 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/golang-timer-leak/</guid>
+      <guid>https://runzhen.github.io/posts/golang-timer-leak/</guid>
       <description>&lt;p&gt;今天看到了一篇有关 timer 泄露的文章，觉得很有意思，于是把它记录下来。&lt;/p&gt;
 &lt;h3 id=&#34;一般没有问题的写法&#34;&gt;一般没有问题的写法&lt;/h3&gt;
 &lt;p&gt;说道 time.After() 会导致内存泄露，很多人一定会觉得奇怪，因为代码里经常会用到它，也没见有内存泄漏啊？&lt;/p&gt;
@@ -241,9 +241,9 @@
     </item>
     <item>
       <title>如何设计一个连接池</title>
-      <link>http://localhost:1313/posts/go-redis-conn-pool/</link>
+      <link>https://runzhen.github.io/posts/go-redis-conn-pool/</link>
       <pubDate>Sat, 01 May 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/go-redis-conn-pool/</guid>
+      <guid>https://runzhen.github.io/posts/go-redis-conn-pool/</guid>
       <description>&lt;p&gt;事情的起因是我在 k8s 中部署了一个 redis，然后 service A 使用 &lt;code&gt;go-redis&lt;/code&gt; 库连接 redis。&lt;/p&gt;
 &lt;p&gt;这个时候我想到： service Pod 和 redis Pod 启动的顺序是不一定的，可能是 service Pod 先启动，此时 redis pod 还没有启动；又或者 redis pod 中途 restart 了。 &lt;code&gt;go-redis&lt;/code&gt; 库能正确的处理重连吗？&lt;/p&gt;
 &lt;p&gt;简单的用 kubectl 命令删除、 重启了 redis，发现 service Pod 能自动恢复连接，说明 &lt;code&gt;go-redis&lt;/code&gt; 正确进行了处理，那么它是怎么做的呢 ？&lt;/p&gt;
@@ -268,9 +268,9 @@
     </item>
     <item>
       <title>Goroutine Pool 实现高并发</title>
-      <link>http://localhost:1313/posts/goroutine-pool/</link>
+      <link>https://runzhen.github.io/posts/goroutine-pool/</link>
       <pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/goroutine-pool/</guid>
+      <guid>https://runzhen.github.io/posts/goroutine-pool/</guid>
       <description>&lt;p&gt;本文是读完 &lt;a href=&#34;http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang/&#34;&gt;Handling 1 Million Requests per Minute with Go&lt;/a&gt; 之后，根据自己的理解，对文中提到的并发模型和实现再梳理一遍。&lt;/p&gt;
 &lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;假设有一个 http server 接收 client 发来的 request，如果用下面的这样的代码，会有什么问题呢？&lt;/p&gt;
@@ -295,9 +295,9 @@
     </item>
     <item>
       <title>gRPC-go 建立 TCP 连接的过程</title>
-      <link>http://localhost:1313/posts/grpc-client-tcp-connection/</link>
+      <link>https://runzhen.github.io/posts/grpc-client-tcp-connection/</link>
       <pubDate>Sun, 11 Oct 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/grpc-client-tcp-connection/</guid>
+      <guid>https://runzhen.github.io/posts/grpc-client-tcp-connection/</guid>
       <description>&lt;p&gt;首先看一个最简单的建立 client server 之间 gRPC 连接的代码，以这个代码为例，分析一下 TCP 是在何时建立的。&lt;/p&gt;
 &lt;p&gt;Server 端的代码相对来说很容易，一个最简单的 server 代码如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;

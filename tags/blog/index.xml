@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Blog on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/blog/</link>
+    <link>https://runzhen.github.io/tags/blog/</link>
     <description>Recent content in Blog on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 04 Mar 2018 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/blog/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>博客十年的变迁: 从 Wordpress 到 Jekyll</title>
-      <link>http://localhost:1313/posts/wordpress-to-jekyll/</link>
+      <link>https://runzhen.github.io/posts/wordpress-to-jekyll/</link>
       <pubDate>Sun, 04 Mar 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/wordpress-to-jekyll/</guid>
+      <guid>https://runzhen.github.io/posts/wordpress-to-jekyll/</guid>
       <description>&lt;h3 id=&#34;前言&#34;&gt;前言&lt;/h3&gt;
 &lt;p&gt;印象中我的第一个博客是在大约2007年左右创建的，那个时候是个人博客非常流行的几年，各个网站都推出了自己的博客服务，如今已经是2018年，转眼间10年过去了，个人博客不如以前那么盛行了，现在流行的是微博自媒体和微信公众号。但是作为一个程序员，总觉得还是自己的博客比较 “geek”，所以一直还在折腾。&lt;/p&gt;
 &lt;p&gt;一开始的博客是建立在《电脑爱好者》网站推出的“博墅”服务上的，跟所有提供博客服务的网站一样，用户只要在网上点几下鼠标博客就建立好了。&lt;/p&gt;

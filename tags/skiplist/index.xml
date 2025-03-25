@@ -2,27 +2,27 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Skiplist on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/skiplist/</link>
+    <link>https://runzhen.github.io/tags/skiplist/</link>
     <description>Recent content in Skiplist on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Fri, 22 Feb 2013 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/skiplist/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/skiplist/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>一个简单的跳表(SkipList)实现</title>
-      <link>http://localhost:1313/posts/skiplist/</link>
+      <link>https://runzhen.github.io/posts/skiplist/</link>
       <pubDate>Fri, 22 Feb 2013 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/skiplist/</guid>
+      <guid>https://runzhen.github.io/posts/skiplist/</guid>
       <description>&lt;p&gt;跳表（skiplist） 是一个非常有趣的、简单的数据结构， 应用也非常广泛， 著名的NoSQL内存数据库Redis， 就用到了skiplist作为排序集合的基础数据结构。 跳表最大的特点就是插入、删除操作的性能均为O(logn) 。&lt;/p&gt;
 &lt;p&gt;关于它的原理网上有一大堆，如果不了解的话，可以先看看文章末尾的参考资料， 或者动手google一下。&lt;/p&gt;
 &lt;p&gt;需要指出的是，网上搜的一些的文章原理介绍的不错， 但是代码写的有点乱， 排版的时候也没有语法高亮， 所以我自己也参照着写了一份， 并且在这里简单的注释一下。&lt;/p&gt;
 &lt;p&gt;首先， 一个“跳表” 基本上长的是这个样子的：&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2013/skiplist1.png&#34; alt=&#34;skiplist1&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2013/skiplist1.png&#34; alt=&#34;skiplist1&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;再来看下抽象的数据结构：&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;#define object int

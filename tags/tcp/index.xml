@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>TCP on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/tcp/</link>
+    <link>https://runzhen.github.io/tags/tcp/</link>
     <description>Recent content in TCP on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Mon, 12 Mar 2018 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/tcp/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/tcp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>RFC 793 传输控制协议 TCP</title>
-      <link>http://localhost:1313/posts/tcp-rfc793/</link>
+      <link>https://runzhen.github.io/posts/tcp-rfc793/</link>
       <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/tcp-rfc793/</guid>
+      <guid>https://runzhen.github.io/posts/tcp-rfc793/</guid>
       <description>&lt;p&gt;RFC 793 是 TCP 正式成为标准时的文档，虽然距今已有 30 多年的历史，并且已经多次被更新，但是要学习 TCP 这份文档仍然值得一读。&lt;/p&gt;
 &lt;p&gt;文本算是一个读书笔记，把阅读过程中我认为需要注意的部分记录下来，方便自己以后查漏补缺。后续也会有阅读其他相关 RFC 的读书笔记。&lt;/p&gt;
 &lt;p&gt;RFC 的第一二章节是按照惯例的声明，正式内容从 &lt;strong&gt;第三章 FUNCTIONAL SPECIFICATION&lt;/strong&gt; 开始。&lt;/p&gt;
@@ -49,12 +49,12 @@
     </item>
     <item>
       <title>TCP 的 FIN_WAIT1 状态</title>
-      <link>http://localhost:1313/posts/tcp-fin-wait/</link>
+      <link>https://runzhen.github.io/posts/tcp-fin-wait/</link>
       <pubDate>Wed, 09 Aug 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/tcp-fin-wait/</guid>
+      <guid>https://runzhen.github.io/posts/tcp-fin-wait/</guid>
       <description>&lt;p&gt;最近看到了一篇有关 TCP 关闭连接时 FIN-WAIT1 状态的文章（见参考资料），觉得很有意思，于是也在自己的电脑上验证了一下。&lt;/p&gt;
 &lt;p&gt;首先，开局一张图：&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2017/tcpclose.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2017/tcpclose.png&#34; alt=&#34;&#34;  /&gt;
 {:height=&amp;ldquo;300&amp;rdquo; width=&amp;ldquo;300&amp;rdquo;}&lt;/p&gt;
 &lt;p&gt;FIN-WAIT1 状态出现在 &lt;code&gt;主动关闭链接方&lt;/code&gt;发出 FIN 报文后，收到对应 ACK 之前。通常 Server 在收到 FIN 报文之后，会在很短的时间内回复 ACK（这个 ACK 可能携带数据，也可能只是一个纯 ACK），所以 FIN-WAIT1 状态存在的时间非常短暂，很难被观察到。&lt;/p&gt;
 &lt;p&gt;于是准备两台虚拟机，我们可以设计这样一个实验：&lt;/p&gt;

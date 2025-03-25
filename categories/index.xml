@@ -2,127 +2,127 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Categories on Mind in the Wind</title>
-    <link>http://localhost:1313/categories/</link>
+    <link>https://runzhen.github.io/categories/</link>
     <description>Recent content in Categories on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Programming</title>
-      <link>http://localhost:1313/categories/programming/</link>
+      <link>https://runzhen.github.io/categories/programming/</link>
       <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/programming/</guid>
+      <guid>https://runzhen.github.io/categories/programming/</guid>
       <description></description>
     </item>
     <item>
       <title>Reading</title>
-      <link>http://localhost:1313/categories/reading/</link>
+      <link>https://runzhen.github.io/categories/reading/</link>
       <pubDate>Thu, 20 Oct 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/reading/</guid>
+      <guid>https://runzhen.github.io/categories/reading/</guid>
       <description></description>
     </item>
     <item>
       <title>Golang</title>
-      <link>http://localhost:1313/categories/golang/</link>
+      <link>https://runzhen.github.io/categories/golang/</link>
       <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/golang/</guid>
+      <guid>https://runzhen.github.io/categories/golang/</guid>
       <description></description>
     </item>
     <item>
       <title>Raft</title>
-      <link>http://localhost:1313/categories/raft/</link>
+      <link>https://runzhen.github.io/categories/raft/</link>
       <pubDate>Sun, 22 May 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/raft/</guid>
+      <guid>https://runzhen.github.io/categories/raft/</guid>
       <description></description>
     </item>
     <item>
       <title>K8s</title>
-      <link>http://localhost:1313/categories/k8s/</link>
+      <link>https://runzhen.github.io/categories/k8s/</link>
       <pubDate>Sun, 03 Apr 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/k8s/</guid>
+      <guid>https://runzhen.github.io/categories/k8s/</guid>
       <description></description>
     </item>
     <item>
       <title>Rust</title>
-      <link>http://localhost:1313/categories/rust/</link>
+      <link>https://runzhen.github.io/categories/rust/</link>
       <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/rust/</guid>
+      <guid>https://runzhen.github.io/categories/rust/</guid>
       <description></description>
     </item>
     <item>
       <title>Ddia</title>
-      <link>http://localhost:1313/categories/ddia/</link>
+      <link>https://runzhen.github.io/categories/ddia/</link>
       <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/ddia/</guid>
+      <guid>https://runzhen.github.io/categories/ddia/</guid>
       <description></description>
     </item>
     <item>
       <title>Linux</title>
-      <link>http://localhost:1313/categories/linux/</link>
+      <link>https://runzhen.github.io/categories/linux/</link>
       <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/linux/</guid>
+      <guid>https://runzhen.github.io/categories/linux/</guid>
       <description></description>
     </item>
     <item>
       <title>Docker</title>
-      <link>http://localhost:1313/categories/docker/</link>
+      <link>https://runzhen.github.io/categories/docker/</link>
       <pubDate>Sun, 18 Oct 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/docker/</guid>
+      <guid>https://runzhen.github.io/categories/docker/</guid>
       <description></description>
     </item>
     <item>
       <title>Kubeflow</title>
-      <link>http://localhost:1313/categories/kubeflow/</link>
+      <link>https://runzhen.github.io/categories/kubeflow/</link>
       <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/kubeflow/</guid>
+      <guid>https://runzhen.github.io/categories/kubeflow/</guid>
       <description></description>
     </item>
     <item>
       <title>Kubernetes</title>
-      <link>http://localhost:1313/categories/kubernetes/</link>
+      <link>https://runzhen.github.io/categories/kubernetes/</link>
       <pubDate>Mon, 20 Jan 2020 20:22:33 -0800</pubDate>
-      <guid>http://localhost:1313/categories/kubernetes/</guid>
+      <guid>https://runzhen.github.io/categories/kubernetes/</guid>
       <description></description>
     </item>
     <item>
       <title>Cloud</title>
-      <link>http://localhost:1313/categories/cloud/</link>
+      <link>https://runzhen.github.io/categories/cloud/</link>
       <pubDate>Sun, 25 Aug 2019 14:49:42 -0700</pubDate>
-      <guid>http://localhost:1313/categories/cloud/</guid>
+      <guid>https://runzhen.github.io/categories/cloud/</guid>
       <description></description>
     </item>
     <item>
       <title>Algorithm</title>
-      <link>http://localhost:1313/categories/algorithm/</link>
+      <link>https://runzhen.github.io/categories/algorithm/</link>
       <pubDate>Sun, 09 Jun 2019 00:33:33 -0700</pubDate>
-      <guid>http://localhost:1313/categories/algorithm/</guid>
+      <guid>https://runzhen.github.io/categories/algorithm/</guid>
       <description></description>
     </item>
     <item>
       <title>Nginx</title>
-      <link>http://localhost:1313/categories/nginx/</link>
+      <link>https://runzhen.github.io/categories/nginx/</link>
       <pubDate>Sun, 09 Dec 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/nginx/</guid>
+      <guid>https://runzhen.github.io/categories/nginx/</guid>
       <description></description>
     </item>
     <item>
       <title>RFC</title>
-      <link>http://localhost:1313/categories/rfc/</link>
+      <link>https://runzhen.github.io/categories/rfc/</link>
       <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/rfc/</guid>
+      <guid>https://runzhen.github.io/categories/rfc/</guid>
       <description></description>
     </item>
     <item>
       <title>Security</title>
-      <link>http://localhost:1313/categories/security/</link>
+      <link>https://runzhen.github.io/categories/security/</link>
       <pubDate>Tue, 21 Mar 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/categories/security/</guid>
+      <guid>https://runzhen.github.io/categories/security/</guid>
       <description></description>
     </item>
   </channel>

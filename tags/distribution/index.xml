@@ -2,35 +2,35 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Distribution on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/distribution/</link>
+    <link>https://runzhen.github.io/tags/distribution/</link>
     <description>Recent content in Distribution on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
-    <atom:link href="http://localhost:1313/tags/distribution/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/distribution/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Raft 一致性算法读书笔记</title>
-      <link>http://localhost:1313/posts/2018-02-24-raft-paper/</link>
+      <link>https://runzhen.github.io/posts/2018-02-24-raft-paper/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/2018-02-24-raft-paper/</guid>
-      <description>&lt;p&gt;论文原文链接 &lt;a href=&#34;http://localhost:1313/papers/raft-extended.pdf&#34;&gt;In Search of an Understandable Consensus Algorithm&lt;/a&gt;&lt;/p&gt;
+      <guid>https://runzhen.github.io/posts/2018-02-24-raft-paper/</guid>
+      <description>&lt;p&gt;论文原文链接 &lt;a href=&#34;https://runzhen.github.io/papers/raft-extended.pdf&#34;&gt;In Search of an Understandable Consensus Algorithm&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Raft 保证一致性的 4 个重要组成部分： &lt;strong&gt;领导人的选举&lt;/strong&gt;，&lt;strong&gt;日志复制&lt;/strong&gt;，&lt;strong&gt;安全性&lt;/strong&gt;，&lt;strong&gt;集群成员的变化&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;Raft 是一个强领导者算法，意思就是所有的数据以当前领导者（Leader）上的为准，领导者上有的就是正确的，领导者上没有的就是错误的。&lt;/p&gt;
 &lt;h2 id=&#34;51-raft-的基本术语和概念&#34;&gt;5.1 Raft 的基本术语和概念&lt;/h2&gt;
 &lt;p&gt;任期的概念：任期(term) 用来区分时间轴上不同的领导者，当领导者换了，日期也也立刻变更。raft 算法用 term 来表示一个 &lt;code&gt;逻辑时钟&lt;/code&gt;，而不是用传统的几月几日几点几分几秒，term 是一个递增的整数，当领导者变了，term 也 +1。&lt;/p&gt;
 &lt;p&gt;集群中的每一个服务器都存储了一个 currentTerm，任意两个 server 要相互通信时都需要包含各自的 currentTerm。如果一个 server 的 currentTerm 值小于对方，那么它需要更新自己的值。如果 candidate 或者 leader 发现他们自己的 currentTerm 比其他人的要小，那个立马变成 follower。如果收到的请求包含一个旧的 currentTerm，直接忽略。&lt;/p&gt;
 &lt;p&gt;原论文的图 2 包含了大量的信息，我自己制作了下面四个图片。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2018/raft1.png&#34; alt=&#34;状态&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft1.png&#34; alt=&#34;状态&#34;  /&gt;
 &lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2018/raft2.png&#34; alt=&#34;请求投票 RPC&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft2.png&#34; alt=&#34;请求投票 RPC&#34;  /&gt;
 &lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2018/raft3.png&#34; alt=&#34;附加日志条目 RPC&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft3.png&#34; alt=&#34;附加日志条目 RPC&#34;  /&gt;
 &lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2018/raft4.png&#34; alt=&#34;所有服务器的规则&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft4.png&#34; alt=&#34;所有服务器的规则&#34;  /&gt;
 &lt;/p&gt;
 &lt;h2 id=&#34;52-领导人的选举&#34;&gt;5.2 领导人的选举&lt;/h2&gt;
 &lt;p&gt;领导人不断的向集群中其他人发送心跳包，当集群中一个 server 在一段时间里没有收到领导人的心跳包，那么他就要起义，自己竞选当领导人。&lt;/p&gt;

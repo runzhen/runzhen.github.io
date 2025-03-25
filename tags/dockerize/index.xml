@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Dockerize on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/dockerize/</link>
+    <link>https://runzhen.github.io/tags/dockerize/</link>
     <description>Recent content in Dockerize on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Wed, 16 May 2018 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/dockerize/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/dockerize/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>容器化博客的编译环境</title>
-      <link>http://localhost:1313/posts/dockerize-blog/</link>
+      <link>https://runzhen.github.io/posts/dockerize-blog/</link>
       <pubDate>Wed, 16 May 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/dockerize-blog/</guid>
+      <guid>https://runzhen.github.io/posts/dockerize-blog/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;在上一篇博客 &lt;a href=&#34;posts/wordpress-to-jekyll/&#34;&gt;从 Wordpress 到 Jekyll&lt;/a&gt; 中，提到了把博客从原来的 Workpress 迁移到了 Jekyll, 开始用 Markdown 语法写博客正文，用 &lt;code&gt;jekyll build&lt;/code&gt; 生成博客内容并部署到 Web 服务器。&lt;/p&gt;
 &lt;p&gt;最近这两天在考虑把 &amp;ldquo;jekyll build&amp;rdquo; 这个过程容器化，达到传说中 &lt;strong&gt;一次部署到处运行&lt;/strong&gt; 的终极目标。 :-)&lt;/p&gt;

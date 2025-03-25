@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Gcp on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/gcp/</link>
+    <link>https://runzhen.github.io/tags/gcp/</link>
     <description>Recent content in Gcp on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 25 Aug 2019 14:49:42 -0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/gcp/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/gcp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>从 Kubernetes 中访问 Memorystore</title>
-      <link>http://localhost:1313/posts/gke-access-memorystore/</link>
+      <link>https://runzhen.github.io/posts/gke-access-memorystore/</link>
       <pubDate>Sun, 25 Aug 2019 14:49:42 -0700</pubDate>
-      <guid>http://localhost:1313/posts/gke-access-memorystore/</guid>
+      <guid>https://runzhen.github.io/posts/gke-access-memorystore/</guid>
       <description>&lt;p&gt;Memorystore 是 Google Cloud 在 2018 年推出的托管 Redis 服务，让用户一键生成 Redis 实例，必要的时候再一键 scale，省去了维护 Redis 的烦恼。&lt;/p&gt;
 &lt;p&gt;本文在 k8s 中部署一个简单的小程序访问 Memorystore 数据库，获取 counter 值，并开启一个 http server 对外提供这个值。&lt;/p&gt;
 &lt;h2 id=&#34;准备&#34;&gt;准备&lt;/h2&gt;

@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Raft on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/raft/</link>
+    <link>https://runzhen.github.io/tags/raft/</link>
     <description>Recent content in Raft on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 22 May 2022 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/raft/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/raft/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>etcd-raft 源码阅读之 raftLog</title>
-      <link>http://localhost:1313/posts/etcd-raft-raftlog/</link>
+      <link>https://runzhen.github.io/posts/etcd-raft-raftlog/</link>
       <pubDate>Sun, 22 May 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/etcd-raft-raftlog/</guid>
+      <guid>https://runzhen.github.io/posts/etcd-raft-raftlog/</guid>
       <description>&lt;p&gt;etcd-raft 有关 log 的实现在分布在&lt;code&gt;log.go&lt;/code&gt;，&lt;code&gt;log_unstable.go&lt;/code&gt;，&lt;code&gt;storage.go&lt;/code&gt; 三个文件中。首先看一下 raftLog 结构体。&lt;/p&gt;
 &lt;h2 id=&#34;raftlog-结构体&#34;&gt;raftLog 结构体&lt;/h2&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;raftLog&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
@@ -46,9 +46,9 @@
     </item>
     <item>
       <title>etcd-raft 源码阅读之 Leader 的选举</title>
-      <link>http://localhost:1313/posts/etcd-raft-leader-election/</link>
+      <link>https://runzhen.github.io/posts/etcd-raft-leader-election/</link>
       <pubDate>Sun, 15 May 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/etcd-raft-leader-election/</guid>
+      <guid>https://runzhen.github.io/posts/etcd-raft-leader-election/</guid>
       <description>&lt;p&gt;首先看一下 raft node 之间传递的基本消息（比如 leader 选举，AppendLog）类型 &lt;code&gt;Message&lt;/code&gt; protobuf 定义&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;message&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;Message&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;MessageType&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;type&lt;/span&gt;        &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
@@ -95,21 +95,21 @@
     </item>
     <item>
       <title>Raft 一致性算法实现 1</title>
-      <link>http://localhost:1313/posts/2009-09-01-raft-implementation-leader/</link>
+      <link>https://runzhen.github.io/posts/2009-09-01-raft-implementation-leader/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/2009-09-01-raft-implementation-leader/</guid>
+      <guid>https://runzhen.github.io/posts/2009-09-01-raft-implementation-leader/</guid>
       <description>&lt;p&gt;在实现的时候发现这张状态转换图非常重要。整个 raft 的运行就是围绕着这张图发生一系列状态转换。
 因此，第一步实现一个状态机就成了关键。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2018/raft6.png&#34; alt=&#34;状态转换图&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2018/raft6.png&#34; alt=&#34;状态转换图&#34;  /&gt;
 &lt;/p&gt;
 &lt;h2 id=&#34;参考资料&#34;&gt;参考资料&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&#34;http://www.woola.net/detail/2017-04-27-goroutines.html&#34;&gt;Go 并发、管道&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>Raft 算法实现 2：日志的复制</title>
-      <link>http://localhost:1313/posts/2009-09-01-raft-implementation-log-replication/</link>
+      <link>https://runzhen.github.io/posts/2009-09-01-raft-implementation-log-replication/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/2009-09-01-raft-implementation-log-replication/</guid>
+      <guid>https://runzhen.github.io/posts/2009-09-01-raft-implementation-log-replication/</guid>
       <description>&lt;h1 id=&#34;投票的过程&#34;&gt;投票的过程&lt;/h1&gt;
 &lt;h1 id=&#34;日志的复制&#34;&gt;日志的复制&lt;/h1&gt;
 &lt;p&gt;一旦选举成功，所有的 Client 请求最终都会交给 Leader 处理。&lt;/p&gt;

@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Docker on Mind in the Wind</title>
-    <link>http://localhost:1313/categories/docker/</link>
+    <link>https://runzhen.github.io/categories/docker/</link>
     <description>Recent content in Docker on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 18 Oct 2020 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/docker/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Docker 的 privileged 模式</title>
-      <link>http://localhost:1313/posts/docker-privileged/</link>
+      <link>https://runzhen.github.io/posts/docker-privileged/</link>
       <pubDate>Sun, 18 Oct 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/docker-privileged/</guid>
+      <guid>https://runzhen.github.io/posts/docker-privileged/</guid>
       <description>&lt;p&gt;无论是 docker 启动一个 container 还是在 k8s 中 deploy 一个 Pod 都可以指定 privileged 参数，之前在 Pod 的 spec YAML file 也里曾经用过，但是一直没有仔细想过加上这个参数后有什么不一样，今天就来研究一下。&lt;/p&gt;
 &lt;p&gt;首先来看一个最直观的对比，先运行一个没有 privileged 的容器：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ docker run --rm -it ubuntu:18.04 bash
@@ -42,9 +42,9 @@
     </item>
     <item>
       <title>Orphan, Zombie and Docker</title>
-      <link>http://localhost:1313/posts/orphan-zombie-and-docker/</link>
+      <link>https://runzhen.github.io/posts/orphan-zombie-and-docker/</link>
       <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/orphan-zombie-and-docker/</guid>
+      <guid>https://runzhen.github.io/posts/orphan-zombie-and-docker/</guid>
       <description>&lt;h2 id=&#34;孤儿进程的产生&#34;&gt;孤儿进程的产生&lt;/h2&gt;
 &lt;p&gt;孤儿进程： 父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。通常，孤儿进程将被进程号为1的进程(进程号为 1 的是 init 进程)所收养，并由该进程调用 wait 对孤儿进程收尸。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
@@ -80,9 +80,9 @@ I&amp;#39;m child process, pid:25355  ppid:1
     </item>
     <item>
       <title>容器化博客的编译环境</title>
-      <link>http://localhost:1313/posts/dockerize-blog/</link>
+      <link>https://runzhen.github.io/posts/dockerize-blog/</link>
       <pubDate>Wed, 16 May 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/dockerize-blog/</guid>
+      <guid>https://runzhen.github.io/posts/dockerize-blog/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;在上一篇博客 &lt;a href=&#34;posts/wordpress-to-jekyll/&#34;&gt;从 Wordpress 到 Jekyll&lt;/a&gt; 中，提到了把博客从原来的 Workpress 迁移到了 Jekyll, 开始用 Markdown 语法写博客正文，用 &lt;code&gt;jekyll build&lt;/code&gt; 生成博客内容并部署到 Web 服务器。&lt;/p&gt;
 &lt;p&gt;最近这两天在考虑把 &amp;ldquo;jekyll build&amp;rdquo; 这个过程容器化，达到传说中 &lt;strong&gt;一次部署到处运行&lt;/strong&gt; 的终极目标。 :-)&lt;/p&gt;
@@ -100,9 +100,9 @@ I&amp;#39;m child process, pid:25355  ppid:1
     </item>
     <item>
       <title>博客十年的变迁: 从 Wordpress 到 Jekyll</title>
-      <link>http://localhost:1313/posts/wordpress-to-jekyll/</link>
+      <link>https://runzhen.github.io/posts/wordpress-to-jekyll/</link>
       <pubDate>Sun, 04 Mar 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/wordpress-to-jekyll/</guid>
+      <guid>https://runzhen.github.io/posts/wordpress-to-jekyll/</guid>
       <description>&lt;h3 id=&#34;前言&#34;&gt;前言&lt;/h3&gt;
 &lt;p&gt;印象中我的第一个博客是在大约2007年左右创建的，那个时候是个人博客非常流行的几年，各个网站都推出了自己的博客服务，如今已经是2018年，转眼间10年过去了，个人博客不如以前那么盛行了，现在流行的是微博自媒体和微信公众号。但是作为一个程序员，总觉得还是自己的博客比较 “geek”，所以一直还在折腾。&lt;/p&gt;
 &lt;p&gt;一开始的博客是建立在《电脑爱好者》网站推出的“博墅”服务上的，跟所有提供博客服务的网站一样，用户只要在网上点几下鼠标博客就建立好了。&lt;/p&gt;

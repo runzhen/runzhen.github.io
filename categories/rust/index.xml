@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Rust on Mind in the Wind</title>
-    <link>http://localhost:1313/categories/rust/</link>
+    <link>https://runzhen.github.io/categories/rust/</link>
     <description>Recent content in Rust on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 06 Mar 2022 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/rust/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/categories/rust/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Rust WASM 自制俄罗斯方块游戏</title>
-      <link>http://localhost:1313/posts/tetris-game-in-rust/</link>
+      <link>https://runzhen.github.io/posts/tetris-game-in-rust/</link>
       <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/tetris-game-in-rust/</guid>
+      <guid>https://runzhen.github.io/posts/tetris-game-in-rust/</guid>
       <description>&lt;h2 id=&#34;起因&#34;&gt;起因&lt;/h2&gt;
 &lt;p&gt;事情的起因是在 Switch 上玩 Tetris99 游戏，由于不喜欢这种吃鸡的形式，只想玩小时候的那种掌机模式，于是想到可不可以自己做一个。&lt;/p&gt;
 &lt;p&gt;有了这个想法以后，打算使用 Rust + WASM，一方面是学习一下新技术，另一方面考虑到能直接在浏览器运行，可以跨平台，甚至可以在电视机上用浏览器打开网页就可以玩。&lt;/p&gt;
@@ -39,9 +39,9 @@
     </item>
     <item>
       <title>Rust 异步 async 和 tokio</title>
-      <link>http://localhost:1313/posts/rust-async-and-tokio/</link>
+      <link>https://runzhen.github.io/posts/rust-async-and-tokio/</link>
       <pubDate>Sun, 27 Feb 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/rust-async-and-tokio/</guid>
+      <guid>https://runzhen.github.io/posts/rust-async-and-tokio/</guid>
       <description>&lt;h2 id=&#34;快速入门&#34;&gt;快速入门&lt;/h2&gt;
 &lt;p&gt;Rust 语言原生提供了异步操作的关键字 &lt;code&gt;async&lt;/code&gt; 和 &lt;code&gt;await&lt;/code&gt;，但通常还需要配合第三方的 runtime，其中最有名的就是 tokio 了。&lt;/p&gt;
 &lt;p&gt;在开始了解 Rust 的所谓异步是什么样子之前，先看一下如何写一个简单的 Rust 异步程序。&lt;/p&gt;
@@ -72,15 +72,15 @@
     </item>
     <item>
       <title>Rust 入坑之 LRU Cache</title>
-      <link>http://localhost:1313/posts/rust-lru-cache/</link>
+      <link>https://runzhen.github.io/posts/rust-lru-cache/</link>
       <pubDate>Sun, 11 Jul 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/rust-lru-cache/</guid>
+      <guid>https://runzhen.github.io/posts/rust-lru-cache/</guid>
       <description>&lt;p&gt;lru 算法的原理简而言之就是一个 hash ，一个 double linked list&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Linked List 提供 O(1) 的复杂度对元素进行插入和删除&lt;/li&gt;
 &lt;li&gt;hash 提供 O(1) 的复杂度进行查找&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2021/rust-lru/Untitled.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2021/rust-lru/Untitled.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;本文主要是通过阅读一个 rust 实现的 lru 学习相关语法。&lt;/p&gt;
 &lt;ul&gt;
@@ -127,9 +127,9 @@
     </item>
     <item>
       <title>Rust 入坑之 Bloom Filter</title>
-      <link>http://localhost:1313/posts/rust-examples-1/</link>
+      <link>https://runzhen.github.io/posts/rust-examples-1/</link>
       <pubDate>Sat, 19 Jun 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/rust-examples-1/</guid>
+      <guid>https://runzhen.github.io/posts/rust-examples-1/</guid>
       <description>&lt;p&gt;关于 Bloom Filter 的原理不做介绍，网上各种资料满天飞，其中参考资料 1 已经讲解的很详细。&lt;/p&gt;
 &lt;p&gt;我重点关注如何用 Rust 实现一个简单的 Bloom Filter，并学习一些语法，源码在参考资料 2 。&lt;/p&gt;
 &lt;h2 id=&#34;bloomfilter-结构体&#34;&gt;BloomFilter 结构体&lt;/h2&gt;
@@ -150,9 +150,9 @@
     </item>
     <item>
       <title>Rust 语言知识点记录</title>
-      <link>http://localhost:1313/posts/rust-programming-language/</link>
+      <link>https://runzhen.github.io/posts/rust-programming-language/</link>
       <pubDate>Wed, 21 Nov 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/rust-programming-language/</guid>
+      <guid>https://runzhen.github.io/posts/rust-programming-language/</guid>
       <description>&lt;p&gt;Rust 编程语言知识点笔记。&lt;/p&gt;
 &lt;h1 id=&#34;trait-关键字&#34;&gt;trait 关键字&lt;/h1&gt;
 &lt;p&gt;Rust没有继承，它和Golang不约而同的选择了trait(Golang叫Interface)作为其实现多态的基础。&lt;/p&gt;

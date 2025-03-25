@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Nginx on Mind in the Wind</title>
-    <link>http://localhost:1313/categories/nginx/</link>
+    <link>https://runzhen.github.io/categories/nginx/</link>
     <description>Recent content in Nginx on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 09 Dec 2018 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/nginx/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/categories/nginx/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>nginx HTTP 的 11 个阶段</title>
-      <link>http://localhost:1313/posts/nginx-http-11-phases/</link>
+      <link>https://runzhen.github.io/posts/nginx-http-11-phases/</link>
       <pubDate>Sun, 09 Dec 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/nginx-http-11-phases/</guid>
+      <guid>https://runzhen.github.io/posts/nginx-http-11-phases/</guid>
       <description>&lt;p&gt;nginx 源码的特点是用了很多回调函数，阅读起来非常麻烦，因为不知道当前这个 hanlder 到底对应哪个函数。&lt;/p&gt;
 &lt;p&gt;在正式开始研究这 11 个阶段之前，我们先看几个结构体，然后再看 ngx_http_core_run_phases() 函数，希望能更快的理解这些 phase 是怎么 run 的。&lt;/p&gt;
 &lt;h1 id=&#34;ngx_http_core_main_conf_t&#34;&gt;ngx_http_core_main_conf_t&lt;/h1&gt;

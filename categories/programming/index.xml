@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Programming on Mind in the Wind</title>
-    <link>http://localhost:1313/categories/programming/</link>
+    <link>https://runzhen.github.io/categories/programming/</link>
     <description>Recent content in Programming on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/programming/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/categories/programming/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>分布式限流</title>
-      <link>http://localhost:1313/posts/distributed-rate-limit/</link>
+      <link>https://runzhen.github.io/posts/distributed-rate-limit/</link>
       <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/distributed-rate-limit/</guid>
+      <guid>https://runzhen.github.io/posts/distributed-rate-limit/</guid>
       <description>&lt;h1 id=&#34;限流算法&#34;&gt;限流算法&lt;/h1&gt;
 &lt;p&gt;通常有下面4种：&lt;/p&gt;
 &lt;ul&gt;
@@ -97,9 +97,9 @@
     </item>
     <item>
       <title>Rust 的所有权和生命周期</title>
-      <link>http://localhost:1313/posts/rust-ownership-lifetime/</link>
+      <link>https://runzhen.github.io/posts/rust-ownership-lifetime/</link>
       <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/rust-ownership-lifetime/</guid>
+      <guid>https://runzhen.github.io/posts/rust-ownership-lifetime/</guid>
       <description>&lt;h2 id=&#34;所有权&#34;&gt;所有权&lt;/h2&gt;
 &lt;p&gt;在 Rust 中，heap 上的一块内存区域是一块 “值”，与之绑定的是一个变量，也就是说&lt;code&gt;变量&lt;/code&gt;和&lt;code&gt;值&lt;/code&gt;是&lt;code&gt;绑定&lt;/code&gt;的，要注意这种绑定关系。 在任何时候，一个值只有一个对应的变量作为&lt;code&gt;所有者&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;理解了这些概念之后，再来看所有权和它的基本特性：&lt;/p&gt;
@@ -135,9 +135,9 @@
     </item>
     <item>
       <title>从 C 语言调用 Rust 的函数</title>
-      <link>http://localhost:1313/posts/call-rust-functions-from-c/</link>
+      <link>https://runzhen.github.io/posts/call-rust-functions-from-c/</link>
       <pubDate>Sat, 15 Dec 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/call-rust-functions-from-c/</guid>
+      <guid>https://runzhen.github.io/posts/call-rust-functions-from-c/</guid>
       <description>&lt;p&gt;看到 rust 可以编译成动态链接库（.so），想到是不是可以用 C 语言链接到这个库呢？答案是肯定的。Rust 提供了 FFI 接口，即 Foreign Function Interface，目的就是和其他语言交互。&lt;/p&gt;
 &lt;p&gt;废话不多说，开始干。我们要实现三个例子：&lt;/p&gt;
 &lt;ul&gt;

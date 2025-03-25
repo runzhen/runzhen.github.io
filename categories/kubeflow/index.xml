@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Kubeflow on Mind in the Wind</title>
-    <link>http://localhost:1313/categories/kubeflow/</link>
+    <link>https://runzhen.github.io/categories/kubeflow/</link>
     <description>Recent content in Kubeflow on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 22 Mar 2020 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/kubeflow/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/categories/kubeflow/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Kubeflow 部署 MNIST</title>
-      <link>http://localhost:1313/posts/mnist_step_by_step/</link>
+      <link>https://runzhen.github.io/posts/mnist_step_by_step/</link>
       <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/mnist_step_by_step/</guid>
+      <guid>https://runzhen.github.io/posts/mnist_step_by_step/</guid>
       <description>&lt;p&gt;在阅读本文之前，假设已经在 GCP 上安装好了 Kubeflow。&lt;/p&gt;
 &lt;p&gt;首先进入 Kubeflow，点击 &lt;code&gt;Notebook Server&lt;/code&gt;，新建一个 &lt;code&gt;Jupyter Notebook&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2020/notebook.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/notebook.jpeg&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;新建的时候会让你输入 Name 和 Namespace，在 Kubeflow 中，每个用户都在 k8s 集群上有自己的 Namespace。&lt;/p&gt;
 &lt;p&gt;这里输入的 Name 对应的 Notebook Pod 最后会在自己的 Namespace 下。&lt;/p&gt;
 &lt;p&gt;新的 Notebook 里面是空的，我们需要下载一些例子。打开 terminal&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2020/notebook2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/notebook2.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;然后输入 git clone 命令：&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;git clone https://github.com/kubeflow/examples.git&lt;/code&gt;&lt;/p&gt;

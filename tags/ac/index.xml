@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Ac on Mind in the Wind</title>
-    <link>http://localhost:1313/tags/ac/</link>
+    <link>https://runzhen.github.io/tags/ac/</link>
     <description>Recent content in Ac on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sat, 14 Jul 2018 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/ac/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://runzhen.github.io/tags/ac/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Aho–Corasick 算法，AC 自动机</title>
-      <link>http://localhost:1313/posts/aho-ac-automaton/</link>
+      <link>https://runzhen.github.io/posts/aho-ac-automaton/</link>
       <pubDate>Sat, 14 Jul 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/aho-ac-automaton/</guid>
+      <guid>https://runzhen.github.io/posts/aho-ac-automaton/</guid>
       <description>&lt;p&gt;AHO 算法，或者叫 AC 自动机、又或者叫 Aho–Corasick string matching algorithm，是一个高效的多模式匹配算法，它的特点是可以同时匹配多个模式串。&lt;/p&gt;
 &lt;p&gt;最常见的应用就是&lt;code&gt;病毒扫描&lt;/code&gt; : 把所有病毒的特征码（类似一段字符串）构造成一个 AC 自动机，把用户的文件或者网络数据流作为输入文本，只要在输入文本中找到了任何一个特征码，那么就表示有病毒存在。&lt;/p&gt;
 &lt;p&gt;对于这样的一个应用场景，我们最希望的功能就是&lt;code&gt;只扫描一遍输入文本，找出所有的病毒&lt;/code&gt;，而 AC 自动机恰恰就有这样的能力。&lt;/p&gt;
