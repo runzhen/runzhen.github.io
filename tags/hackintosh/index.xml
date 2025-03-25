@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Hackintosh on Mind in the Wind</title>
-    <link>https://runzhen.github.io/tags/hackintosh/</link>
+    <link>http://localhost:1313/tags/hackintosh/</link>
     <description>Recent content in Hackintosh on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sat, 05 Nov 2022 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/tags/hackintosh/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/hackintosh/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>记录安装黑苹果过程中的各种坑</title>
-      <link>https://runzhen.github.io/posts/hackintosh/</link>
+      <link>http://localhost:1313/posts/hackintosh/</link>
       <pubDate>Sat, 05 Nov 2022 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/hackintosh/</guid>
-      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2022/hackintosh1.png&#34; alt=&#34;&#34;  /&gt;
+      <guid>http://localhost:1313/posts/hackintosh/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2022/hackintosh1.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;主机配置&lt;/p&gt;
 &lt;ul&gt;
@@ -41,7 +41,7 @@
 &lt;li&gt;NVRAM “7C436110” 那一项的 &lt;code&gt;boot-args&lt;/code&gt; 参数里面加了 &lt;code&gt;-cdfon&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;在 PlatformInfo SMBIOS 里面选择了 &lt;code&gt;iMac19,1&lt;/code&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2022/hackintosh2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2022/hackintosh2.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;</description>
     </item>
   </channel>

@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Istio on Mind in the Wind</title>
-    <link>https://runzhen.github.io/tags/istio/</link>
+    <link>http://localhost:1313/tags/istio/</link>
     <description>Recent content in Istio on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 15 Mar 2020 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/tags/istio/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/istio/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>[Istio] 使用 istio 控制转发流量</title>
-      <link>https://runzhen.github.io/posts/use-istio/</link>
+      <link>http://localhost:1313/posts/use-istio/</link>
       <pubDate>Sun, 15 Mar 2020 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/use-istio/</guid>
+      <guid>http://localhost:1313/posts/use-istio/</guid>
       <description>&lt;h2 id=&#34;概念&#34;&gt;概念&lt;/h2&gt;
 &lt;p&gt;首先介绍几个概念，Ingress 指的是进入到 k8s 集群中的 traffic，比如一个 client 发起的 HTTP 请求，经过层层网络最终到达了 k8s cluster 的外部，那么让不让它进入到 cluster 内部就是 ingress controller 做的事。&lt;/p&gt;
 &lt;p&gt;Kubernetes 原生提供了自己的 Ingress Controller，此外还有很多第三方的 Ingress Controller，istio 就是其中之一。需要注意的是，本文所有部署都是基于 GKE，其他的云平台可能略有不同。&lt;/p&gt;

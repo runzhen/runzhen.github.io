@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Reading on Mind in the Wind</title>
-    <link>https://runzhen.github.io/tags/reading/</link>
+    <link>http://localhost:1313/tags/reading/</link>
     <description>Recent content in Reading on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Thu, 20 Oct 2022 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/tags/reading/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/reading/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ByteGraph 和 OceanBase</title>
-      <link>https://runzhen.github.io/posts/bytegraph-and-oceanbase/</link>
+      <link>http://localhost:1313/posts/bytegraph-and-oceanbase/</link>
       <pubDate>Thu, 20 Oct 2022 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/bytegraph-and-oceanbase/</guid>
+      <guid>http://localhost:1313/posts/bytegraph-and-oceanbase/</guid>
       <description>&lt;h2 id=&#34;bytegraph&#34;&gt;ByteGraph&lt;/h2&gt;
 &lt;p&gt;ByteGraph 是字节跳动开发的一个&lt;strong&gt;分布式图数据库&lt;/strong&gt;。之前只是听说过图数据库，但并没有用过，因此在阅读的过程中难免对一些概念理解的不够深入。&lt;/p&gt;
 &lt;p&gt;为什么字节要开发图数据库呢？因为字节的产品都是社交App，因此用户，短视频，专注，点赞，粉丝所有的这些构成了一个巨大的图。&lt;/p&gt;
@@ -29,7 +29,7 @@
 &lt;li&gt;OLSP，这个第一次听说，Online Serving Processing。比如一个用户点赞了某个视频，那么后台需要实时计算他的喜好，然后推荐类似的视频。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;整体架构如下所示：&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2022/bytegraph.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2022/bytegraph.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;BGE, ByteGraph Execution Engine 负责执行 SQL 语句。&lt;/li&gt;
@@ -38,7 +38,7 @@
 &lt;/ul&gt;
 &lt;p&gt;BGE 使用了 Gremlin 作为解析 query language 的解析器，这是一个专门用于图查询的工具。用户输入的查询语句经过 Gremlin 生成 execution plan 然后传给 BGE。&lt;/p&gt;
 &lt;p&gt;既然是查询引起，那么就涉及到分布式事务，BGE也是用了 2PC。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2022/bytegraph2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2022/bytegraph2.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;上图可以直观的显示 ByteGraph 数据库中所存的数据，可见 KV store 是比较适合存这类数据的，因此 BG 的最底层是 KV store。&lt;/p&gt;</description>
     </item>

@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>RSA on Mind in the Wind</title>
-    <link>https://runzhen.github.io/tags/rsa/</link>
+    <link>http://localhost:1313/tags/rsa/</link>
     <description>Recent content in RSA on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Tue, 21 Mar 2017 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/tags/rsa/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/rsa/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>TLS Perfect Forward Secrecy 之 DH/ECDHE</title>
-      <link>https://runzhen.github.io/posts/pfs-ecdhe/</link>
+      <link>http://localhost:1313/posts/pfs-ecdhe/</link>
       <pubDate>Tue, 21 Mar 2017 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/pfs-ecdhe/</guid>
-      <description>&lt;p&gt;接着上一篇 &lt;a href=&#34;https://runzhen.github.io/ssl-perfect-forward-secrecy/&#34;&gt;TLS Perfect Forward Secrecy 之 RSA 缺陷&lt;/a&gt; 继续来看看 DH/ECDHE 如何解决这个问题。&lt;/p&gt;
+      <guid>http://localhost:1313/posts/pfs-ecdhe/</guid>
+      <description>&lt;p&gt;接着上一篇 &lt;a href=&#34;http://localhost:1313/ssl-perfect-forward-secrecy/&#34;&gt;TLS Perfect Forward Secrecy 之 RSA 缺陷&lt;/a&gt; 继续来看看 DH/ECDHE 如何解决这个问题。&lt;/p&gt;
 &lt;p&gt;前面提到 RSA 做密钥协商过程中，最关键的缺陷是客户端用公钥加密了 PreMaster Key，服务器用私钥解密 PreMaster Key。理想中更好的方法是 公钥/私钥只用来对证书签名，不参与到密钥协商的过程中来，换句话说，希望通信的双方能&lt;code&gt;独立计算&lt;/code&gt;出&lt;strong&gt;对称加密&lt;/strong&gt;的密钥。于是密码学家找到了尘封已久的，几乎与 RSA 同时出现的 DH 算法。&lt;/p&gt;
 &lt;p&gt;其实我一直有一个疑问：既然问题出在传送 PreMaster Key，那么客户端不发送 PreMaster Key 不就行了？握手的过程中已经有了 2 个随机数了，难道一定要 3 个随机数才能生成 master key 吗？&lt;/p&gt;
 &lt;p&gt;首先来看一下 DH 算法的数学基础。&lt;/p&gt;
@@ -54,9 +54,9 @@
     </item>
     <item>
       <title>TLS Perfect Forward Secrecy 之 RSA 的缺陷</title>
-      <link>https://runzhen.github.io/posts/ssl-perfect-forward-secrecy/</link>
+      <link>http://localhost:1313/posts/ssl-perfect-forward-secrecy/</link>
       <pubDate>Tue, 21 Feb 2017 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/ssl-perfect-forward-secrecy/</guid>
+      <guid>http://localhost:1313/posts/ssl-perfect-forward-secrecy/</guid>
       <description>&lt;p&gt;HTTPS 这样的加密传输，最关键的是要解决两个问题，&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;一个是通信双方如何协商出一个对称加密的密钥（密钥交换）&lt;/code&gt;&lt;/li&gt;

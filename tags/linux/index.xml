@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Linux on Mind in the Wind</title>
-    <link>https://runzhen.github.io/tags/linux/</link>
+    <link>http://localhost:1313/tags/linux/</link>
     <description>Recent content in Linux on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Wed, 22 Mar 2023 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>cgroups 介绍与使用</title>
-      <link>https://runzhen.github.io/posts/cgroups-intro/</link>
+      <link>http://localhost:1313/posts/cgroups-intro/</link>
       <pubDate>Wed, 22 Mar 2023 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/cgroups-intro/</guid>
+      <guid>http://localhost:1313/posts/cgroups-intro/</guid>
       <description>&lt;p&gt;cgroup 比较有趣的地方是它没有提供任何的系统调用接口，所以你不能用 API Call 的方式使用 cgroup，实际上 cgroup 实现了 linux 虚拟文件系统 vfs，所以类似我们熟悉的 btfrs, ext4， 因此可以用类似文件系统的方式进行操作。&lt;/p&gt;
 &lt;p&gt;比如用 mount 命令看一下 linux 上挂载了哪些设备：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-jsx&#34; data-lang=&#34;jsx&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;mount&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;t&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;cgroup&lt;/span&gt;
@@ -44,9 +44,9 @@
     </item>
     <item>
       <title>Latency numbers every programmer should know</title>
-      <link>https://runzhen.github.io/posts/latency-numbers-every-programer-should-know/</link>
+      <link>http://localhost:1313/posts/latency-numbers-every-programer-should-know/</link>
       <pubDate>Sun, 02 Oct 2022 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/latency-numbers-every-programer-should-know/</guid>
+      <guid>http://localhost:1313/posts/latency-numbers-every-programer-should-know/</guid>
       <description>&lt;p&gt;这期水一篇文章。 网上有很多人流传 Jeff Dean 的这个 &lt;a href=&#34;https://gist.github.com/hellerbarde/2843375&#34;&gt;Latency numbers&lt;/a&gt;，我看过很多遍但总是记不住，干脆把它抄下来算了。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;L1 cache reference ......................... 0.5 ns
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Branch mispredict ............................ &lt;span class=&#34;m&#34;&gt;5&lt;/span&gt; ns
@@ -66,9 +66,9 @@
     </item>
     <item>
       <title>使用 Kubernetes 遇到的一些问题和解决思路</title>
-      <link>https://runzhen.github.io/posts/k8s-debug-stories/</link>
+      <link>http://localhost:1313/posts/k8s-debug-stories/</link>
       <pubDate>Wed, 27 Apr 2022 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/k8s-debug-stories/</guid>
+      <guid>http://localhost:1313/posts/k8s-debug-stories/</guid>
       <description>&lt;p&gt;update on 2022-05-21&lt;/p&gt;
 &lt;p&gt;今天在 homelab 的 k8s 集群上发生了同样的情况，我想删除一个 namespace，再确认已经把 namespace 里面所有其他资源都删除的情况下，namespace 始终是 Terminating, 找了很多资料，方法也&lt;a href=&#34;https://github.com/kubernetes/kubernetes/issues/60807#issuecomment-524772920&#34;&gt;众说纷纭&lt;/a&gt; 。&lt;/p&gt;
 &lt;p&gt;最后通过看 &lt;code&gt;api-server&lt;/code&gt; log 发现原来又是 Unable to authenticate the request due to an error: x509: certificate has expired or is not yet valid&lt;/p&gt;
@@ -82,9 +82,9 @@
     </item>
     <item>
       <title>Makefile 的几个语法坑</title>
-      <link>https://runzhen.github.io/posts/makefile-syntax-pitfalls/</link>
+      <link>http://localhost:1313/posts/makefile-syntax-pitfalls/</link>
       <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/makefile-syntax-pitfalls/</guid>
+      <guid>http://localhost:1313/posts/makefile-syntax-pitfalls/</guid>
       <description>&lt;p&gt;Makefile 和 Bash script 在使用的过程中有很多奇奇怪怪的坑，本文做一下纪录。&lt;/p&gt;
 &lt;p&gt;首先，有两个文件，一个叫 envs，里面定义了一个环境变量，比如&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat envs
@@ -106,13 +106,13 @@ export GOPROXY=&amp;#34;test.local&amp;#34;
     </item>
     <item>
       <title>bbolt 的设计与实现</title>
-      <link>https://runzhen.github.io/posts/bbolt/</link>
+      <link>http://localhost:1313/posts/bbolt/</link>
       <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/bbolt/</guid>
+      <guid>http://localhost:1313/posts/bbolt/</guid>
       <description>&lt;p&gt;关于 bbolt 的分析，网上已经有很多资料，本文只是对资料和源码的整理，主要是自己的学习笔记，文章最后的参考资料中有更多链接。&lt;/p&gt;
 &lt;h2 id=&#34;bbolt-db-整体组织&#34;&gt;bbolt DB 整体组织&lt;/h2&gt;
 &lt;p&gt;首先，bbolt 的一个文件是一个 DB，DB 中可以有多个 table， 每一个 table 是一个 B+ 树。而这个 table 在源码中就是 bucket， 整个 DB 就是一个大 bucket，它的子节点有多个 bucket。整体结构如图所示：&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2021/bbolt/Untitled.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2021/bbolt/Untitled.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;顶层 B+ 树，比较特殊，称为 root bucket，其所有叶子节点保存的都是子 bucket B+ 树根的 page id&lt;/li&gt;
@@ -133,26 +133,25 @@ export GOPROXY=&amp;#34;test.local&amp;#34;
     </item>
     <item>
       <title>Bigtable 论文阅读笔记</title>
-      <link>https://runzhen.github.io/posts/bigtable-sstable/</link>
+      <link>http://localhost:1313/posts/bigtable-sstable/</link>
       <pubDate>Sun, 20 Jun 2021 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/bigtable-sstable/</guid>
+      <guid>http://localhost:1313/posts/bigtable-sstable/</guid>
       <description>&lt;p&gt;最近因为工作需要用到 Bigtable，而设计一个好的数据库 Schema 对于性能至关重要，因此想找一些资料看看别人是如何根据自身业务特点设计 schema 的。&lt;/p&gt;
 &lt;p&gt;在网上找到了一篇 GCP 自己的&lt;a href=&#34;https://cloud.google.com/bigtable/docs/schema-design&#34;&gt;官方文档&lt;/a&gt; , 里面提到了一些 best practice，也提到了哪些坑需要避免，然而还是看的云里雾里。 比如，&lt;/p&gt;
 &lt;p&gt;Row keys to avoid&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Row keys that start with a timestamp. This will cause sequential writes to be pushed onto a single node, creating a hotspot. If you put a timestamp in a row key, you need to precede it with a high-cardinality value like a user ID to avoid hotspotting.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;Row keys that start with a timestamp. This will cause sequential writes to be pushed onto a single node, creating a hotspot. If you put a timestamp in a row key, you need to precede it with a high-cardinality value like a user ID to avoid hotspotting.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Row keys that cause related data to not be grouped together. Avoid row keys that cause related data to be stored in non-contiguous row ranges, which are inefficient to read together.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Unicode 字符编码</title>
-      <link>https://runzhen.github.io/posts/unicode-utf8-encode/</link>
+      <link>http://localhost:1313/posts/unicode-utf8-encode/</link>
       <pubDate>Sun, 16 Aug 2020 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/unicode-utf8-encode/</guid>
+      <guid>http://localhost:1313/posts/unicode-utf8-encode/</guid>
       <description>&lt;h2 id=&#34;ascii&#34;&gt;ASCII&lt;/h2&gt;
 &lt;p&gt;我们熟悉的 ASCII 码可以说是字符编码的始祖了。它规定了常用的数字、符号、英文字母与二进制之间的对应关系。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/ascii1.gif&#34; alt=&#34;dashboard&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2020/ascii1.gif&#34; alt=&#34;dashboard&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;ASCII 的缺点是字符集太少了，只能表示英文和数字，无法表示像中文，日文这样的符号。因此人们就设计出了 Unicode 字符集，囊括了几乎所有人类语言文字的符号。&lt;/p&gt;
 &lt;h2 id=&#34;unicode&#34;&gt;Unicode&lt;/h2&gt;
@@ -167,9 +166,9 @@ export GOPROXY=&amp;#34;test.local&amp;#34;
     </item>
     <item>
       <title>用 Grafana 展示监控状态</title>
-      <link>https://runzhen.github.io/posts/grafana-dashboard/</link>
+      <link>http://localhost:1313/posts/grafana-dashboard/</link>
       <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/grafana-dashboard/</guid>
+      <guid>http://localhost:1313/posts/grafana-dashboard/</guid>
       <description>&lt;p&gt;运维或者 SRE 部门经常会弄一个大屏幕展示各种系统状态，看上去很好玩，于是我也用类似的开源软件监控一下家里的主机。&lt;/p&gt;
 &lt;p&gt;整个过程非常简单，主要是安装三个软件 Node exporter，Prometheus，Grafana。&lt;/p&gt;
 &lt;h2 id=&#34;node-exporter&#34;&gt;Node exporter&lt;/h2&gt;
@@ -192,9 +191,9 @@ export GOPROXY=&amp;#34;test.local&amp;#34;
     </item>
     <item>
       <title>CPU affinity</title>
-      <link>https://runzhen.github.io/posts/taskset/</link>
+      <link>http://localhost:1313/posts/taskset/</link>
       <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/taskset/</guid>
+      <guid>http://localhost:1313/posts/taskset/</guid>
       <description>&lt;p&gt;CPU affinity &amp;ndash; CPU 亲和性，指进程更希望运行在哪个 CPU core 上。&lt;/p&gt;
 &lt;p&gt;指定 core 有什么好处呢？&lt;/p&gt;
 &lt;ol&gt;
@@ -226,9 +225,9 @@ export GOPROXY=&amp;#34;test.local&amp;#34;
     </item>
     <item>
       <title>How TCP backlog works in Linux</title>
-      <link>https://runzhen.github.io/posts/tcp-backlog/</link>
+      <link>http://localhost:1313/posts/tcp-backlog/</link>
       <pubDate>Thu, 15 Aug 2019 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/tcp-backlog/</guid>
+      <guid>http://localhost:1313/posts/tcp-backlog/</guid>
       <description>&lt;p&gt;原文： &lt;a href=&#34;http://veithen.io/2014/01/01/how-tcp-backlog-works-in-linux.html&#34;&gt;http://veithen.io/2014/01/01/how-tcp-backlog-works-in-linux.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;当一个应用程序使用 listen() 系统调用把一个 socket fd 设置成 LISTEN 状态时，也需要指定一个 backlog 值。通常我们可以认为这个 backlog 代表这个 socket fd 可以接受最大的连接请求数。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/types.h&amp;gt;         &lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
@@ -244,9 +243,9 @@ export GOPROXY=&amp;#34;test.local&amp;#34;
     </item>
     <item>
       <title>ASLR 内核虚拟地址随机化</title>
-      <link>https://runzhen.github.io/posts/address-space-layout-randomize/</link>
+      <link>http://localhost:1313/posts/address-space-layout-randomize/</link>
       <pubDate>Sun, 07 Jul 2019 14:01:40 -0700</pubDate>
-      <guid>https://runzhen.github.io/posts/address-space-layout-randomize/</guid>
+      <guid>http://localhost:1313/posts/address-space-layout-randomize/</guid>
       <description>&lt;p&gt;ASLR 全称 Address Space Layout Randomization，是一项 Linux 内核的安全措施，使应用程序每次加载到内存后，函数地址都不同。&lt;/p&gt;
 &lt;h2 id=&#34;试用一下&#34;&gt;试用一下&lt;/h2&gt;
 &lt;p&gt;先来直观的感受下什么是 ASLR。目前大多数 linux 系统都默认开启了这个选项，可以用一下两个命令确认一下系统是否支持 ASLR。&lt;/p&gt;
@@ -283,9 +282,9 @@ export GOPROXY=&amp;#34;test.local&amp;#34;
     </item>
     <item>
       <title>Orphan, Zombie and Docker</title>
-      <link>https://runzhen.github.io/posts/orphan-zombie-and-docker/</link>
+      <link>http://localhost:1313/posts/orphan-zombie-and-docker/</link>
       <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/orphan-zombie-and-docker/</guid>
+      <guid>http://localhost:1313/posts/orphan-zombie-and-docker/</guid>
       <description>&lt;h2 id=&#34;孤儿进程的产生&#34;&gt;孤儿进程的产生&lt;/h2&gt;
 &lt;p&gt;孤儿进程： 父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。通常，孤儿进程将被进程号为1的进程(进程号为 1 的是 init 进程)所收养，并由该进程调用 wait 对孤儿进程收尸。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
@@ -321,9 +320,9 @@ I&amp;#39;m child process, pid:25355  ppid:1
     </item>
     <item>
       <title>Wireshark/tcpdump 抓到的数据包可信吗？</title>
-      <link>https://runzhen.github.io/posts/can-we-trust-wireshark/</link>
+      <link>http://localhost:1313/posts/can-we-trust-wireshark/</link>
       <pubDate>Wed, 24 Oct 2018 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/can-we-trust-wireshark/</guid>
+      <guid>http://localhost:1313/posts/can-we-trust-wireshark/</guid>
       <description>&lt;ul&gt;
 &lt;li&gt;table
 {:toc}&lt;/li&gt;
@@ -332,8 +331,7 @@ I&amp;#39;m child process, pid:25355  ppid:1
 &lt;h1 id=&#34;问题的表面现象&#34;&gt;问题的表面现象&lt;/h1&gt;
 &lt;p&gt;问题的背景是这样的：&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;一个应用程序监听某端口的 UDP 包，发送者发送的 UDP 包比较大，有 65535 个字节。显然，发送者的 UDP 包在经过 IP 层时，会被拆分层多个 1460 字节长度的 IP 分片，经过网络传输之后到达接收方，接收方的网卡收到包后，在内核协议栈的 IP 层又将分片重新组合，生成大的 UDP 包给应用程序。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;一个应用程序监听某端口的 UDP 包，发送者发送的 UDP 包比较大，有 65535 个字节。显然，发送者的 UDP 包在经过 IP 层时，会被拆分层多个 1460 字节长度的 IP 分片，经过网络传输之后到达接收方，接收方的网卡收到包后，在内核协议栈的 IP 层又将分片重新组合，生成大的 UDP 包给应用程序。&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;正常情况下，应用程序能准确无误的收到大 UDP 包，偶尔系统网络流量十分巨大的时候，会丢个别 UDP 包 ——这都在允许范围内。&lt;/p&gt;
 &lt;p&gt;突然有一天，即便网络流量不是很大的时候，UDP 包的丢包十分严重，应用程序几乎收不到任何数据包。&lt;/p&gt;
 &lt;h2 id=&#34;开始-debug&#34;&gt;开始 debug&lt;/h2&gt;
@@ -350,9 +348,9 @@ I&amp;#39;m child process, pid:25355  ppid:1
     </item>
     <item>
       <title>Linux 共享内存以及 nginx 中的实现</title>
-      <link>https://runzhen.github.io/posts/share-memory/</link>
+      <link>http://localhost:1313/posts/share-memory/</link>
       <pubDate>Tue, 04 Sep 2018 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/share-memory/</guid>
+      <guid>http://localhost:1313/posts/share-memory/</guid>
       <description>&lt;h2 id=&#34;共享内存方法简介&#34;&gt;共享内存方法简介&lt;/h2&gt;
 &lt;p&gt;Linux/Unix系统中，共享内存可以通过两个系统调用来获得，mmap 和 shmget/shm_open，其中 shmget 和 shm_open 分别属于不同的标准：&lt;/p&gt;
 &lt;ul&gt;
@@ -416,9 +414,9 @@ I&amp;#39;m child process, pid:25355  ppid:1
     </item>
     <item>
       <title>使用 socketpair 实现进程间通信</title>
-      <link>https://runzhen.github.io/posts/socketpair/</link>
+      <link>http://localhost:1313/posts/socketpair/</link>
       <pubDate>Tue, 28 Aug 2018 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/socketpair/</guid>
+      <guid>http://localhost:1313/posts/socketpair/</guid>
       <description>&lt;h2 id=&#34;socketpair-牛刀小试&#34;&gt;socketpair 牛刀小试&lt;/h2&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;int socketpair(int d, int type, int protocol, int sv[2]);
 
@@ -474,9 +472,9 @@ I&amp;#39;m child process, pid:25355  ppid:1
     </item>
     <item>
       <title>BPF -- Linux 中的 DTrace</title>
-      <link>https://runzhen.github.io/posts/linux-bpf/</link>
+      <link>http://localhost:1313/posts/linux-bpf/</link>
       <pubDate>Thu, 09 Aug 2018 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/linux-bpf/</guid>
+      <guid>http://localhost:1313/posts/linux-bpf/</guid>
       <description>&lt;p&gt;记得 5 年前刚接触 perf 的时候，还特意调研了一下不同系统上的动态和静态追踪工具，知道了 Linux 上的 SystemTap，perf。Solaris 上的 DTrace。看到绝大多数资料都说 DTrace 多么的强大好用，但是 Linux 却没有与之相提并论的工具。&lt;/p&gt;
 &lt;p&gt;最近看到 BPF 这三个字被提及的很频繁，搜索了一下发现它号称 “Linux 中的 DTrace”， 于是试着玩了一下。&lt;/p&gt;
 &lt;p&gt;BPF 全称是 &amp;ldquo;Berkeley Packet Filter&amp;rdquo;，字面意思是包过滤器，那么问题来了：&lt;strong&gt;我一个包过滤器，怎么就成了追踪调试工具呢？&lt;/strong&gt; 这主要是因为一些历史的进程：原先开发 BPF 的目的是在内核重定向数据包，接着增加了对事件的追踪功能，然后又增加了基于时间的采样，于是久而久之 BPF 就成了一个功能强大的调试工具。&lt;/p&gt;
@@ -488,12 +486,12 @@ I&amp;#39;m child process, pid:25355  ppid:1
     </item>
     <item>
       <title>SO_REUSEPORT 和 epoll 的 Thundering Herd</title>
-      <link>https://runzhen.github.io/posts/port-reuse/</link>
+      <link>http://localhost:1313/posts/port-reuse/</link>
       <pubDate>Sat, 23 Jun 2018 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/port-reuse/</guid>
+      <guid>http://localhost:1313/posts/port-reuse/</guid>
       <description>&lt;p&gt;&lt;code&gt;SO_REUSEPORT&lt;/code&gt; 顾名思义就是重用端口，是指不同的 socket 可以 bind 到同一个端口上。 Linux 内核 3.9 版本引入了这个新特性，有兴趣的同学可以移步到这个链接查看更加详细的内容。 &lt;a href=&#34;https://lwn.net/Articles/542629/&#34;&gt;https://lwn.net/Articles/542629/&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;reuse-port&#34;&gt;Reuse Port&lt;/h2&gt;
-&lt;p&gt;我们先通过一段简单的代码来看看怎么使用这个选项（完整的代码在&lt;a href=&#34;https://runzhen.github.io/image/2018/server.c&#34;&gt;这里下载&lt;/a&gt;）。&lt;/p&gt;
+&lt;p&gt;我们先通过一段简单的代码来看看怎么使用这个选项（完整的代码在&lt;a href=&#34;http://localhost:1313/image/2018/server.c&#34;&gt;这里下载&lt;/a&gt;）。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;serv_sock&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;socket&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;AF_INET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SOCK_STREAM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IPPROTO_TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// 一定要在 bind() 函数之前设定好 SO_REUSEPORT
@@ -507,17 +505,16 @@ I&amp;#39;m child process, pid:25355  ppid:1
 &lt;p&gt;&lt;code&gt;./port_reuse1 127.0.0.1 1234&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;再用 telnet/nc 等工具发送请求到 1234 端口上，多重复几次，会看到两个进程轮流的处理客户端发来的请求。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;这里说一个题外话，上面的例子是手动启动两个进程。而我发现如果是进程自动 fork() 生成 2 个进程的话，似乎不用设置 SO_REUSEPORT 也能自动监听同一个端口。这是为什么？&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;这里说一个题外话，上面的例子是手动启动两个进程。而我发现如果是进程自动 fork() 生成 2 个进程的话，似乎不用设置 SO_REUSEPORT 也能自动监听同一个端口。这是为什么？&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h2 id=&#34;thundering-herd--惊群现象&#34;&gt;Thundering Herd / 惊群现象&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;The thundering herd problem occurs when a large number of processes waiting for an event are awoken when that event occurs, but only one process is able to proceed at a time. After the processes wake up, they all demand the resource and a decision must be made as to which process can continue. After the decision is made, the remaining processes are put back to sleep, only to all wake up again to request access to the resource.&lt;/p&gt;</description>
     </item>
     <item>
       <title>如何拦截库函数调用 ? </title>
-      <link>https://runzhen.github.io/posts/hook-syscall/</link>
+      <link>http://localhost:1313/posts/hook-syscall/</link>
       <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/hook-syscall/</guid>
+      <guid>http://localhost:1313/posts/hook-syscall/</guid>
       <description>&lt;ul&gt;
 &lt;li&gt;&lt;code&gt;LD_PRELOAD 环境变量&lt;/code&gt; : 直接作用在可执行文件上 (准确的说是&lt;strong&gt;拦截库函数&lt;/strong&gt;) 。&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;ptrace()&lt;/code&gt; : 拦截子进程的系统调用。&lt;/li&gt;
@@ -543,12 +540,12 @@ I&amp;#39;m child process, pid:25355  ppid:1
     </item>
     <item>
       <title>TCP 的 FIN_WAIT1 状态</title>
-      <link>https://runzhen.github.io/posts/tcp-fin-wait/</link>
+      <link>http://localhost:1313/posts/tcp-fin-wait/</link>
       <pubDate>Wed, 09 Aug 2017 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/tcp-fin-wait/</guid>
+      <guid>http://localhost:1313/posts/tcp-fin-wait/</guid>
       <description>&lt;p&gt;最近看到了一篇有关 TCP 关闭连接时 FIN-WAIT1 状态的文章（见参考资料），觉得很有意思，于是也在自己的电脑上验证了一下。&lt;/p&gt;
 &lt;p&gt;首先，开局一张图：&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2017/tcpclose.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2017/tcpclose.png&#34; alt=&#34;&#34;  /&gt;
 {:height=&amp;ldquo;300&amp;rdquo; width=&amp;ldquo;300&amp;rdquo;}&lt;/p&gt;
 &lt;p&gt;FIN-WAIT1 状态出现在 &lt;code&gt;主动关闭链接方&lt;/code&gt;发出 FIN 报文后，收到对应 ACK 之前。通常 Server 在收到 FIN 报文之后，会在很短的时间内回复 ACK（这个 ACK 可能携带数据，也可能只是一个纯 ACK），所以 FIN-WAIT1 状态存在的时间非常短暂，很难被观察到。&lt;/p&gt;
 &lt;p&gt;于是准备两台虚拟机，我们可以设计这样一个实验：&lt;/p&gt;
@@ -562,9 +559,9 @@ tcp        0      0 192.168.122.167:60482   192.168.122.183:1234    ESTABLISHED 
     </item>
     <item>
       <title>Linux 内核在 x86-64 上的内存分区</title>
-      <link>https://runzhen.github.io/posts/zone-highmem/</link>
+      <link>http://localhost:1313/posts/zone-highmem/</link>
       <pubDate>Thu, 02 Jan 2014 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/zone-highmem/</guid>
+      <guid>http://localhost:1313/posts/zone-highmem/</guid>
       <description>&lt;p&gt;如果稍微了解过 Linux 内核的内存管理，那么对内存分区的概念一定不陌生，Linux内核把物理内存分成了3个区，&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;0 – 16M 为ZONE_DMA区,&lt;/li&gt;
@@ -575,7 +572,7 @@ tcp        0      0 192.168.122.167:60482   192.168.122.183:1234    ESTABLISHED 
 &lt;p&gt;在CPU还是32位的时代，CPU最大的物理寻址范围是0-4G， 在这里为了方便讨论，我们不考虑物理地址扩展（PAE）。进程的虚拟地址空间也是 4G，Linux内核把 0-3G虚拟地址空间作为用户空间，3G-4G虚拟地址空间作为内核空间。&lt;/p&gt;
 &lt;p&gt;目前几乎所有介绍Linux内存管理的书籍还是停留在32位寻址的时代，所以大家对下面这张图一定很熟悉！
 （这个图画得非常详细，本篇文章我们关注的重点是 3个分区 以及最右边的线性地址空间，也就是虚拟地址空间之间的关系，另外，应该是ZONE_DMA， ZONE_NORMAL, ZONE_HIGHMEM, 图中把ZONE 写成了ZUNE）&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2014/zone1.gif&#34; alt=&#34;zone1&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2014/zone1.gif&#34; alt=&#34;zone1&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;然而，现在是64位的时代了, 64位CPU的寻址空间是多大呢？ &lt;code&gt;16EB， 1EB = 1024 TB = 1024 * 1024 GB&lt;/code&gt;，我想很多人这辈子还没见过大于1TB的内存吧，事实上也是这样，几乎没有哪个服务器能有16EB的内存，实现64位长的地址只会增加系统的复杂度和地址转换的成本，所以目前的&lt;code&gt;x86_64&lt;/code&gt;架构CPU都遵循AMD的 Canonical Form, &lt;code&gt;即只有虚拟地址的最低48位才会在地址转换时被使用, 且任何虚拟地址的48位至63位必须与47位一致&lt;/code&gt;, 也就是说总的虚拟地址空间为&lt;strong&gt;256TB&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;那么在64位架构下，如何分配虚拟地址空间的呢？&lt;/p&gt;
@@ -585,16 +582,16 @@ tcp        0      0 192.168.122.167:60482   192.168.122.183:1234    ESTABLISHED 
 &lt;/ol&gt;
 &lt;p&gt;而且内核空间中有很多空洞, 越过第一个空洞后, &lt;code&gt;ffff880000000000 – ffffc7ffffffffff(64TB)&lt;/code&gt; 才是直接映射物理内存的区域, 也就是说默认的PAGE_OFFSET为 ffff880000000000.&lt;/p&gt;
 &lt;p&gt;请关注下图的最左边，这就是目前64位的虚拟地址布局。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2014/x86mem.png&#34; alt=&#34;&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2014/x86mem.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;在本文的一开头提到的物理内存分区 ZONE_DMA， ZONE_NORMAL， ZONE_HIGHMEM 就是与内核虚拟地址的直接映射有关的，如果读者不了解 内核直接映射物理地址这个概念的话，建议你去google一下，这个很简单的一一映射的概念。&lt;/p&gt;
 &lt;p&gt;既然现在内核直接映射的物理内存区域有64TB， 而且一般情况下，极少有计算机的内存能达到64TB（别说64TB了，1TB内存的也很少很少），所以整个内核虚拟地址空间都能够一一映射到计算机的物理内存上，因此，不再需要 ZONE_HIGHMEM这个分区了，现在对物理内存的划分，只有ZONE_DMA， ZONE_NORMAL。&lt;/p&gt;</description>
     </item>
     <item>
       <title>用GDB追踪glibc代码执行过程</title>
-      <link>https://runzhen.github.io/posts/trace-glibc-by-using-gdb/</link>
+      <link>http://localhost:1313/posts/trace-glibc-by-using-gdb/</link>
       <pubDate>Tue, 27 Mar 2012 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/trace-glibc-by-using-gdb/</guid>
+      <guid>http://localhost:1313/posts/trace-glibc-by-using-gdb/</guid>
       <description>&lt;p&gt;首先需要安装一下额外的工具包，一个是 libc6-dbg，这是带有debug symbol信息的 libc.so；另一个是libc6-dev，这是glibc的源代码，获取之后我们就可以在gdb中查看代码了。&lt;/p&gt;
 &lt;p&gt;在Ubuntu/Debian 系统上，我们可以通过以下2条命令获得：&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;$sudo apt-get install libc6-dbg&lt;/code&gt;&lt;/p&gt;
@@ -613,7 +610,7 @@ tcp        0      0 192.168.122.167:60482   192.168.122.183:1234    ESTABLISHED 
 然后开启gdb调试 $gdb fork&lt;/p&gt;
 &lt;p&gt;在开始调试之前，需要指定一下刚刚获得的带有libc6-dev源码文件夹的路径，比如我把这些源码放在了 ~/glibc/lib 文件夹下，通常一般程序需要的是stdio-common这个目录内的文件，&lt;/p&gt;
 &lt;p&gt;于是输入 &lt;code&gt;(gdb) directory ~/glibc/lib/stdio-common&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2012/gdb.png&#34; alt=&#34;gdb&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2012/gdb.png&#34; alt=&#34;gdb&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;注意看其中几条命令的用法。&lt;/p&gt;
 &lt;p&gt;程序在调用fork函数后，其实执行的是glibc包装过的__libc_fork ，并且我们可以查看其源代码。
@@ -631,9 +628,9 @@ in genops.c&lt;/p&gt;</description>
     </item>
     <item>
       <title>从书上的一个错误说 Buffer Overflow</title>
-      <link>https://runzhen.github.io/posts/buffer-overflow/</link>
+      <link>http://localhost:1313/posts/buffer-overflow/</link>
       <pubDate>Sat, 01 Oct 2011 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/buffer-overflow/</guid>
+      <guid>http://localhost:1313/posts/buffer-overflow/</guid>
       <description>&lt;p&gt;时间倒回到2011年5月的一天，大学的最后一门课《计算机信息安全技术》，讲到《缓冲区溢出》这一章，并且给出了一段示例代码来演示缓冲区溢出，回到宿舍后出于好奇我运行了一下这段代码，发现结果并不是书上所说的那样，当时在人人网也发过一篇吐槽的日志，但是一直拖到现在都没有仔细的去研究过，正好现在十一放假没事，就花点时间搞搞啦。&lt;/p&gt;
 &lt;p&gt;书第136页-137页。代码如下，出于简单考虑（其实书上的C++代码格式也是错的），我除去了头文件和cout函数，这样就跟纯C语言代码是一样了。&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void function(int a)
@@ -683,9 +680,9 @@ main:
     </item>
     <item>
       <title>《编程珠玑》Maximum Subarray </title>
-      <link>https://runzhen.github.io/posts/maximum-subarray/</link>
+      <link>http://localhost:1313/posts/maximum-subarray/</link>
       <pubDate>Tue, 19 Jul 2011 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/maximum-subarray/</guid>
+      <guid>http://localhost:1313/posts/maximum-subarray/</guid>
       <description>&lt;ul&gt;
 &lt;li&gt;Table
 {:toc}&lt;/li&gt;
@@ -698,7 +695,7 @@ main:
 &lt;p&gt;解法1、解法2略。&lt;/p&gt;
 &lt;h3 id=&#34;解法-3分治法&#34;&gt;解法 3：分治法&lt;/h3&gt;
 &lt;p&gt;复杂度为O(nlogn)。 分治法在结构上是递归的，在保证不改变原问题的条件下，将问题的规模减小，生成多个子问题，并多次递归调用自身来解决子问题，之后再将子问题的求解结果合并成原问题的解。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2011/subarray1.jpg&#34; alt=&#34;sub&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2011/subarray1.jpg&#34; alt=&#34;sub&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;对于case1，我们只要比较 &lt;code&gt;ma&lt;/code&gt; 和 &lt;code&gt;mb&lt;/code&gt; 的大小就可以得出原数组的最大子串的和了。 &lt;br&gt;
 对于case2, 只要把ma和mb相加即可。以上只是将问题一次分解的过程，我们还需要将问题再分解直到不能在分解或是能直接得出结果为止。&lt;/p&gt;

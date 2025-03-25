@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Distributed on Mind in the Wind</title>
-    <link>https://runzhen.github.io/tags/distributed/</link>
+    <link>http://localhost:1313/tags/distributed/</link>
     <description>Recent content in Distributed on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sat, 03 Oct 2020 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/tags/distributed/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/distributed/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Spanner Distributed Database 阅读</title>
-      <link>https://runzhen.github.io/posts/spanner-paper-reading/</link>
+      <link>http://localhost:1313/posts/spanner-paper-reading/</link>
       <pubDate>Sat, 03 Oct 2020 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/spanner-paper-reading/</guid>
+      <guid>http://localhost:1313/posts/spanner-paper-reading/</guid>
       <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;Spanner 数据库中的数据是分片(Shard)分散存储在多个数据中心的，数据是用 Paxos 算法(状态机)保证一致性。如果数据中心发生变化，Spanner 自动做 reshard。&lt;/p&gt;
 &lt;p&gt;Spanner 中的数据是存储在 schematized semi-relational table 上的。 在 commit 的时候把 timestamp 作为数据的 version。老版本的数据可以被垃圾回收，client 也可以读老数据。&lt;/p&gt;
@@ -29,7 +29,7 @@
 &lt;p&gt;能实现以上两点，是因为 Spanner 可以分配全球范围内保持一致的 commit timestamp。Spanner 的 timestamp 靠 TrueTime API 实现，甚至可以用 GPS 和原子钟来提高 TrueTime API 的精度。&lt;/p&gt;
 &lt;h2 id=&#34;implementation&#34;&gt;Implementation&lt;/h2&gt;
 &lt;p&gt;一个 Spanner 集群被称为一个 universe，如下图所示&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/spanner1.png&#34; alt=&#34;dashboard&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2020/spanner1.png&#34; alt=&#34;dashboard&#34;  /&gt;
 &lt;/p&gt;
 &lt;p&gt;Spanner 被组织成许多个 zone 的集合，zone 是管理部署的基本单元。一个数据中心可能会有多个 zone，zone 也是物理隔离的单元，例如，两个不同应用的数据就会被分散在两个 zone 上。&lt;/p&gt;
 &lt;ul&gt;

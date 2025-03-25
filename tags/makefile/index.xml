@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Makefile on Mind in the Wind</title>
-    <link>https://runzhen.github.io/tags/makefile/</link>
+    <link>http://localhost:1313/tags/makefile/</link>
     <description>Recent content in Makefile on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 26 Sep 2021 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/tags/makefile/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/makefile/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Makefile 的几个语法坑</title>
-      <link>https://runzhen.github.io/posts/makefile-syntax-pitfalls/</link>
+      <link>http://localhost:1313/posts/makefile-syntax-pitfalls/</link>
       <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/makefile-syntax-pitfalls/</guid>
+      <guid>http://localhost:1313/posts/makefile-syntax-pitfalls/</guid>
       <description>&lt;p&gt;Makefile 和 Bash script 在使用的过程中有很多奇奇怪怪的坑，本文做一下纪录。&lt;/p&gt;
 &lt;p&gt;首先，有两个文件，一个叫 envs，里面定义了一个环境变量，比如&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat envs

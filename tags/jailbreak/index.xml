@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Jailbreak on Mind in the Wind</title>
-    <link>https://runzhen.github.io/tags/jailbreak/</link>
+    <link>http://localhost:1313/tags/jailbreak/</link>
     <description>Recent content in Jailbreak on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 13 Sep 2009 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/tags/jailbreak/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/jailbreak/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>iPhone 3G 越狱 (内置卡贴版)</title>
-      <link>https://runzhen.github.io/posts/jailbreak-iphone/</link>
+      <link>http://localhost:1313/posts/jailbreak-iphone/</link>
       <pubDate>Sun, 13 Sep 2009 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/jailbreak-iphone/</guid>
+      <guid>http://localhost:1313/posts/jailbreak-iphone/</guid>
       <description>&lt;p&gt;泡了N久论坛，看了N多帖子以后终于成功的把 iPhone 3G 有内置卡贴的手机成功的破解，并且抽出了卡贴，越狱成功，可以用任何移动运营商的手机卡了！&lt;/p&gt;
 &lt;p&gt;哦耶！散花庆祝！（如果不懂什么是“越狱”请自行补习相关知识 ）&lt;/p&gt;
 &lt;p&gt;说一下我的经验心得：&lt;/p&gt;
@@ -25,13 +25,13 @@
 &lt;p&gt;2、下面说下我这次破解跟别人的不同之处。如果你的iPhone也非常不幸的是内置卡贴的话，可以参考我的方法，不用拆开手机。我是用了一根绣花针（一定要细小，但是要结实），在放SIM卡的开口处挑的，先用很薄的小刀沿着SIM卡开口把卡贴（一般是一根屎黄色的带子）划断，很容易划断的，然后用针一点一点把它的挑出来，你挑不出来的部分就让他在里面，没事的，关键是要把挡在SIM下面的卡贴去掉，下图就有这个万恶的卡贴！！（这个过程如有疑问欢迎通过邮件联系我^_^）&lt;/p&gt;
 &lt;p&gt;下面放图，分享一下～～&lt;/p&gt;
 &lt;p&gt;先来一张万恶的卡贴：&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2009/iphone1.jpg&#34; alt=&#34;pic1&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2009/iphone1.jpg&#34; alt=&#34;pic1&#34;  /&gt;
 &lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2009/iphone2.png&#34; alt=&#34;pic2&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2009/iphone2.png&#34; alt=&#34;pic2&#34;  /&gt;
 &lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2009/iphone3.png&#34; alt=&#34;pic2&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2009/iphone3.png&#34; alt=&#34;pic2&#34;  /&gt;
 &lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2009/iphone4.png&#34; alt=&#34;pic2&#34;  /&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/image/2009/iphone4.png&#34; alt=&#34;pic2&#34;  /&gt;
 &lt;/p&gt;</description>
     </item>
   </channel>

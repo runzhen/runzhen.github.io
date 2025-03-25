@@ -2,28 +2,27 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Bigtable on Mind in the Wind</title>
-    <link>https://runzhen.github.io/tags/bigtable/</link>
+    <link>http://localhost:1313/tags/bigtable/</link>
     <description>Recent content in Bigtable on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Sun, 20 Jun 2021 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/tags/bigtable/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/tags/bigtable/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Bigtable 论文阅读笔记</title>
-      <link>https://runzhen.github.io/posts/bigtable-sstable/</link>
+      <link>http://localhost:1313/posts/bigtable-sstable/</link>
       <pubDate>Sun, 20 Jun 2021 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/bigtable-sstable/</guid>
+      <guid>http://localhost:1313/posts/bigtable-sstable/</guid>
       <description>&lt;p&gt;最近因为工作需要用到 Bigtable，而设计一个好的数据库 Schema 对于性能至关重要，因此想找一些资料看看别人是如何根据自身业务特点设计 schema 的。&lt;/p&gt;
 &lt;p&gt;在网上找到了一篇 GCP 自己的&lt;a href=&#34;https://cloud.google.com/bigtable/docs/schema-design&#34;&gt;官方文档&lt;/a&gt; , 里面提到了一些 best practice，也提到了哪些坑需要避免，然而还是看的云里雾里。 比如，&lt;/p&gt;
 &lt;p&gt;Row keys to avoid&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Row keys that start with a timestamp. This will cause sequential writes to be pushed onto a single node, creating a hotspot. If you put a timestamp in a row key, you need to precede it with a high-cardinality value like a user ID to avoid hotspotting.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;Row keys that start with a timestamp. This will cause sequential writes to be pushed onto a single node, creating a hotspot. If you put a timestamp in a row key, you need to precede it with a high-cardinality value like a user ID to avoid hotspotting.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Row keys that cause related data to not be grouped together. Avoid row keys that cause related data to be stored in non-contiguous row ranges, which are inefficient to read together.&lt;/p&gt;</description>
     </item>

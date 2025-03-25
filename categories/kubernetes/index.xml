@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Kubernetes on Mind in the Wind</title>
-    <link>https://runzhen.github.io/categories/kubernetes/</link>
+    <link>http://localhost:1313/categories/kubernetes/</link>
     <description>Recent content in Kubernetes on Mind in the Wind</description>
     <image>
       <title>Mind in the Wind</title>
-      <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
-      <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+      <url>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>http://localhost:1313/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.135.0</generator>
+    <generator>Hugo -- 0.145.0</generator>
     <language>en</language>
     <lastBuildDate>Mon, 20 Jan 2020 20:22:33 -0800</lastBuildDate>
-    <atom:link href="https://runzhen.github.io/categories/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/categories/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Kubernetes 部署 Tensorflow Serving</title>
-      <link>https://runzhen.github.io/posts/kubernetes-tensorflow-serving/</link>
+      <link>http://localhost:1313/posts/kubernetes-tensorflow-serving/</link>
       <pubDate>Mon, 20 Jan 2020 20:22:33 -0800</pubDate>
-      <guid>https://runzhen.github.io/posts/kubernetes-tensorflow-serving/</guid>
+      <guid>http://localhost:1313/posts/kubernetes-tensorflow-serving/</guid>
       <description>&lt;p&gt;本文记录如何把 TensorFlow ResNet 模型部署在&lt;strong&gt;本地 Kubernetes&lt;/strong&gt; 集群上，并提供一个 grpc 端口供集群外部访问。&lt;/p&gt;
 &lt;p&gt;本文不牵涉 ResNet（Deep residual networks）模型的实现细节，只讨论部署。&lt;/p&gt;
 &lt;p&gt;本文来源于 TensorFlow 官网上的一个例子，但正如大多数项目的文档一样，文档落后于项目的发展，因此有一些小坑，这里记录一下。&lt;/p&gt;
@@ -42,9 +42,9 @@
     </item>
     <item>
       <title>Kubernetes DNS</title>
-      <link>https://runzhen.github.io/posts/kubernetes-dns/</link>
+      <link>http://localhost:1313/posts/kubernetes-dns/</link>
       <pubDate>Sun, 19 Jan 2020 21:47:47 -0800</pubDate>
-      <guid>https://runzhen.github.io/posts/kubernetes-dns/</guid>
+      <guid>http://localhost:1313/posts/kubernetes-dns/</guid>
       <description>&lt;p&gt;在介绍 Kubernetes 中的 DNS 之前，我们先来看看 Kubernetes 中的另一个概念 &lt;code&gt;Service&lt;/code&gt;，以及为什么需要 Service。&lt;/p&gt;
 &lt;h2 id=&#34;什么是-service&#34;&gt;什么是 Service&lt;/h2&gt;
 &lt;p&gt;我们知道 k8s 集群中应用的部署是以 Pod 为单位的，在 Pod 内执行 ifconfig 可以看到每个 Pod 都有自己的 IP，这个 IP 在集群内部是唯一的，其他 Pod 都能 ping 这个地址。&lt;/p&gt;
@@ -59,9 +59,9 @@
     </item>
     <item>
       <title>安装 Kubernetes Dashboard</title>
-      <link>https://runzhen.github.io/posts/kubernetes-dashboard/</link>
+      <link>http://localhost:1313/posts/kubernetes-dashboard/</link>
       <pubDate>Sat, 18 Jan 2020 23:07:24 -0800</pubDate>
-      <guid>https://runzhen.github.io/posts/kubernetes-dashboard/</guid>
+      <guid>http://localhost:1313/posts/kubernetes-dashboard/</guid>
       <description>&lt;p&gt;Kubernetes Dashboard 是一个 Web UI 的集群管理工具。项目主页在&lt;a href=&#34;https://github.com/kubernetes/dashboard&#34;&gt;这里&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;首先根据它的主页上 README 里面的内容直接 &lt;code&gt;kubectl apply -f recommended.yaml&lt;/code&gt;，这样集群中就会创建并运行 dashboard 的 POD。&lt;/p&gt;
 &lt;p&gt;接下来的问题是如何从外界访问到这个 UI。&lt;/p&gt;
@@ -80,9 +80,9 @@
     </item>
     <item>
       <title>本地搭建三节点 Kubenetes</title>
-      <link>https://runzhen.github.io/posts/kubenetes-cluster-from-scratch/</link>
+      <link>http://localhost:1313/posts/kubenetes-cluster-from-scratch/</link>
       <pubDate>Sat, 28 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>https://runzhen.github.io/posts/kubenetes-cluster-from-scratch/</guid>
+      <guid>http://localhost:1313/posts/kubenetes-cluster-from-scratch/</guid>
       <description>&lt;p&gt;赶在 2019 年快结束之际，写一篇博客作为本年度的收官之作吧。&lt;/p&gt;
 &lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;虽然现在各大云平台厂商都提供了一键搭建 kubenetes 的服务，但缺点是费用太贵了，如果仅仅把它作为自己没事折腾的小玩具非常不划算，另外虽然也可以用公司的账号，但并不想把自己的折腾的东西跟工作混为一谈。&lt;/p&gt;
@@ -93,30 +93,30 @@
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;主机名&lt;/th&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;主机 IP&lt;/th&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;OS&lt;/th&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;集群角色&lt;/th&gt;
+          &lt;th&gt;主机名&lt;/th&gt;
+          &lt;th&gt;主机 IP&lt;/th&gt;
+          &lt;th&gt;OS&lt;/th&gt;
+          &lt;th&gt;集群角色&lt;/th&gt;
       &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
       &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;192-168-56-10.master&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;192.168.56.10&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Ubuntu 18.04&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;master&lt;/td&gt;
+          &lt;td&gt;192-168-56-10.master&lt;/td&gt;
+          &lt;td&gt;192.168.56.10&lt;/td&gt;
+          &lt;td&gt;Ubuntu 18.04&lt;/td&gt;
+          &lt;td&gt;master&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;192-168-56-11.node&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;192.168.56.11&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Ubuntu 18.04&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;node1&lt;/td&gt;
+          &lt;td&gt;192-168-56-11.node&lt;/td&gt;
+          &lt;td&gt;192.168.56.11&lt;/td&gt;
+          &lt;td&gt;Ubuntu 18.04&lt;/td&gt;
+          &lt;td&gt;node1&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;192-168-56-12.node&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;192.168.56.12&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;Ubuntu 18.04&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;node2&lt;/td&gt;
+          &lt;td&gt;192-168-56-12.node&lt;/td&gt;
+          &lt;td&gt;192.168.56.12&lt;/td&gt;
+          &lt;td&gt;Ubuntu 18.04&lt;/td&gt;
+          &lt;td&gt;node2&lt;/td&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
