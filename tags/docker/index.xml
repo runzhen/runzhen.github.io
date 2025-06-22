@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.145.0</generator>
+    <generator>Hugo -- 0.125.1</generator>
     <language>en</language>
     <lastBuildDate>Mon, 17 May 2021 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
@@ -18,108 +18,49 @@
       <link>https://runzhen.github.io/posts/docker-exec-io-stream/</link>
       <pubDate>Mon, 17 May 2021 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/docker-exec-io-stream/</guid>
-      <description>&lt;p&gt;&lt;code&gt;docker exec&lt;/code&gt; 命令的作用是进入到“容器内部”，并执行一些命令，那么它是如何实现把“容器内部”的 io 重定向到我们的终端(bash) 的呢？&lt;/p&gt;
-&lt;h2 id=&#34;基本原理&#34;&gt;基本原理&lt;/h2&gt;
-&lt;p&gt;首先，要明白容器所依赖的内核 namespace 的概念，其实不存在“容器内部”，只要两个进程在相同的 namespace，那它们就相互可见，从用户的角度来说，也就是进入了容器內部。&lt;/p&gt;
-&lt;h2 id=&#34;nsenter&#34;&gt;nsenter&lt;/h2&gt;
-&lt;p&gt;nsenter 是一个命令行工具，它可以运行一个 binary，并且把它加入到指定的 namespace 中。&lt;/p&gt;
-&lt;p&gt;用法如下,&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nsenter -h 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nsenter -a -t &amp;lt;pid&amp;gt; &amp;lt;command&amp;gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nsenter -m -u -i -n -p -t &amp;lt;pid&amp;gt; &amp;lt;command&amp;gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;假设有一个 redis container 正在运行，通过 &lt;code&gt;docker inspect --format {{.State.Pid}}&lt;/code&gt; 获取 pid, 假设为 2929。&lt;/p&gt;
-&lt;p&gt;然后运行 nsenter 命令：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# nsenter -a -t 2929 ps aux &lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;redis        &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;  0.0  0.0  &lt;span class=&#34;m&#34;&gt;52968&lt;/span&gt;  &lt;span class=&#34;m&#34;&gt;7744&lt;/span&gt; ?        Ssl  May17   0:19 redis-server *:6379
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root        &lt;span class=&#34;m&#34;&gt;93&lt;/span&gt;  0.0  0.0   &lt;span class=&#34;m&#34;&gt;7640&lt;/span&gt;  &lt;span class=&#34;m&#34;&gt;2748&lt;/span&gt; ?        R+   05:47   0:00 ps aux
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;可以看到，ps 命令输出了 “容器內部” 的进程： redis 和 ps，符合我们的预期。&lt;/p&gt;</description>
+      <description>docker exec 命令的作用是进入到“容器内部”，并执行一些命令，那么它是如何实现把“容器内部”的 io 重定向到我们的终端(bash) 的呢？
+基本原理 首先，要明白容器所依赖的内核 namespace 的概念，其实不存在“容器内部”，只要两个进程在相同的 namespace，那它们就相互可见，从用户的角度来说，也就是进入了容器內部。
+nsenter nsenter 是一个命令行工具，它可以运行一个 binary，并且把它加入到指定的 namespace 中。
+用法如下,
+nsenter -h nsenter -a -t &amp;lt;pid&amp;gt; &amp;lt;command&amp;gt; nsenter -m -u -i -n -p -t &amp;lt;pid&amp;gt; &amp;lt;command&amp;gt; 假设有一个 redis container 正在运行，通过 docker inspect --format {{.State.Pid}} 获取 pid, 假设为 2929。
+然后运行 nsenter 命令：
+# nsenter -a -t 2929 ps aux USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND redis 1 0.0 0.</description>
     </item>
     <item>
       <title>Docker 的 privileged 模式</title>
       <link>https://runzhen.github.io/posts/docker-privileged/</link>
       <pubDate>Sun, 18 Oct 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/docker-privileged/</guid>
-      <description>&lt;p&gt;无论是 docker 启动一个 container 还是在 k8s 中 deploy 一个 Pod 都可以指定 privileged 参数，之前在 Pod 的 spec YAML file 也里曾经用过，但是一直没有仔细想过加上这个参数后有什么不一样，今天就来研究一下。&lt;/p&gt;
-&lt;p&gt;首先来看一个最直观的对比，先运行一个没有 privileged 的容器：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ docker run --rm -it ubuntu:18.04 bash
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@e6f5f42c5b7e:/# ls /dev/
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;console  core  fd  full  mqueue  null  ptmx  pts  
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@e6f5f42c5b7e:/# fdisk -l
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;再来看看如果加上了 privileged 会有什么不一样：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ docker run --rm -it --privileged ubuntu:18.04 bash
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@8e28f79eec9e:/# ls /dev/
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tty11  tty2   tty28  tty36  tty44  tty52  tty60  
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@8e28f79eec9e:/# fdisk -l
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Disk /dev/loop0: 97.1 MiB, &lt;span class=&#34;m&#34;&gt;101777408&lt;/span&gt; bytes, &lt;span class=&#34;m&#34;&gt;198784&lt;/span&gt; sectors
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Units: sectors of &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; * &lt;span class=&#34;nv&#34;&gt;512&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Sector size &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;logical/physical&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;: &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes / &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;I/O size &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;minimum/optimal&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;: &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes / &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; bytes
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;不止能看到设备文件，甚至还能 mount 宿主机的文件系统，&lt;/p&gt;</description>
+      <description>无论是 docker 启动一个 container 还是在 k8s 中 deploy 一个 Pod 都可以指定 privileged 参数，之前在 Pod 的 spec YAML file 也里曾经用过，但是一直没有仔细想过加上这个参数后有什么不一样，今天就来研究一下。
+首先来看一个最直观的对比，先运行一个没有 privileged 的容器：
+$ docker run --rm -it ubuntu:18.04 bash root@e6f5f42c5b7e:/# ls /dev/ console core fd full mqueue null ptmx pts root@e6f5f42c5b7e:/# fdisk -l 再来看看如果加上了 privileged 会有什么不一样：
+$ docker run --rm -it --privileged ubuntu:18.04 bash root@8e28f79eec9e:/# ls /dev/ tty11 tty2 tty28 tty36 tty44 tty52 tty60 ... ... root@8e28f79eec9e:/# fdisk -l Disk /dev/loop0: 97.</description>
     </item>
     <item>
       <title>Orphan, Zombie and Docker</title>
       <link>https://runzhen.github.io/posts/orphan-zombie-and-docker/</link>
       <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/orphan-zombie-and-docker/</guid>
-      <description>&lt;h2 id=&#34;孤儿进程的产生&#34;&gt;孤儿进程的产生&lt;/h2&gt;
-&lt;p&gt;孤儿进程： 父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。通常，孤儿进程将被进程号为1的进程(进程号为 1 的是 init 进程)所收养，并由该进程调用 wait 对孤儿进程收尸。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;I&amp;#39;m child process, pid:%d  ppid:%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getppid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;I&amp;#39;m child process, pid:%d  ppid:%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getppid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;I&amp;#39;m father process, pid:%d  ppid:%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getppid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;());&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;father process is  exited.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行结果如下所示：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;I&amp;#39;m father process, pid:25354  ppid:13981
-I&amp;#39;m child process, pid:25355  ppid:25354
-father process is  exited.
-
-I&amp;#39;m child process, pid:25355  ppid:1
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;一般来说，孤儿进程并没有什么危害，因为当孤儿进程结束的时候，init 进程会调用 wait 来处理。&lt;/p&gt;
-&lt;p&gt;但是当到了 Docker 环境下是不是还是这样呢？ 本文第三节再详细说明。&lt;/p&gt;</description>
+      <description>孤儿进程的产生 孤儿进程： 父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。通常，孤儿进程将被进程号为1的进程(进程号为 1 的是 init 进程)所收养，并由该进程调用 wait 对孤儿进程收尸。
+#include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;errno.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; int main() { pid_t pid; pid = fork(); if (pid == 0) { printf(&amp;#34;I&amp;#39;m child process, pid:%d ppid:%d\n&amp;#34;, getpid(), getppid()); sleep(5); printf(&amp;#34;I&amp;#39;m child process, pid:%d ppid:%d\n&amp;#34;, getpid(), getppid()); } else { printf(&amp;#34;I&amp;#39;m father process, pid:%d ppid:%d\n&amp;#34;, getpid(), getppid()); sleep(1); printf(&amp;#34;father process is exited.\n&amp;#34;); } return 0; } 运行结果如下所示：
+I&amp;#39;m father process, pid:25354 ppid:13981I&amp;#39;m child process, pid:25355 ppid:25354father process is exited.</description>
     </item>
     <item>
       <title>容器化博客的编译环境</title>
       <link>https://runzhen.github.io/posts/dockerize-blog/</link>
       <pubDate>Wed, 16 May 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/dockerize-blog/</guid>
-      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
-&lt;p&gt;在上一篇博客 &lt;a href=&#34;posts/wordpress-to-jekyll/&#34;&gt;从 Wordpress 到 Jekyll&lt;/a&gt; 中，提到了把博客从原来的 Workpress 迁移到了 Jekyll, 开始用 Markdown 语法写博客正文，用 &lt;code&gt;jekyll build&lt;/code&gt; 生成博客内容并部署到 Web 服务器。&lt;/p&gt;
-&lt;p&gt;最近这两天在考虑把 &amp;ldquo;jekyll build&amp;rdquo; 这个过程容器化，达到传说中 &lt;strong&gt;一次部署到处运行&lt;/strong&gt; 的终极目标。 :-)&lt;/p&gt;
-&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
-&lt;p&gt;废话不多说，开始折腾。 首先要制定一下具体的目标：&lt;/p&gt;
-&lt;p&gt;jekyll build 是将 Markdown 语法写成的纯文本文件生成 html 文件，这也是我希望将它容器化的部分，因为我并不希望再次搭建 jekyll 的环境，只要有一个稳定能用的编译环境就可以了。&lt;/p&gt;
-&lt;p&gt;生成了 html 文件以后，拷贝到 nginx 的目录下，这样就可以通过浏览器访问博客内容了，一般来说也可以将 nginx 运行在容器里面。&lt;/p&gt;
-&lt;p&gt;但是我目前在学习 nginx 源码，希望时不时的能把我修改过的 nginx 部署到博客上，因此，&lt;code&gt;不容器化 nginx&lt;/code&gt; 。&lt;/p&gt;
-&lt;h2 id=&#34;步骤&#34;&gt;步骤&lt;/h2&gt;
-&lt;p&gt;首先去 &lt;a href=&#34;https://hub.docker.com/r/runzhen/&#34;&gt;docker hub&lt;/a&gt; 上找了一个可用的镜像 jekyll/jekyll，这个镜像已经部署好了一个基本的 jekyll 环境。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;docker pull jekyll/jekyll:latest&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;然后启动这个镜像并进入到容器中。&lt;/p&gt;
-&lt;p&gt;这一步如果非常清楚需要安装哪些软件的话可以用 Dockerfile 代替完成。我在这里直接进入到容器中是因为并不清楚需要安装哪些依赖软件，需要一步一步 debug。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;docker run --rm --volume=/LOCAL_DIR:/srv/jekyll -it jekyll/jekyll  /bin/bash&lt;/code&gt;&lt;/p&gt;</description>
+      <description>前言 在上一篇博客 从 Wordpress 到 Jekyll 中，提到了把博客从原来的 Workpress 迁移到了 Jekyll, 开始用 Markdown 语法写博客正文，用 jekyll build 生成博客内容并部署到 Web 服务器。
+最近这两天在考虑把 &amp;ldquo;jekyll build&amp;rdquo; 这个过程容器化，达到传说中 一次部署到处运行 的终极目标。 :-)
+目标 废话不多说，开始折腾。 首先要制定一下具体的目标：
+jekyll build 是将 Markdown 语法写成的纯文本文件生成 html 文件，这也是我希望将它容器化的部分，因为我并不希望再次搭建 jekyll 的环境，只要有一个稳定能用的编译环境就可以了。
+生成了 html 文件以后，拷贝到 nginx 的目录下，这样就可以通过浏览器访问博客内容了，一般来说也可以将 nginx 运行在容器里面。
+但是我目前在学习 nginx 源码，希望时不时的能把我修改过的 nginx 部署到博客上，因此，不容器化 nginx 。
+步骤 首先去 docker hub 上找了一个可用的镜像 jekyll/jekyll，这个镜像已经部署好了一个基本的 jekyll 环境。
+docker pull jekyll/jekyll:latest
+然后启动这个镜像并进入到容器中。
+这一步如果非常清楚需要安装哪些软件的话可以用 Dockerfile 代替完成。我在这里直接进入到容器中是因为并不清楚需要安装哪些依赖软件，需要一步一步 debug。
+docker run --rm --volume=/LOCAL_DIR:/srv/jekyll -it jekyll/jekyll /bin/bash</description>
     </item>
   </channel>
 </rss>

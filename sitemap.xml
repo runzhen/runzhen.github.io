@@ -8,6 +8,9 @@
     <loc>https://runzhen.github.io/categories/</loc>
     <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://runzhen.github.io/posts/distributed-rate-limit/</loc>
+    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://runzhen.github.io/</loc>
     <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
@@ -20,25 +23,22 @@
     <loc>https://runzhen.github.io/tags/</loc>
     <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/posts/distributed-rate-limit/</loc>
-    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://runzhen.github.io/tags/golang/</loc>
     <lastmod>2023-04-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/go-maxprocs/</loc>
     <lastmod>2023-04-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/posts/cgroups-intro/</loc>
-    <lastmod>2023-03-22T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://runzhen.github.io/tags/linux/</loc>
     <lastmod>2023-03-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/tags/boltdb/</loc>
-    <lastmod>2023-01-04T00:00:00+00:00</lastmod>
+    <loc>https://runzhen.github.io/posts/cgroups-intro/</loc>
+    <lastmod>2023-03-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/boltdb-b-plus-tree/</loc>
+    <lastmod>2023-01-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://runzhen.github.io/tags/boltdb/</loc>
     <lastmod>2023-01-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/tags/hackintosh/</loc>
@@ -59,10 +59,10 @@
     <loc>https://runzhen.github.io/posts/bytegraph-and-oceanbase/</loc>
     <lastmod>2022-10-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/categories/reading/</loc>
+    <loc>https://runzhen.github.io/tags/reading/</loc>
     <lastmod>2022-10-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/tags/reading/</loc>
+    <loc>https://runzhen.github.io/categories/reading/</loc>
     <lastmod>2022-10-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/latency-numbers-every-programer-should-know/</loc>
@@ -74,19 +74,19 @@
     <loc>https://runzhen.github.io/categories/golang/</loc>
     <lastmod>2022-07-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/tags/distributed-system/</loc>
+    <loc>https://runzhen.github.io/posts/consistent-hashing/</loc>
     <lastmod>2022-07-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/posts/consistent-hashing/</loc>
+    <loc>https://runzhen.github.io/tags/distributed-system/</loc>
     <lastmod>2022-07-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/etcd-raft-raftlog/</loc>
     <lastmod>2022-05-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/categories/raft/</loc>
+    <loc>https://runzhen.github.io/tags/raft/</loc>
     <lastmod>2022-05-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/tags/raft/</loc>
+    <loc>https://runzhen.github.io/categories/raft/</loc>
     <lastmod>2022-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/etcd-raft-leader-election/</loc>
@@ -107,31 +107,31 @@
     <loc>https://runzhen.github.io/posts/how-does-grpc-client-reconnect-tcp/</loc>
     <lastmod>2022-04-04T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://runzhen.github.io/posts/nsenter-escape-from-pod-to-host/</loc>
+    <lastmod>2022-04-03T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://runzhen.github.io/categories/k8s/</loc>
     <lastmod>2022-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/tags/nsenter/</loc>
     <lastmod>2022-04-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/posts/nsenter-escape-from-pod-to-host/</loc>
-    <lastmod>2022-04-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://runzhen.github.io/categories/rust/</loc>
+    <loc>https://runzhen.github.io/posts/tetris-game-in-rust/</loc>
     <lastmod>2022-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/tags/rust/</loc>
     <lastmod>2022-03-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/posts/tetris-game-in-rust/</loc>
+    <loc>https://runzhen.github.io/categories/rust/</loc>
     <lastmod>2022-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/rust-async-and-tokio/</loc>
     <lastmod>2022-02-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/categories/ddia/</loc>
+    <loc>https://runzhen.github.io/tags/ddia/</loc>
     <lastmod>2022-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/tags/ddia/</loc>
+    <loc>https://runzhen.github.io/categories/ddia/</loc>
     <lastmod>2022-02-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/ddia-ch9-consistency-and-consensus/</loc>
@@ -281,10 +281,10 @@
     <loc>https://runzhen.github.io/posts/nvidia-gpu-pass-through/</loc>
     <lastmod>2020-06-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/categories/kubeflow/</loc>
+    <loc>https://runzhen.github.io/tags/kubeflow/</loc>
     <lastmod>2020-03-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/tags/kubeflow/</loc>
+    <loc>https://runzhen.github.io/categories/kubeflow/</loc>
     <lastmod>2020-03-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/mnist_step_by_step/</loc>
@@ -368,10 +368,10 @@
     <loc>https://runzhen.github.io/posts/lua-programming-basic/</loc>
     <lastmod>2018-12-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/categories/nginx/</loc>
+    <loc>https://runzhen.github.io/tags/nginx/</loc>
     <lastmod>2018-12-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/tags/nginx/</loc>
+    <loc>https://runzhen.github.io/categories/nginx/</loc>
     <lastmod>2018-12-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/nginx-http-11-phases/</loc>
@@ -443,10 +443,10 @@
     <loc>https://runzhen.github.io/posts/dockerize-blog/</loc>
     <lastmod>2018-05-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/categories/rfc/</loc>
+    <loc>https://runzhen.github.io/tags/rfc/</loc>
     <lastmod>2018-03-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://runzhen.github.io/tags/rfc/</loc>
+    <loc>https://runzhen.github.io/categories/rfc/</loc>
     <lastmod>2018-03-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://runzhen.github.io/posts/tcp-rfc793/</loc>

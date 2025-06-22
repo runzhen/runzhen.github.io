@@ -9,38 +9,24 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.145.0</generator>
+    <generator>Hugo -- 0.125.1</generator>
     <language>en</language>
     <lastBuildDate>Thu, 20 Oct 2022 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/reading/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>ByteGraph 和 OceanBase</title>
+      <title>ByteGraph and OceanBase</title>
       <link>https://runzhen.github.io/posts/bytegraph-and-oceanbase/</link>
       <pubDate>Thu, 20 Oct 2022 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/bytegraph-and-oceanbase/</guid>
-      <description>&lt;h2 id=&#34;bytegraph&#34;&gt;ByteGraph&lt;/h2&gt;
-&lt;p&gt;ByteGraph 是字节跳动开发的一个&lt;strong&gt;分布式图数据库&lt;/strong&gt;。之前只是听说过图数据库，但并没有用过，因此在阅读的过程中难免对一些概念理解的不够深入。&lt;/p&gt;
-&lt;p&gt;为什么字节要开发图数据库呢？因为字节的产品都是社交App，因此用户，短视频，专注，点赞，粉丝所有的这些构成了一个巨大的图。&lt;/p&gt;
-&lt;p&gt;为什么现有的数据库无法满足呢？ 关系型数据库和文档型数据库显然不适合这样的应用场景，比如要获取两个用户之间的关系，即图中两个节点之间的路径，这个路径可以是关注，可以是都点赞了某个视频，关系型数据库无法满足性能需求。其他的图数据库有的是单机，有的是单 master，都不满足要求，因此需要造轮子。&lt;/p&gt;
-&lt;p&gt;字节的 Workload 分成了 3 种，比我平时听说的多了一种&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;OLTP，在线处理，比如一个用户发布了新文章，那么 (user,article),(user,tag), (article,tag) 这三条边就要被插入数据库。&lt;/li&gt;
-&lt;li&gt;OLAP，在线分析数据，一次需要查询大量数据做分析，比如做风险管理分析。&lt;/li&gt;
-&lt;li&gt;OLSP，这个第一次听说，Online Serving Processing。比如一个用户点赞了某个视频，那么后台需要实时计算他的喜好，然后推荐类似的视频。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;整体架构如下所示：&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2022/bytegraph.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;BGE, ByteGraph Execution Engine 负责执行 SQL 语句。&lt;/li&gt;
-&lt;li&gt;BGS, A cache layer in ByteGraph，负责存储相关。&lt;/li&gt;
-&lt;li&gt;底层的 KV Stroage 可以选用 RocksDB 或者 TerarkDB。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;BGE 使用了 Gremlin 作为解析 query language 的解析器，这是一个专门用于图查询的工具。用户输入的查询语句经过 Gremlin 生成 execution plan 然后传给 BGE。&lt;/p&gt;
-&lt;p&gt;既然是查询引起，那么就涉及到分布式事务，BGE也是用了 2PC。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2022/bytegraph2.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;上图可以直观的显示 ByteGraph 数据库中所存的数据，可见 KV store 是比较适合存这类数据的，因此 BG 的最底层是 KV store。&lt;/p&gt;</description>
+      <description>ByteGraph ByteGraph 是字节跳动开发的一个分布式图数据库。之前只是听说过图数据库，但并没有用过，因此在阅读的过程中难免对一些概念理解的不够深入。
+为什么字节要开发图数据库呢？因为字节的产品都是社交App，因此用户，短视频，专注，点赞，粉丝所有的这些构成了一个巨大的图。
+为什么现有的数据库无法满足呢？ 关系型数据库和文档型数据库显然不适合这样的应用场景，比如要获取两个用户之间的关系，即图中两个节点之间的路径，这个路径可以是关注，可以是都点赞了某个视频，关系型数据库无法满足性能需求。其他的图数据库有的是单机，有的是单 master，都不满足要求，因此需要造轮子。
+字节的 Workload 分成了 3 种，比我平时听说的多了一种
+OLTP，在线处理，比如一个用户发布了新文章，那么 (user,article),(user,tag), (article,tag) 这三条边就要被插入数据库。 OLAP，在线分析数据，一次需要查询大量数据做分析，比如做风险管理分析。 OLSP，这个第一次听说，Online Serving Processing。比如一个用户点赞了某个视频，那么后台需要实时计算他的喜好，然后推荐类似的视频。 整体架构如下所示：
+BGE, ByteGraph Execution Engine 负责执行 SQL 语句。 BGS, A cache layer in ByteGraph，负责存储相关。 底层的 KV Stroage 可以选用 RocksDB 或者 TerarkDB。 BGE 使用了 Gremlin 作为解析 query language 的解析器，这是一个专门用于图查询的工具。用户输入的查询语句经过 Gremlin 生成 execution plan 然后传给 BGE。
+既然是查询引起，那么就涉及到分布式事务，BGE也是用了 2PC。
+上图可以直观的显示 ByteGraph 数据库中所存的数据，可见 KV store 是比较适合存这类数据的，因此 BG 的最底层是 KV store。
+实现 5.1 分布式事务处理 前面提到，分布式事务处理用的是 2PC。值得一提的是，BG 不支持 MVCC</description>
     </item>
   </channel>
 </rss>

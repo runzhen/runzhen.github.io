@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.145.0</generator>
+    <generator>Hugo -- 0.125.1</generator>
     <language>en</language>
     <lastBuildDate>Sun, 09 Jun 2019 00:33:33 -0700</lastBuildDate>
     <atom:link href="https://runzhen.github.io/categories/algorithm/index.xml" rel="self" type="application/rss+xml" />
@@ -18,47 +18,27 @@
       <link>https://runzhen.github.io/posts/lsm-tree-basic/</link>
       <pubDate>Sun, 09 Jun 2019 00:33:33 -0700</pubDate>
       <guid>https://runzhen.github.io/posts/lsm-tree-basic/</guid>
-      <description>&lt;p&gt;LSM Tree 是 Log Structured Merge Tree 的缩写，这种 Tree 数据结构的特点就是”Log Structured“ 和 ”Merge“。LSM Tree 主要用在各种新兴的数据库，作为底层数据结构。 提供了比 B+ 树/ISAM 更好的写性能。&lt;/p&gt;
-&lt;p&gt;本文是一篇读书笔记，作为以后再次阅读的提纲，此外，原文旁征博引有不少参考资料，值得一读。 &lt;a href=&#34;http://www.benstopford.com/2015/02/14/log-structured-merge-trees/&#34;&gt;原文传送门&lt;/a&gt;。&lt;/p&gt;
-&lt;h2 id=&#34;some-background&#34;&gt;Some Background&lt;/h2&gt;
-&lt;p&gt;核心： 硬盘（无论是磁盘，SSD 甚至是内存）随机读写性能太差，但是顺序读写性能非常高，所以要充分利用一点。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;http://queue.acm.org/detail.cfm?id=1563874&#34;&gt;这篇文章&lt;/a&gt;指出，磁盘的顺序访问甚至比内存的随机访问还快！&lt;/p&gt;
-&lt;p&gt;所以，如果我们对写性能要求高，怎么办？ 一种方法是写数据的时候只 append（添加在文件尾部）。通常我们把这种叫做写日志，logging。&lt;/p&gt;
-&lt;p&gt;但是，简单的 log 结构无法满足复杂的需求，为了满足类似搜索、kv 之类的场景，需要在 logging 基础上加上额外的数据结构，比如 binary search, hash, B+ or external。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Search Sorted File: save data to a file, sorted by key. If data has defined widths use Binary search. If not use a page index + scan.&lt;/li&gt;
-&lt;li&gt;Hash: split the data into buckets using a hash function, which can later be used to direct reads.&lt;/li&gt;
-&lt;li&gt;B+: use navigable file organisation such as a B+ tree, ISAM etc.&lt;/li&gt;
-&lt;li&gt;External file: leave the data as a log/heap and create a separate hash or tree index into it.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;以上 4 种方法都可以改善读性能。&lt;/p&gt;</description>
+      <description>LSM Tree 是 Log Structured Merge Tree 的缩写，这种 Tree 数据结构的特点就是”Log Structured“ 和 ”Merge“。LSM Tree 主要用在各种新兴的数据库，作为底层数据结构。 提供了比 B+ 树/ISAM 更好的写性能。
+本文是一篇读书笔记，作为以后再次阅读的提纲，此外，原文旁征博引有不少参考资料，值得一读。 原文传送门。
+Some Background 核心： 硬盘（无论是磁盘，SSD 甚至是内存）随机读写性能太差，但是顺序读写性能非常高，所以要充分利用一点。
+这篇文章指出，磁盘的顺序访问甚至比内存的随机访问还快！
+所以，如果我们对写性能要求高，怎么办？ 一种方法是写数据的时候只 append（添加在文件尾部）。通常我们把这种叫做写日志，logging。
+但是，简单的 log 结构无法满足复杂的需求，为了满足类似搜索、kv 之类的场景，需要在 logging 基础上加上额外的数据结构，比如 binary search, hash, B+ or external。
+Search Sorted File: save data to a file, sorted by key. If data has defined widths use Binary search. If not use a page index + scan. Hash: split the data into buckets using a hash function, which can later be used to direct reads.</description>
     </item>
     <item>
       <title>Aho–Corasick 算法，AC 自动机</title>
       <link>https://runzhen.github.io/posts/aho-ac-automaton/</link>
       <pubDate>Sat, 14 Jul 2018 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/aho-ac-automaton/</guid>
-      <description>&lt;p&gt;AHO 算法，或者叫 AC 自动机、又或者叫 Aho–Corasick string matching algorithm，是一个高效的多模式匹配算法，它的特点是可以同时匹配多个模式串。&lt;/p&gt;
-&lt;p&gt;最常见的应用就是&lt;code&gt;病毒扫描&lt;/code&gt; : 把所有病毒的特征码（类似一段字符串）构造成一个 AC 自动机，把用户的文件或者网络数据流作为输入文本，只要在输入文本中找到了任何一个特征码，那么就表示有病毒存在。&lt;/p&gt;
-&lt;p&gt;对于这样的一个应用场景，我们最希望的功能就是&lt;code&gt;只扫描一遍输入文本，找出所有的病毒&lt;/code&gt;，而 AC 自动机恰恰就有这样的能力。&lt;/p&gt;
-&lt;p&gt;一般使用 AC 自动机需要以下三步：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;根据待匹配的字符串 P1, P2, Pn 建立 Trie&lt;/li&gt;
-&lt;li&gt;给 Trie 添加失败路径，实际上是生成了一个自动机。&lt;/li&gt;
-&lt;li&gt;将输入文本 str 的字符逐个通过自动机，在 O(n) 的时间复杂度内找出 P1, P2 &amp;hellip; Pn 是否存在于 str 内。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;举例&#34;&gt;举例&lt;/h2&gt;
-&lt;p&gt;假设我们有模式字符串 { &lt;code&gt;fat&lt;/code&gt;,  &lt;code&gt;fare&lt;/code&gt;,  &lt;code&gt;hat&lt;/code&gt;,  &lt;code&gt;are&lt;/code&gt; }， 输入的文本为 “fatehatfare”。&lt;/p&gt;
-&lt;p&gt;显然，所有的模式串都出现在了我们的输入文本中。我们的目标就是只扫描一遍文本串，找出所有的模式串。&lt;/p&gt;
-&lt;h2 id=&#34;建立-trie&#34;&gt;建立 Trie&lt;/h2&gt;
-&lt;p&gt;首先根据模式串建立起一个 trie，一般来说每个节点的结构大概是这样：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Node {
-	Node * children[26]; /* 指向子节点的指针 */
-	Node * parent;       /* 指向父节点的指针 */ 
-	Node * fail;         /* 失败指针 */
-	bool   terminate;    /* 是否是一个终结节点，即一个串的最后一个字符 */
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Trie 建立好之后大概是这个样子：&lt;/p&gt;</description>
+      <description>AHO 算法，或者叫 AC 自动机、又或者叫 Aho–Corasick string matching algorithm，是一个高效的多模式匹配算法，它的特点是可以同时匹配多个模式串。
+最常见的应用就是病毒扫描 : 把所有病毒的特征码（类似一段字符串）构造成一个 AC 自动机，把用户的文件或者网络数据流作为输入文本，只要在输入文本中找到了任何一个特征码，那么就表示有病毒存在。
+对于这样的一个应用场景，我们最希望的功能就是只扫描一遍输入文本，找出所有的病毒，而 AC 自动机恰恰就有这样的能力。
+一般使用 AC 自动机需要以下三步：
+根据待匹配的字符串 P1, P2, Pn 建立 Trie 给 Trie 添加失败路径，实际上是生成了一个自动机。 将输入文本 str 的字符逐个通过自动机，在 O(n) 的时间复杂度内找出 P1, P2 &amp;hellip; Pn 是否存在于 str 内。 举例 假设我们有模式字符串 { fat, fare, hat, are }， 输入的文本为 “fatehatfare”。
+显然，所有的模式串都出现在了我们的输入文本中。我们的目标就是只扫描一遍文本串，找出所有的模式串。
+建立 Trie 首先根据模式串建立起一个 trie，一般来说每个节点的结构大概是这样：
+Node {Node * children[26]; /* 指向子节点的指针 */Node * parent; /* 指向父节点的指针 */ Node * fail; /* 失败指针 */bool terminate; /* 是否是一个终结节点，即一个串的最后一个字符 */} Trie 建立好之后大概是这个样子：</description>
     </item>
   </channel>
 </rss>

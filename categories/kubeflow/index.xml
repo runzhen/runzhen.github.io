@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.145.0</generator>
+    <generator>Hugo -- 0.125.1</generator>
     <language>en</language>
     <lastBuildDate>Sun, 22 Mar 2020 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/categories/kubeflow/index.xml" rel="self" type="application/rss+xml" />
@@ -18,32 +18,16 @@
       <link>https://runzhen.github.io/posts/mnist_step_by_step/</link>
       <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/mnist_step_by_step/</guid>
-      <description>&lt;p&gt;在阅读本文之前，假设已经在 GCP 上安装好了 Kubeflow。&lt;/p&gt;
-&lt;p&gt;首先进入 Kubeflow，点击 &lt;code&gt;Notebook Server&lt;/code&gt;，新建一个 &lt;code&gt;Jupyter Notebook&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/notebook.jpeg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;新建的时候会让你输入 Name 和 Namespace，在 Kubeflow 中，每个用户都在 k8s 集群上有自己的 Namespace。&lt;/p&gt;
-&lt;p&gt;这里输入的 Name 对应的 Notebook Pod 最后会在自己的 Namespace 下。&lt;/p&gt;
-&lt;p&gt;新的 Notebook 里面是空的，我们需要下载一些例子。打开 terminal&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/notebook2.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;然后输入 git clone 命令：&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;git clone https://github.com/kubeflow/examples.git&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;回到默认界面会看到刚刚 clone 的项目，打开 mnist 目录下的 &lt;code&gt;mnist_gcp.ipynb&lt;/code&gt;&lt;/p&gt;
-&lt;h1 id=&#34;开始&#34;&gt;开始&lt;/h1&gt;
-&lt;p&gt;首先第一个问题，当我打开这个 Jupyter Notebook 的 WebUI 时，它运行在哪里？&lt;/p&gt;
-&lt;h2 id=&#34;notebook-是在哪个-pod&#34;&gt;Notebook 是在哪个 Pod&lt;/h2&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ kubectl -n Your-namespace get pod
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NAME                                 READY   STATUS      RESTARTS   AGE
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;fairing-builder-chvkq-6s4cn          0/1     Completed   &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          3d23h
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mnist-model-7886dcbb5b-t2kk8         1/1     Running     &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          3d22h
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mnist-tensorboard-774c585b7c-65766   2/2     Running     &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          21h
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mnist-train-2596-chief-0             0/1     Completed   &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          3d22h
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mnist-train-2596-worker-0            0/1     Completed   &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          3d22h
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mnist-ui-7f95c8498b-xqsfs            2/2     Running     &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          3d22h
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;test1-0                              2/2     Running     &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          3d23h
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;test1-0&lt;/code&gt; 是之前在 UI里面创建 Notebook server 时定下的名字，于是&lt;code&gt;test1-0&lt;/code&gt;&lt;/p&gt;</description>
+      <description>在阅读本文之前，假设已经在 GCP 上安装好了 Kubeflow。
+首先进入 Kubeflow，点击 Notebook Server，新建一个 Jupyter Notebook。
+新建的时候会让你输入 Name 和 Namespace，在 Kubeflow 中，每个用户都在 k8s 集群上有自己的 Namespace。
+这里输入的 Name 对应的 Notebook Pod 最后会在自己的 Namespace 下。
+新的 Notebook 里面是空的，我们需要下载一些例子。打开 terminal
+然后输入 git clone 命令：
+git clone https://github.com/kubeflow/examples.git
+回到默认界面会看到刚刚 clone 的项目，打开 mnist 目录下的 mnist_gcp.ipynb
+开始 首先第一个问题，当我打开这个 Jupyter Notebook 的 WebUI 时，它运行在哪里？
+Notebook 是在哪个 Pod $ kubectl -n Your-namespace get pod NAME READY STATUS RESTARTS AGE fairing-builder-chvkq-6s4cn 0/1 Completed 0 3d23h mnist-model-7886dcbb5b-t2kk8 1/1 Running 0 3d22h mnist-tensorboard-774c585b7c-65766 2/2 Running 0 21h mnist-train-2596-chief-0 0/1 Completed 0 3d22h mnist-train-2596-worker-0 0/1 Completed 0 3d22h mnist-ui-7f95c8498b-xqsfs 2/2 Running 0 3d22h test1-0 2/2 Running 0 3d23h test1-0 是之前在 UI里面创建 Notebook server 时定下的名字，于是test1-0</description>
     </item>
   </channel>
 </rss>

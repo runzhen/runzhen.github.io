@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.145.0</generator>
+    <generator>Hugo -- 0.125.1</generator>
     <language>en</language>
     <lastBuildDate>Tue, 21 Mar 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/dhe/index.xml" rel="self" type="application/rss+xml" />
@@ -18,68 +18,24 @@
       <link>https://runzhen.github.io/posts/pfs-ecdhe/</link>
       <pubDate>Tue, 21 Mar 2017 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/pfs-ecdhe/</guid>
-      <description>&lt;p&gt;接着上一篇 &lt;a href=&#34;https://runzhen.github.io/ssl-perfect-forward-secrecy/&#34;&gt;TLS Perfect Forward Secrecy 之 RSA 缺陷&lt;/a&gt; 继续来看看 DH/ECDHE 如何解决这个问题。&lt;/p&gt;
-&lt;p&gt;前面提到 RSA 做密钥协商过程中，最关键的缺陷是客户端用公钥加密了 PreMaster Key，服务器用私钥解密 PreMaster Key。理想中更好的方法是 公钥/私钥只用来对证书签名，不参与到密钥协商的过程中来，换句话说，希望通信的双方能&lt;code&gt;独立计算&lt;/code&gt;出&lt;strong&gt;对称加密&lt;/strong&gt;的密钥。于是密码学家找到了尘封已久的，几乎与 RSA 同时出现的 DH 算法。&lt;/p&gt;
-&lt;p&gt;其实我一直有一个疑问：既然问题出在传送 PreMaster Key，那么客户端不发送 PreMaster Key 不就行了？握手的过程中已经有了 2 个随机数了，难道一定要 3 个随机数才能生成 master key 吗？&lt;/p&gt;
-&lt;p&gt;首先来看一下 DH 算法的数学基础。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;+-------------------------------------------------------------------+
-|                    Global Pulic Elements                          |
-|                                                                   |
-|       p                               prime number                |
-|       a                               prime number, a &amp;lt; p         |
-+-------------------------------------------------------------------+
-+-------------------------------------------------------------------+
-|                    User A Key Generation                          |
-|                                                                   |
-|       Select private Xa               Xa &amp;lt; p                      |
-|       Calculate public Ya             Ya = a^Xa mod p             |
-+-------------------------------------------------------------------+
-+-------------------------------------------------------------------+
-|                    User B Key Generation                          |
-|                                                                   |
-|       Select private Xb               Xb &amp;lt; p                      |
-|       Calculate public Yb             Yb = a^Xb mod p             |
-+-------------------------------------------------------------------+
-+-------------------------------------------------------------------+
-|               Calculation of Secret Key by User A                 |
-|                                                                   |
-|       Secret Key K                    K = Yb^Xa mod p             |
-+-------------------------------------------------------------------+
-+-------------------------------------------------------------------+
-|               Calculation of Secret Key by User B                 |
-|                                                                   |
-|       Secret Key K                    K = Ya^Xb mod p             |
-+-------------------------------------------------------------------+
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;上面一共出现了 a, p, Xa, Ya, Xb, Yb, K 共 7 个数，其中：&lt;/p&gt;</description>
+      <description>接着上一篇 TLS Perfect Forward Secrecy 之 RSA 缺陷 继续来看看 DH/ECDHE 如何解决这个问题。
+前面提到 RSA 做密钥协商过程中，最关键的缺陷是客户端用公钥加密了 PreMaster Key，服务器用私钥解密 PreMaster Key。理想中更好的方法是 公钥/私钥只用来对证书签名，不参与到密钥协商的过程中来，换句话说，希望通信的双方能独立计算出对称加密的密钥。于是密码学家找到了尘封已久的，几乎与 RSA 同时出现的 DH 算法。
+其实我一直有一个疑问：既然问题出在传送 PreMaster Key，那么客户端不发送 PreMaster Key 不就行了？握手的过程中已经有了 2 个随机数了，难道一定要 3 个随机数才能生成 master key 吗？
+首先来看一下 DH 算法的数学基础。
++-------------------------------------------------------------------+| Global Pulic Elements || || p prime number || a prime number, a &amp;lt; p |+-------------------------------------------------------------------++-------------------------------------------------------------------+| User A Key Generation || || Select private Xa Xa &amp;lt; p || Calculate public Ya Ya = a^Xa mod p |+-------------------------------------------------------------------++-------------------------------------------------------------------+| User B Key Generation || || Select private Xb Xb &amp;lt; p || Calculate public Yb Yb = a^Xb mod p |+-------------------------------------------------------------------++-------------------------------------------------------------------+| Calculation of Secret Key by User A || || Secret Key K K = Yb^Xa mod p |+-------------------------------------------------------------------++-------------------------------------------------------------------+| Calculation of Secret Key by User B || || Secret Key K K = Ya^Xb mod p |+-------------------------------------------------------------------+ 上面一共出现了 a, p, Xa, Ya, Xb, Yb, K 共 7 个数，其中：</description>
     </item>
     <item>
       <title>TLS Perfect Forward Secrecy 之 RSA 的缺陷</title>
       <link>https://runzhen.github.io/posts/ssl-perfect-forward-secrecy/</link>
       <pubDate>Tue, 21 Feb 2017 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/ssl-perfect-forward-secrecy/</guid>
-      <description>&lt;p&gt;HTTPS 这样的加密传输，最关键的是要解决两个问题，&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;一个是通信双方如何协商出一个对称加密的密钥（密钥交换）&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;二是自己如何确认对方的服务器就是我想访问的，即认证。&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;第一个问题可以由非对称加密解决，第二个问题是证书的合法性校验，“签发数字签名”，指的是用hash函数，对证书中的发行者，有效期，证书名等信息计算得到一个摘要（digest），然后用私钥进行加密，得到签名A。而对应的“校验数字签名”，则是先用相同的hash函数得到digest, 再利用相应的公钥解密A，然后对比自己hash出的和解密出的A是否相同，以此来认证对方是不是我们想要通信的人。&lt;/p&gt;
-&lt;p&gt;写到这里，正好最近有一个有趣的新闻：&lt;a href=&#34;https://security.googleblog.com/2017/02/announcing-first-sha1-collision.html&#34;&gt;SHA1签名算法被破解&lt;/a&gt;，也就是说，安全研究人员根据理论上的SHA1破解算法，运用大量的计算资源，终于生成了两个不同的 PDF文件，但是它们的SHA1 值是一样的，所以以后我们应该使用更高级的签名算法来避免可能的安全漏洞。有兴趣的可以移步到上面的链接查看。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;|算法     | 密钥交换 |  认证   |
-|--------|---------|---------|
-|基于 RSA |  RSA    | RSA    |
-|基于 DH  |  DH     | RSA/DSA|
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;相比传统的 RSA 握手，ECDHE 能支持 forward secrecy(DH 算法本身没有forward secrecy，要 ECDHE 才行)。DH 算法让 client 和 server 分别独立的计算出同步加密的密钥，注意：是独立计算出，而不是通过一方传递给另一方。&lt;/p&gt;
-&lt;p&gt;加密套件，类似于 “ECDHE-ECDSA-AES256-SHA384” 这样的一串，主要包含这些信息：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;密钥协商的算法，要么 RSA，要么 DH&lt;/li&gt;
-&lt;li&gt;认证方法，比如 SHA&lt;/li&gt;
-&lt;li&gt;同步加密的方法，即 session key 所属的类型&lt;/li&gt;
-&lt;li&gt;hash 函数，保证传输的用户数据的完整性&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;在探讨 &lt;code&gt;Perfect Forward Secrecy&lt;/code&gt; 之前，先来回顾一下旧的 TLS 握手过程会有什么缺陷。&lt;/p&gt;
-&lt;h2 id=&#34;没有-pfs-的-rsa-握手过程&#34;&gt;没有 PFS 的 RSA 握手过程&lt;/h2&gt;
-&lt;h3 id=&#34;第一步clienthello&#34;&gt;第一步，ClientHello&lt;/h3&gt;
-&lt;p&gt;这一步，客户端向服务器提供以下信息：&lt;/p&gt;</description>
+      <description>HTTPS 这样的加密传输，最关键的是要解决两个问题，
+一个是通信双方如何协商出一个对称加密的密钥（密钥交换） 二是自己如何确认对方的服务器就是我想访问的，即认证。 第一个问题可以由非对称加密解决，第二个问题是证书的合法性校验，“签发数字签名”，指的是用hash函数，对证书中的发行者，有效期，证书名等信息计算得到一个摘要（digest），然后用私钥进行加密，得到签名A。而对应的“校验数字签名”，则是先用相同的hash函数得到digest, 再利用相应的公钥解密A，然后对比自己hash出的和解密出的A是否相同，以此来认证对方是不是我们想要通信的人。
+写到这里，正好最近有一个有趣的新闻：SHA1签名算法被破解，也就是说，安全研究人员根据理论上的SHA1破解算法，运用大量的计算资源，终于生成了两个不同的 PDF文件，但是它们的SHA1 值是一样的，所以以后我们应该使用更高级的签名算法来避免可能的安全漏洞。有兴趣的可以移步到上面的链接查看。
+|算法 | 密钥交换 | 认证 ||--------|---------|---------||基于 RSA | RSA | RSA ||基于 DH | DH | RSA/DSA| 相比传统的 RSA 握手，ECDHE 能支持 forward secrecy(DH 算法本身没有forward secrecy，要 ECDHE 才行)。DH 算法让 client 和 server 分别独立的计算出同步加密的密钥，注意：是独立计算出，而不是通过一方传递给另一方。
+加密套件，类似于 “ECDHE-ECDSA-AES256-SHA384” 这样的一串，主要包含这些信息：
+密钥协商的算法，要么 RSA，要么 DH 认证方法，比如 SHA 同步加密的方法，即 session key 所属的类型 hash 函数，保证传输的用户数据的完整性 在探讨 Perfect Forward Secrecy 之前，先来回顾一下旧的 TLS 握手过程会有什么缺陷。
+没有 PFS 的 RSA 握手过程 第一步，ClientHello 这一步，客户端向服务器提供以下信息：</description>
     </item>
   </channel>
 </rss>

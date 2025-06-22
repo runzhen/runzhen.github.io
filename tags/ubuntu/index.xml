@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.145.0</generator>
+    <generator>Hugo -- 0.125.1</generator>
     <language>en</language>
     <lastBuildDate>Sat, 12 Sep 2009 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/ubuntu/index.xml" rel="self" type="application/rss+xml" />
@@ -18,19 +18,11 @@
       <link>https://runzhen.github.io/posts/ubuntu-cd/</link>
       <pubDate>Sat, 12 Sep 2009 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/ubuntu-cd/</guid>
-      <description>&lt;p&gt;话说，我是在8月13号左右申请的，9月10号收到光盘的，花了4个多星期，比官方说的6—10周快了一点，毕竟，人家是从荷兰不远万里的寄来的光盘，哈哈。&lt;/p&gt;
-&lt;p&gt;如果你也想申请，点这个链接&lt;a href=&#34;https://shipit.ubuntu.com/&#34;&gt;https://shipit.ubuntu.com/&lt;/a&gt; 任何人都可以申请哦，不分国界，不分性别….这就是“Ubuntu精神”。&lt;/p&gt;
-&lt;p&gt;“Ubuntu”is an ancient African word that means “humanity to otherts”.This Linux distribution brings the spirit of Ubuntu to the software world.&lt;/p&gt;
-&lt;p&gt;下面贴几张图吧~（点击图片放大）&lt;/p&gt;
-&lt;p&gt;这是邮件的包裹，没拆开之前&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2009/u1.jpg&#34; alt=&#34;pic1&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2009/u2.jpg&#34; alt=&#34;pic2&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2009/u3.jpg&#34; alt=&#34;pic2&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2009/u4.jpg&#34; alt=&#34;pic2&#34;  /&gt;
-&lt;/p&gt;</description>
+      <description>话说，我是在8月13号左右申请的，9月10号收到光盘的，花了4个多星期，比官方说的6—10周快了一点，毕竟，人家是从荷兰不远万里的寄来的光盘，哈哈。
+如果你也想申请，点这个链接https://shipit.ubuntu.com/ 任何人都可以申请哦，不分国界，不分性别….这就是“Ubuntu精神”。
+“Ubuntu”is an ancient African word that means “humanity to otherts”.This Linux distribution brings the spirit of Ubuntu to the software world.
+下面贴几张图吧~（点击图片放大）
+这是邮件的包裹，没拆开之前</description>
     </item>
   </channel>
 </rss>

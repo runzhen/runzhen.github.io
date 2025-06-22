@@ -9,7 +9,7 @@
       <url>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
       <link>https://runzhen.github.io/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
-    <generator>Hugo -- 0.145.0</generator>
+    <generator>Hugo -- 0.125.1</generator>
     <language>en</language>
     <lastBuildDate>Wed, 27 Apr 2022 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://runzhen.github.io/tags/k8s/index.xml" rel="self" type="application/rss+xml" />
@@ -18,361 +18,164 @@
       <link>https://runzhen.github.io/posts/k8s-debug-stories/</link>
       <pubDate>Wed, 27 Apr 2022 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/k8s-debug-stories/</guid>
-      <description>&lt;p&gt;update on 2022-05-21&lt;/p&gt;
-&lt;p&gt;今天在 homelab 的 k8s 集群上发生了同样的情况，我想删除一个 namespace，再确认已经把 namespace 里面所有其他资源都删除的情况下，namespace 始终是 Terminating, 找了很多资料，方法也&lt;a href=&#34;https://github.com/kubernetes/kubernetes/issues/60807#issuecomment-524772920&#34;&gt;众说纷纭&lt;/a&gt; 。&lt;/p&gt;
-&lt;p&gt;最后通过看 &lt;code&gt;api-server&lt;/code&gt; log 发现原来又是 Unable to authenticate the request due to an error: x509: certificate has expired or is not yet valid&lt;/p&gt;
-&lt;p&gt;root cause 还是我更新 cert 的时候又漏了某些步骤。&lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;事情的起因是 k8s 的 cert 过期了，在目录 &lt;code&gt;/etc/kubernetes/pki/&lt;/code&gt; 下面的这些 cert 都与 k8s 的核心服务息息相关，因此 cert 过期了，整个 k8s 集群就停止服务了。&lt;/p&gt;
-&lt;p&gt;这个集群是 kubernetes 1.14, 因此需要运行几个命令完成更新，而 1.15 版本以上这个过程简化了不少。 由于之前已经 renew cert 两次了，因此正常按部就班几个操作就完事了，但是这个因为一点小疏忽，加上系统死机重启了一次，花了很多时间去恢复各种服务。&lt;/p&gt;
-&lt;p&gt;本文记录 debug 的过程中遇到的一些症状，以及后来发现的解决方法，为以后遇到类似问题提供思路。&lt;/p&gt;
-&lt;h2 id=&#34;node-重启后-kubelet-没运行&#34;&gt;Node 重启后 kubelet 没运行&lt;/h2&gt;
-&lt;p&gt;前面提到，可能是因为 cert 过期后触发某些 bug 导致 Master Node 不能 ssh（之前 renew cert 没有类似问题），所以只能去机房按电源开关重启了。&lt;/p&gt;</description>
+      <description>update on 2022-05-21
+今天在 homelab 的 k8s 集群上发生了同样的情况，我想删除一个 namespace，再确认已经把 namespace 里面所有其他资源都删除的情况下，namespace 始终是 Terminating, 找了很多资料，方法也众说纷纭 。
+最后通过看 api-server log 发现原来又是 Unable to authenticate the request due to an error: x509: certificate has expired or is not yet valid
+root cause 还是我更新 cert 的时候又漏了某些步骤。
+事情的起因是 k8s 的 cert 过期了，在目录 /etc/kubernetes/pki/ 下面的这些 cert 都与 k8s 的核心服务息息相关，因此 cert 过期了，整个 k8s 集群就停止服务了。
+这个集群是 kubernetes 1.14, 因此需要运行几个命令完成更新，而 1.15 版本以上这个过程简化了不少。 由于之前已经 renew cert 两次了，因此正常按部就班几个操作就完事了，但是这个因为一点小疏忽，加上系统死机重启了一次，花了很多时间去恢复各种服务。
+本文记录 debug 的过程中遇到的一些症状，以及后来发现的解决方法，为以后遇到类似问题提供思路。</description>
     </item>
     <item>
-      <title>使用 nsenter 从 k8s Pod 逃逸到 Host</title>
+      <title>Escape from k8s Pod to the Host using nsenter</title>
       <link>https://runzhen.github.io/posts/nsenter-escape-from-pod-to-host/</link>
       <pubDate>Sun, 03 Apr 2022 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/nsenter-escape-from-pod-to-host/</guid>
-      <description>&lt;p&gt;本文是读完 &lt;a href=&#34;https://isovalent.com/blog/post/2021-11-container-escape&#34;&gt;Detecting a Container Escape with Cilium and eBPF&lt;/a&gt; 和 &lt;a href=&#34;https://atbug.com/enhance-kubernetes-network-security-with-cilium/&#34;&gt;使用 Cilium 增强 Kubernetes 网络安全&lt;/a&gt; 的一个简单总结。&lt;/p&gt;
-&lt;h2 id=&#34;如何从-pod-逃逸到-host&#34;&gt;如何从 Pod 逃逸到 Host&lt;/h2&gt;
-&lt;p&gt;通常为了安全起见，生产环境的 docker image 都要求不使用 root，一般都是在 Dockerfile 中指定 &lt;code&gt;USER xxx&lt;/code&gt;，这样启动的 container/pod 是使用非特权的 user，这样的 user 是没法用 sudo 安装软件的。&lt;/p&gt;
-&lt;p&gt;有时为了能临时 debug，需要安装 vim, curl 之类的命令，又不想改动 Dockerfile 重新 build image，该怎么办呢？&lt;/p&gt;
-&lt;p&gt;一个 k8s 原生支持的方法是在 deployment 里面指定 &lt;code&gt;securityContext&lt;/code&gt;，如下所示&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;l&#34;&gt;$ cat privileged.yaml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;apiVersion&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;v1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;kind&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Pod&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;metadata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;privileged-the-pod&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;spec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostPID&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;true&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostNetwork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;true&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;containers&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;privileged-the-pod&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;nginx:latest&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;ports&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;containerPort&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;m&#34;&gt;80&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;securityContext&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;privileged&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;true&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;对于 docker container，可以在指定 docker run 命令时，设置 &lt;code&gt;--user&lt;/code&gt; 为 0 也能获得 root 的 container。&lt;/p&gt;</description>
+      <description>本文是读完 Detecting a Container Escape with Cilium and eBPF 和 使用 Cilium 增强 Kubernetes 网络安全 的一个简单总结。
+如何从 Pod 逃逸到 Host 通常为了安全起见，生产环境的 docker image 都要求不使用 root，一般都是在 Dockerfile 中指定 USER xxx，这样启动的 container/pod 是使用非特权的 user，这样的 user 是没法用 sudo 安装软件的。
+有时为了能临时 debug，需要安装 vim, curl 之类的命令，又不想改动 Dockerfile 重新 build image，该怎么办呢？
+一个 k8s 原生支持的方法是在 deployment 里面指定 securityContext，如下所示
+$ cat privileged.yaml apiVersion: v1 kind: Pod metadata: name: privileged-the-pod spec: hostPID: true hostNetwork: true containers: - name: privileged-the-pod image: nginx:latest ports: - containerPort: 80 securityContext: privileged: true 对于 docker container，可以在指定 docker run 命令时，设置 --user 为 0 也能获得 root 的 container。</description>
     </item>
     <item>
       <title>k8s 切换 namespace 以及命令补全</title>
       <link>https://runzhen.github.io/posts/k8s-set-namespace-tool/</link>
       <pubDate>Sun, 01 Aug 2021 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/k8s-set-namespace-tool/</guid>
-      <description>&lt;p&gt;本文可以学到&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;.kube/config&lt;/code&gt; 文件中有哪些内容&lt;/li&gt;
-&lt;li&gt;如何实现 bash 的命令补全功能&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;起因&#34;&gt;起因&lt;/h2&gt;
-&lt;p&gt;在使用 kubectl 命令的过程中，经常需要查看不同 namespace 下的资源，因此命令经常需要带上 &lt;code&gt;-n name&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;如果不想每次都多打这些字符，也可以设置一个默认的 namespace，&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;kubectl config set-context --current --namespace&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;xxxx
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这样是方便了不少，但是一旦切换了 namespace 之后，又要重复上面的命令，而且经常还不记得。&lt;/p&gt;
-&lt;p&gt;有没有更好的办法呢？ 有人开发了一个小工具，&lt;a href=&#34;https://github.com/ahmetb/kubectx&#34;&gt;kubectx&lt;/a&gt; 专门用于方便的切换 ctx 和 namespace。
-ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便的在多个集群和 namespace 之间切换。&lt;/p&gt;
-&lt;p&gt;kubectx 有两种实现，一开始用的是最简单的 bash shell 脚本，新的版本开始用 k8s client API 开发。 下文的分析仅仅关注 namespace 的切换。&lt;/p&gt;
-&lt;h2 id=&#34;shell-版本的实现&#34;&gt;shell 版本的实现&lt;/h2&gt;
-&lt;p&gt;这个实现非常简单，本质上就是调用几个 kubectl 命令实现 ns 切换。&lt;/p&gt;
-&lt;p&gt;首先需要知道的是，在 &lt;code&gt;~/.kube/config&lt;/code&gt; 路径下的 config 记录了你配置 kubectl 的信息，比如你用 kubectl 操作过几个 k8s 都会纪录在里面。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;apiVersion&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;v1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;clusters&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;cluster&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;certificate-authority-data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;DATA+OMITTED&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;https://10.180.117.162&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;gke_hyrule-dev_us-central1_hyrule-us-central1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;contexts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;context&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cluster&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;gke_hyrule_us-central1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;namespace&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;mi-hyrule&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;gke_hyrule-dev_us-central1_hyrule-us-central1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;gke_hyrule-dev_us-central1_hyrule-us-central1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;context&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cluster&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;current-context&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;gke_hyrule_us-central1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;kind&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Config&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;preferences&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;{}&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;users&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;gke_hyrule-dev_us-central1_hyrule-us-central1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;auth-provider&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;access-token&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;ya29.c.Ko8BCghf9Cp47iz7usZH24k_ask9OD6E4KEh-Z&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cmd-args&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;config config-helper --format=json&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cmd-path&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;/usr/lib/google-cloud-sdk/bin/gcloud&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;gcp&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果是多个 k8s 的话将会有多个 &lt;code&gt;contexts&lt;/code&gt; 和 &lt;code&gt;users&lt;/code&gt; 字段。&lt;/p&gt;</description>
+      <description>本文可以学到
+.kube/config 文件中有哪些内容 如何实现 bash 的命令补全功能 起因 在使用 kubectl 命令的过程中，经常需要查看不同 namespace 下的资源，因此命令经常需要带上 -n name。
+如果不想每次都多打这些字符，也可以设置一个默认的 namespace，
+kubectl config set-context --current --namespace=xxxx 这样是方便了不少，但是一旦切换了 namespace 之后，又要重复上面的命令，而且经常还不记得。
+有没有更好的办法呢？ 有人开发了一个小工具，kubectx 专门用于方便的切换 ctx 和 namespace。 ctx 是什么呢？ 其实就是哪个 k8s 集群。 说白了就是让你方便的在多个集群和 namespace 之间切换。
+kubectx 有两种实现，一开始用的是最简单的 bash shell 脚本，新的版本开始用 k8s client API 开发。 下文的分析仅仅关注 namespace 的切换。
+shell 版本的实现 这个实现非常简单，本质上就是调用几个 kubectl 命令实现 ns 切换。
+首先需要知道的是，在 ~/.kube/config 路径下的 config 记录了你配置 kubectl 的信息，比如你用 kubectl 操作过几个 k8s 都会纪录在里面。
+apiVersion: v1 clusters: - cluster: certificate-authority-data: DATA+OMITTED server: https://10.</description>
     </item>
     <item>
       <title>如何实现一个 kubectl-debug</title>
       <link>https://runzhen.github.io/posts/how-to-implement-kubectl-debug/</link>
       <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/how-to-implement-kubectl-debug/</guid>
-      <description>&lt;ol start=&#34;0&#34;&gt;
-&lt;li&gt;借助 k8s &lt;code&gt;client-go&lt;/code&gt; 连接 API Server，并进行简单的 list 操作，创建 deployment&lt;/li&gt;
-&lt;li&gt;如何在 pod 内创建 container&lt;/li&gt;
-&lt;li&gt;如何让 container 加入到某个 Pod 中，并共享 namespace&lt;/li&gt;
-&lt;li&gt;如何让 pod 内部的 tty 操作结果显示在用户端&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;docker exec 和 直接 nsenter 还是不太一样的：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;docker exec， OCI-O 的实现是启动一个 grpc server，重定向 IO，等于是把 container 的 IO stream 重定向到 用户 cli&lt;/li&gt;
-&lt;li&gt;nsenter 则是启动一个 进程，然后加入到 container 的 ns&lt;/li&gt;
-&lt;li&gt;所以 前者不需要知道 container 的 pid，而后者需要知道，所以后者需要执行 docker insepect 命令。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;观察上图，分析原理，不难发现，容器内部的进程关系已然不是树。然而，为什么总是强调“树状”关系呢？答案是：树状的继承关系，有利于容器管理。以上文《docker logs 实现剖析》中卖的关子「docker exec的标准输出不会作为容器日志」为例，Docker Daemon 创建容器主进程时，负责接管主进程的标准输出，从而保证容器主进程下所有进程的标准输出被接管，然而 Docker Daemon 在新创建 docker exec 所需执行的进程时，后者的标准输出并未与容器主进程作关联，也并未被 Docker Daemon 特殊处理，故 docker exec 所执行进程的标准输出不会进入容器的日志文件中。&lt;/p&gt;</description>
+      <description>借助 k8s client-go 连接 API Server，并进行简单的 list 操作，创建 deployment 如何在 pod 内创建 container 如何让 container 加入到某个 Pod 中，并共享 namespace 如何让 pod 内部的 tty 操作结果显示在用户端 docker exec 和 直接 nsenter 还是不太一样的：
+docker exec， OCI-O 的实现是启动一个 grpc server，重定向 IO，等于是把 container 的 IO stream 重定向到 用户 cli nsenter 则是启动一个 进程，然后加入到 container 的 ns 所以 前者不需要知道 container 的 pid，而后者需要知道，所以后者需要执行 docker insepect 命令。 观察上图，分析原理，不难发现，容器内部的进程关系已然不是树。然而，为什么总是强调“树状”关系呢？答案是：树状的继承关系，有利于容器管理。以上文《docker logs 实现剖析》中卖的关子「docker exec的标准输出不会作为容器日志」为例，Docker Daemon 创建容器主进程时，负责接管主进程的标准输出，从而保证容器主进程下所有进程的标准输出被接管，然而 Docker Daemon 在新创建 docker exec 所需执行的进程时，后者的标准输出并未与容器主进程作关联，也并未被 Docker Daemon 特殊处理，故 docker exec 所执行进程的标准输出不会进入容器的日志文件中。</description>
     </item>
     <item>
       <title>Kubernetes Scheduler 设计与实现 (一)</title>
       <link>https://runzhen.github.io/posts/k8s-scheduler-beginning/</link>
       <pubDate>Sat, 17 Apr 2021 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/k8s-scheduler-beginning/</guid>
-      <description>&lt;p&gt;Scheduler 的工作就是决定让一个 pod 在哪个 node 上运行。 scheduler 从 API Server 获得 pod 和 node 的信息，然后把它的决策信息写会 API Server, 它自己不参与具体的调度，而是运行在每个 node 上的 kubelet 主动获取更新，然后启动 pod。&lt;/p&gt;
-&lt;p&gt;scheduler 的入口函数在 &lt;code&gt;cmd/kube-schduler/server.go&lt;/code&gt;，但实际工作都是在 &lt;code&gt;pkg/scheduler/scheduler.go&lt;/code&gt; 里面的 Run 函数开始的。&lt;/p&gt;
-&lt;p&gt;打开 scheduler.go 文件找到结构体 &lt;code&gt;Scheduler&lt;/code&gt; ，会发现它有很多私有函数，但只有唯一一个公开的 &lt;code&gt;Run()&lt;/code&gt; 函数。&lt;/p&gt;
-&lt;p&gt;先从 Scheduler 结构体来说一下调度器的整体思路，其中最重要的三个成员如下：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;Scheduler&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;Algorithm&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;core&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;ScheduleAlgorithm&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;NextPod&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;func&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;framework&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;QueuedPodInfo&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nx&#34;&gt;SchedulingQueue&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;internalqueue&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;SchedulingQueue&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;Algorithm 就是具体调度的算法&lt;/li&gt;
-&lt;li&gt;SchedulingQueue 是等待调度的队列，它本身是一个接口，它的实现是 &lt;code&gt;PriorityQueue&lt;/code&gt; ，位于 &lt;code&gt;pkg/scheduler/internal/queue/scheduling_queue.go&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;NextPod 获取等待调度的 pod&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;另外顺便提一下，kubernetes 中的调度队列是由三个队列组成，分别是：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;activeQueue：待调度的 pod 队列，scheduler 会监听这个队列&lt;/li&gt;
-&lt;li&gt;backoffQueue：在 kubernetes 中，如果调度失败了，就相当于一次 backoff。 backoffQueue 专门用来存放 backoff 的 pod。&lt;/li&gt;
-&lt;li&gt;unschedulableQueue：调度过程被终止的 pod 存放的队列。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;然后来看 Scheduler 的 Run 函数:&lt;/p&gt;</description>
+      <description>Scheduler 的工作就是决定让一个 pod 在哪个 node 上运行。 scheduler 从 API Server 获得 pod 和 node 的信息，然后把它的决策信息写会 API Server, 它自己不参与具体的调度，而是运行在每个 node 上的 kubelet 主动获取更新，然后启动 pod。
+scheduler 的入口函数在 cmd/kube-schduler/server.go，但实际工作都是在 pkg/scheduler/scheduler.go 里面的 Run 函数开始的。
+打开 scheduler.go 文件找到结构体 Scheduler ，会发现它有很多私有函数，但只有唯一一个公开的 Run() 函数。
+先从 Scheduler 结构体来说一下调度器的整体思路，其中最重要的三个成员如下：
+type Scheduler struct { Algorithm core.ScheduleAlgorithm NextPod func() *framework.QueuedPodInfo SchedulingQueue internalqueue.SchedulingQueue } Algorithm 就是具体调度的算法 SchedulingQueue 是等待调度的队列，它本身是一个接口，它的实现是 PriorityQueue ，位于 pkg/scheduler/internal/queue/scheduling_queue.go NextPod 获取等待调度的 pod 另外顺便提一下，kubernetes 中的调度队列是由三个队列组成，分别是：
+activeQueue：待调度的 pod 队列，scheduler 会监听这个队列 backoffQueue：在 kubernetes 中，如果调度失败了，就相当于一次 backoff。 backoffQueue 专门用来存放 backoff 的 pod。 unschedulableQueue：调度过程被终止的 pod 存放的队列。 然后来看 Scheduler 的 Run 函数:</description>
     </item>
     <item>
       <title>Kubernetes 中的 DNS </title>
       <link>https://runzhen.github.io/posts/k8s-kubedns-coredns/</link>
       <pubDate>Wed, 10 Mar 2021 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/k8s-kubedns-coredns/</guid>
-      <description>&lt;p&gt;该文件指定如何解析主机名&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cat  /etc/host.conf
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;order hosts, &lt;span class=&#34;nb&#34;&gt;bind&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;multi on
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;order bind,hosts  指定主机名查询顺序，这里规定先使用 DNS 来解析域名，然后再查询 &lt;code&gt;/etc/hosts&lt;/code&gt; 文件(也可以相反)&lt;/li&gt;
-&lt;li&gt;multi  on 指 &lt;code&gt;/etc/hosts&lt;/code&gt; 文件中的主机可以有多个地址&lt;/li&gt;
-&lt;li&gt;nospoof on 指不允许对该服务器进行IP地址欺骗&lt;/li&gt;
-&lt;/ul&gt;</description>
+      <description>该文件指定如何解析主机名
+cat /etc/host.conf order hosts, bind multi on order bind,hosts 指定主机名查询顺序，这里规定先使用 DNS 来解析域名，然后再查询 /etc/hosts 文件(也可以相反) multi on 指 /etc/hosts 文件中的主机可以有多个地址 nospoof on 指不允许对该服务器进行IP地址欺骗 </description>
     </item>
     <item>
       <title>Kubernetes 的 Volume 和 StorageClass</title>
       <link>https://runzhen.github.io/posts/kubernetes-volume-pv-pvc/</link>
       <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/kubernetes-volume-pv-pvc/</guid>
-      <description>&lt;p&gt;Kubernetes 的 Pod 可以 mount 很多种 Volume，常见的 volume 有&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;emptyDir&lt;/li&gt;
-&lt;li&gt;hostPath&lt;/li&gt;
-&lt;li&gt;configMap, secret&lt;/li&gt;
-&lt;li&gt;persistentVolumeClaim&lt;/li&gt;
-&lt;li&gt;nfs, gitRepo, cephfs, iscsi, cinder 等&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;其中，emptyDir 是最简单的一种，用于挂载一些临时文件，比如同一个 Pod 中两个 container 需要通过 unix socket 通信，那么把 socket 放在 emptyDir 中是最简单的方法。&lt;/p&gt;
-&lt;p&gt;甚至可以指定把这个抽象的目录放在内存，从而加快速度。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;volumes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;html&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;emptyDir&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;medium&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Memory&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;hostPath 是把数据直接存在 kubernetes 某个 worker node 上，这种方法一般不推荐使用，因为当 Pod 被调度到其他节点上后，数据就丢失了。&lt;/p&gt;
-&lt;p&gt;那么什么样的情况适合挂载 hostPath 呢？一些系统级的组件，需要挂载 node 上系统本身自带的一些文件时，比如需要读取 host 的 cert 目录，或者 etc 目录。常见的有 &lt;code&gt;kube-system&lt;/code&gt; 空间下的 coreDNS 组件等。&lt;/p&gt;
-&lt;p&gt;当 Pod 中的程序需要把数据持久化到外部存储时，最推荐的用法是先在系统中定义 &lt;em&gt;StorageClass&lt;/em&gt;，然后配合 &lt;code&gt;persistentVolumeClaim (PVC)&lt;/code&gt; 和 &lt;code&gt;persistentVolume (PV)&lt;/code&gt; 一起动态的分配空间。&lt;/p&gt;</description>
+      <description>Kubernetes 的 Pod 可以 mount 很多种 Volume，常见的 volume 有
+emptyDir hostPath configMap, secret persistentVolumeClaim nfs, gitRepo, cephfs, iscsi, cinder 等 其中，emptyDir 是最简单的一种，用于挂载一些临时文件，比如同一个 Pod 中两个 container 需要通过 unix socket 通信，那么把 socket 放在 emptyDir 中是最简单的方法。
+甚至可以指定把这个抽象的目录放在内存，从而加快速度。
+volumes: - name: html emptyDir: medium: Memory hostPath 是把数据直接存在 kubernetes 某个 worker node 上，这种方法一般不推荐使用，因为当 Pod 被调度到其他节点上后，数据就丢失了。
+那么什么样的情况适合挂载 hostPath 呢？一些系统级的组件，需要挂载 node 上系统本身自带的一些文件时，比如需要读取 host 的 cert 目录，或者 etc 目录。常见的有 kube-system 空间下的 coreDNS 组件等。
+当 Pod 中的程序需要把数据持久化到外部存储时，最推荐的用法是先在系统中定义 StorageClass，然后配合 persistentVolumeClaim (PVC) 和 persistentVolume (PV) 一起动态的分配空间。</description>
     </item>
     <item>
       <title>Kubernetes Headless Service</title>
       <link>https://runzhen.github.io/posts/kubernetes-headless-service/</link>
       <pubDate>Sun, 20 Sep 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/kubernetes-headless-service/</guid>
-      <description>&lt;p&gt;问题起源于我用 envoy 对 grpc 做 Layer 7 负载均衡的时候，发现 traffic 永远被转发到了一个特定的 Pod，显然是配置出错了。&lt;/p&gt;
-&lt;p&gt;环境如下：&lt;/p&gt;
-&lt;p&gt;同一个 namespace 下部署了 2 个 grpc server，一个 envoy&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ kubectl get pod
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;NAME                             READY   STATUS    RESTARTS   AGE
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grpc-envoy-7684f49cb-9fv4h     1/1     Running   &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          4h49m
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grpc-server-668bdd6576-2bvkz   1/1     Running   &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          4h51m
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grpc-server-668bdd6576-tqzj4   1/1     Running   &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;          4h51m
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;envoy 的 service 配置如下&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;apiVersion&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;v1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;kind&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Service&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;metadata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;grpc-envoy&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;namespace&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;default&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;labels&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;app&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;grpc-envoy&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;spec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;type&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;NodePort&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;ports&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;grpc&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;m&#34;&gt;8080&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;targetPort&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;grpc&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;nodePort&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;m&#34;&gt;30061&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;protocol&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;selector&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;app&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;grpc-envoy&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;grpc-server 的 service 配置如下&lt;/p&gt;</description>
+      <description>问题起源于我用 envoy 对 grpc 做 Layer 7 负载均衡的时候，发现 traffic 永远被转发到了一个特定的 Pod，显然是配置出错了。
+环境如下：
+同一个 namespace 下部署了 2 个 grpc server，一个 envoy
+$ kubectl get pod NAME READY STATUS RESTARTS AGE grpc-envoy-7684f49cb-9fv4h 1/1 Running 0 4h49m grpc-server-668bdd6576-2bvkz 1/1 Running 0 4h51m grpc-server-668bdd6576-tqzj4 1/1 Running 0 4h51m envoy 的 service 配置如下
+apiVersion: v1 kind: Service metadata: name: grpc-envoy namespace: default labels: app: grpc-envoy spec: type: NodePort ports: - name: grpc port: 8080 targetPort: grpc nodePort: 30061 protocol: TCP selector: app: grpc-envoy grpc-server 的 service 配置如下</description>
     </item>
     <item>
       <title>Kubernetes Pod 中的 Pause 容器</title>
       <link>https://runzhen.github.io/posts/k8s-pod-pause-container/</link>
       <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/k8s-pod-pause-container/</guid>
-      <description>&lt;p&gt;在一个运行 kubernetes 的节点上，我们能看到很多名叫 “pause” 的 container。比如&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ sudo docker ps &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep pause
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;a4218d1d379b        k8s.gcr.io/pause:3.1     &lt;span class=&#34;s2&#34;&gt;&amp;#34;/pause&amp;#34;&lt;/span&gt;          
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;a2109bf3f0db        k8s.gcr.io/pause:3.1     &lt;span class=&#34;s2&#34;&gt;&amp;#34;/pause&amp;#34;&lt;/span&gt;        
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;57cfa42e95d3        k8s.gcr.io/pause:3.1     &lt;span class=&#34;s2&#34;&gt;&amp;#34;/pause&amp;#34;&lt;/span&gt;        
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;仔细观察一下不难发现，每一个 Pod 都会对应一个 pause container。&lt;/p&gt;
-&lt;p&gt;在查阅了网上的一些资料以后，我总结了一下它大概有两个作用，&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;它是 Pod 中第一个启动的 container ，由它创建新的 linux namespace，其他 container 启动后再加入到这些 namespace 中。&lt;/li&gt;
-&lt;li&gt;在 Pod 的环境中充当 init process 的角色，它的 PID 是 1，负责回收所有僵尸进程。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;blockquote&gt;
-&lt;p&gt;说个题外话，在 docker 中，一个 container 启动时，Dockerfile 的 ENTRYPOINT 中指定的命令会成为这个 container 的 init process，PID 为 1.&lt;/p&gt;&lt;/blockquote&gt;
-&lt;p&gt;顺便来看一下 pause 容器的&lt;a href=&#34;https://github.com/kubernetes/kubernetes/blob/master/build/pause/pause.c&#34;&gt;实现&lt;/a&gt;，一共只有几十行 C 语言代码&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;static&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;sigdown&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;signo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nf&#34;&gt;psignal&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;signo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Shutting down, got signal&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nf&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;static&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;sigreap&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;signo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;waitpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;WNOHANG&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;argc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;cm&#34;&gt;/* Not an error because pause sees use outside of infra containers. */&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Warning: pause should be the first process&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;sigaction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;SIGINT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sigaction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sa_handler&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sigdown&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;sigaction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;SIGTERM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sigaction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sa_handler&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sigdown&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;sigaction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;SIGCHLD&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sigaction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sa_handler&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sigreap&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                             &lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sa_flags&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SA_NOCLDSTOP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(;;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;pause&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nf&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Error: infinite loop terminated&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;42&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;函数 &lt;code&gt;sigreap(int signo)&lt;/code&gt; 就是在子进程退出的时候进行回收，防止产生僵尸进程，所以是 “reap”，非常形象生动。&lt;/p&gt;</description>
+      <description>在一个运行 kubernetes 的节点上，我们能看到很多名叫 “pause” 的 container。比如
+$ sudo docker ps | grep pause a4218d1d379b k8s.gcr.io/pause:3.1 &amp;#34;/pause&amp;#34; a2109bf3f0db k8s.gcr.io/pause:3.1 &amp;#34;/pause&amp;#34; 57cfa42e95d3 k8s.gcr.io/pause:3.1 &amp;#34;/pause&amp;#34; 仔细观察一下不难发现，每一个 Pod 都会对应一个 pause container。
+在查阅了网上的一些资料以后，我总结了一下它大概有两个作用，
+它是 Pod 中第一个启动的 container ，由它创建新的 linux namespace，其他 container 启动后再加入到这些 namespace 中。 在 Pod 的环境中充当 init process 的角色，它的 PID 是 1，负责回收所有僵尸进程。 说个题外话，在 docker 中，一个 container 启动时，Dockerfile 的 ENTRYPOINT 中指定的命令会成为这个 container 的 init process，PID 为 1.
+顺便来看一下 pause 容器的实现，一共只有几十行 C 语言代码
+static void sigdown(int signo) { psignal(signo, &amp;#34;Shutting down, got signal&amp;#34;); exit(0); } static void sigreap(int signo) { while (waitpid(-1, NULL, WNOHANG) &amp;gt; 0) ; } int main(int argc, char **argv) { if (getpid() !</description>
     </item>
     <item>
       <title>Kubernetes Dashboard 添加 Auth</title>
       <link>https://runzhen.github.io/posts/k8s-dashboard-auth/</link>
       <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/k8s-dashboard-auth/</guid>
-      <description>&lt;p&gt;组里的 k8s cluster Dashboard 一直没有设置登录，导致所有可以 ping IP 的人都可以登录管理界面，这样显然是不合理的，应该要设置几个不同权限的账户，并且开启 Dashboard 的 Basic Auth。&lt;/p&gt;
-&lt;p&gt;关于开启 Dashboard Basic Auth 网上有不少资料，但是在实际操作中还是遇到几个莫名其妙的坑。&lt;/p&gt;
-&lt;h3 id=&#34;创建用户文件&#34;&gt;创建用户文件&lt;/h3&gt;
-&lt;p&gt;根据实际需求，并不需要使用 LDAP 等等复杂的登录方式，我们只需要一个 admin 账户，再加上低权限的只读 view 账户，以及有修改权限的 edit 账户就足够。&lt;/p&gt;
-&lt;p&gt;因此，只要添加 &lt;code&gt;/etc/kubernetes/pki/basic_auth_file&lt;/code&gt; 文件即可。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vi /etc/kubernetes/pki/basic_auth_file
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;password,username,1 
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;需要注意的一个坑是用户名密码的顺序是反过来的（如上面所示），否则在 dashboard 上怎么输入都提示不对。&lt;/p&gt;
-&lt;h3 id=&#34;修改-api-server-配置&#34;&gt;修改 API Server 配置&lt;/h3&gt;
-&lt;p&gt;修改 &lt;code&gt;/etc/kubernetes/manifests/kube-apiserver.yaml&lt;/code&gt; 加入一个启动参数&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;vim /etc/kubernetes/manifests/kube-apiserver.yaml
-
-- --basic-auth-file=/etc/kubernetes/pki/basic_auth_file
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这里又遇到一个坑，在我们的 k8s Master 节点这个目录下有两个文件，第一个叫 kube-apiserver.yaml， 另一个是 kube-apiserver_xxx.yaml。&lt;/p&gt;
-&lt;p&gt;本来我以为第一个是实际的配置文件，第二个应该是其他人配置时 copy 的一个备份。&lt;/p&gt;
-&lt;p&gt;然而实际并不是，真正被使用的是第二个文件，这点让人匪夷所思，我花了好久才发现这个坑，但是我始终没找到哪里指定了让 api server 读取 &lt;code&gt;kube-apiserver_xxx.yaml&lt;/code&gt; 而不是 &lt;code&gt;kube-apiserver.yaml&lt;/code&gt; 。&lt;/p&gt;
-&lt;h3 id=&#34;重启-api-server&#34;&gt;重启 API Server&lt;/h3&gt;
-&lt;p&gt;很多资料上都会把重启 api server 一笔带过，但是都不写具体怎么操作，k8s 上并不是简单删除一个 pod 就算重启的。&lt;/p&gt;</description>
+      <description>组里的 k8s cluster Dashboard 一直没有设置登录，导致所有可以 ping IP 的人都可以登录管理界面，这样显然是不合理的，应该要设置几个不同权限的账户，并且开启 Dashboard 的 Basic Auth。
+关于开启 Dashboard Basic Auth 网上有不少资料，但是在实际操作中还是遇到几个莫名其妙的坑。
+创建用户文件 根据实际需求，并不需要使用 LDAP 等等复杂的登录方式，我们只需要一个 admin 账户，再加上低权限的只读 view 账户，以及有修改权限的 edit 账户就足够。
+因此，只要添加 /etc/kubernetes/pki/basic_auth_file 文件即可。
+vi /etc/kubernetes/pki/basic_auth_file password,username,1 需要注意的一个坑是用户名密码的顺序是反过来的（如上面所示），否则在 dashboard 上怎么输入都提示不对。
+修改 API Server 配置 修改 /etc/kubernetes/manifests/kube-apiserver.yaml 加入一个启动参数
+vim /etc/kubernetes/manifests/kube-apiserver.yaml - --basic-auth-file=/etc/kubernetes/pki/basic_auth_file 这里又遇到一个坑，在我们的 k8s Master 节点这个目录下有两个文件，第一个叫 kube-apiserver.yaml， 另一个是 kube-apiserver_xxx.yaml。
+本来我以为第一个是实际的配置文件，第二个应该是其他人配置时 copy 的一个备份。
+然而实际并不是，真正被使用的是第二个文件，这点让人匪夷所思，我花了好久才发现这个坑，但是我始终没找到哪里指定了让 api server 读取 kube-apiserver_xxx.yaml 而不是 kube-apiserver.yaml 。
+重启 API Server 很多资料上都会把重启 api server 一笔带过，但是都不写具体怎么操作，k8s 上并不是简单删除一个 pod 就算重启的。</description>
     </item>
     <item>
       <title>在虚拟机中使用 GPU 计算</title>
       <link>https://runzhen.github.io/posts/nvidia-gpu-pass-through/</link>
       <pubDate>Sat, 13 Jun 2020 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/nvidia-gpu-pass-through/</guid>
-      <description>&lt;p&gt;本文介绍如何在 Linux 虚拟机中直接使用 GPU 做科学计算，要达到这个目的，需要满足下面几个条件：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;物理主机使用 VMWare ESXi 作为虚拟化的 VMM，并且版本最好大于等于 6.5&lt;/li&gt;
-&lt;li&gt;使用的是 Nvidia GPU 的显卡&lt;/li&gt;
-&lt;li&gt;Linux 虚拟机 OS 没有限制，我使用的是 ubuntu&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;esxi-开启显卡直通&#34;&gt;ESXi 开启显卡直通&lt;/h2&gt;
-&lt;p&gt;假设已经安装好了 ESXi，通过 WebUI 进入 Host 的 Manage 界面，点击 Hardware，如图&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/esxi1.png&#34; alt=&#34;esxi1&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;把 nVidia 开头的这几个全部选中，然后 “Active”， 表示开启 PCI 设备的直通 (passthrough)。&lt;/p&gt;
-&lt;p&gt;重启物理主机。&lt;/p&gt;
-&lt;h2 id=&#34;配置虚拟机&#34;&gt;配置虚拟机&lt;/h2&gt;
-&lt;p&gt;创建一个新虚拟机，或者修改已有的虚拟机，&lt;/p&gt;
-&lt;p&gt;点击 Edit，&lt;code&gt;VM Options&lt;/code&gt; ，在 &lt;code&gt;Advanced&lt;/code&gt; 里面点击 &lt;code&gt;Edit configuration&lt;/code&gt; 。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2020/esxi2.png&#34; alt=&#34;esxi2&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;增加一条配置参数 &lt;code&gt;hypervisor.cpuid.v0&lt;/code&gt;, 对应的值为 &lt;code&gt;FALSE&lt;/code&gt;，这一步的目的是让驱动把虚拟机当做物理机来处理。&lt;/p&gt;
-&lt;p&gt;另一需要修改的地方让虚拟机硬件配置内存大小下面勾选 “Reserve all guest memory (All locked)”，让虚拟机启动时一次性获取物理主机内存，而不是按需获取。&lt;/p&gt;
-&lt;p&gt;到这里，主机和虚拟机的配置就全部完成了，接下来是驱动软件的安装&lt;/p&gt;
-&lt;h2 id=&#34;虚拟机安装驱动&#34;&gt;虚拟机安装驱动&lt;/h2&gt;
-&lt;p&gt;重启并进入虚拟机 CLI，首先可以确认一下 GPU 已经被直通给了虚拟机，这一步不是必须要做，但检查一下没坏处。&lt;/p&gt;</description>
+      <description>本文介绍如何在 Linux 虚拟机中直接使用 GPU 做科学计算，要达到这个目的，需要满足下面几个条件：
+物理主机使用 VMWare ESXi 作为虚拟化的 VMM，并且版本最好大于等于 6.5 使用的是 Nvidia GPU 的显卡 Linux 虚拟机 OS 没有限制，我使用的是 ubuntu ESXi 开启显卡直通 假设已经安装好了 ESXi，通过 WebUI 进入 Host 的 Manage 界面，点击 Hardware，如图
+把 nVidia 开头的这几个全部选中，然后 “Active”， 表示开启 PCI 设备的直通 (passthrough)。
+重启物理主机。
+配置虚拟机 创建一个新虚拟机，或者修改已有的虚拟机，
+点击 Edit，VM Options ，在 Advanced 里面点击 Edit configuration 。
+增加一条配置参数 hypervisor.cpuid.v0, 对应的值为 FALSE，这一步的目的是让驱动把虚拟机当做物理机来处理。
+另一需要修改的地方让虚拟机硬件配置内存大小下面勾选 “Reserve all guest memory (All locked)”，让虚拟机启动时一次性获取物理主机内存，而不是按需获取。
+到这里，主机和虚拟机的配置就全部完成了，接下来是驱动软件的安装
+虚拟机安装驱动 重启并进入虚拟机 CLI，首先可以确认一下 GPU 已经被直通给了虚拟机，这一步不是必须要做，但检查一下没坏处。
+$ lshw | grep display $ sudo apt install ubuntu-drivers-common $ ubuntu-drivers devices 接下来，禁用系统自带的开源 nouveau 驱动</description>
     </item>
     <item>
       <title>从 Kubernetes 中访问 Memorystore</title>
       <link>https://runzhen.github.io/posts/gke-access-memorystore/</link>
       <pubDate>Sun, 25 Aug 2019 14:49:42 -0700</pubDate>
       <guid>https://runzhen.github.io/posts/gke-access-memorystore/</guid>
-      <description>&lt;p&gt;Memorystore 是 Google Cloud 在 2018 年推出的托管 Redis 服务，让用户一键生成 Redis 实例，必要的时候再一键 scale，省去了维护 Redis 的烦恼。&lt;/p&gt;
-&lt;p&gt;本文在 k8s 中部署一个简单的小程序访问 Memorystore 数据库，获取 counter 值，并开启一个 http server 对外提供这个值。&lt;/p&gt;
-&lt;h2 id=&#34;准备&#34;&gt;准备&lt;/h2&gt;
-&lt;p&gt;GCP 提供了一个命令行工具 gcloud，几乎所有的 web 操作都有对应的 CLI，非常方便。不同操作系统对应的安装包可以在&lt;a href=&#34;https://cloud.google.com/sdk/install&#34;&gt;这里下载&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;我的笔记本就叫它 “local host”，安装好 gcloud 之后，以下所有的操作都在 local 进行，命令执行的结果直接部署到 cloud 中。&lt;/p&gt;
-&lt;p&gt;现在开始前期准备工作。首先，在 GCP web 界面一键创建 Memorystore，之后我们能在 MemoryStore 的 Instances 里面看到这个实例，它的 IP 地址是 10.0.16.3 端口 6379。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;很显然，10.0.16.3 这个 IP 是无法直接访问的，而如果你在相同的 GCP Project 里面创建了一个 VM instance，GCP 会自动创建一条路由，让你的 VM 可以 telnet 10.0.16.3 6379。&lt;/p&gt;&lt;/blockquote&gt;
-&lt;p&gt;然后，创建一个 k8s 集群，这一步也同样可以在 web 界面里做，如果要用 GCP 提供的 gcloud 命令行的话如下：&lt;/p&gt;</description>
+      <description>Memorystore 是 Google Cloud 在 2018 年推出的托管 Redis 服务，让用户一键生成 Redis 实例，必要的时候再一键 scale，省去了维护 Redis 的烦恼。
+本文在 k8s 中部署一个简单的小程序访问 Memorystore 数据库，获取 counter 值，并开启一个 http server 对外提供这个值。
+准备 GCP 提供了一个命令行工具 gcloud，几乎所有的 web 操作都有对应的 CLI，非常方便。不同操作系统对应的安装包可以在这里下载
+我的笔记本就叫它 “local host”，安装好 gcloud 之后，以下所有的操作都在 local 进行，命令执行的结果直接部署到 cloud 中。
+现在开始前期准备工作。首先，在 GCP web 界面一键创建 Memorystore，之后我们能在 MemoryStore 的 Instances 里面看到这个实例，它的 IP 地址是 10.0.16.3 端口 6379。
+很显然，10.0.16.3 这个 IP 是无法直接访问的，而如果你在相同的 GCP Project 里面创建了一个 VM instance，GCP 会自动创建一条路由，让你的 VM 可以 telnet 10.0.16.3 6379。
+然后，创建一个 k8s 集群，这一步也同样可以在 web 界面里做，如果要用 GCP 提供的 gcloud 命令行的话如下：</description>
     </item>
     <item>
       <title>minikube, 单机版 kubernetes</title>
       <link>https://runzhen.github.io/posts/ubuntu-install-k8s/</link>
       <pubDate>Tue, 13 Aug 2019 00:00:00 +0000</pubDate>
       <guid>https://runzhen.github.io/posts/ubuntu-install-k8s/</guid>
-      <description>&lt;p&gt;本来想在我的 linux 主机上创建 3 个虚拟机，然后手工搭建一个拥有 3 个节点的 k8s 集群。&lt;/p&gt;
-&lt;p&gt;但是翻了翻网上的各种教程，发现每个教程都是巨复杂，给我一种 “即使我跟着教程千辛万苦敲完所有命令，也不一定能运行” 的感觉。最后，我发现了 minikube 这个东西，可以方便的搭建一个单机版 k8s。&lt;/p&gt;
-&lt;p&gt;麻雀虽小五脏俱全，即便是这样一个简单的 k8s，目前也足够我学习一些基本知识了。&lt;/p&gt;
-&lt;p&gt;本文记录一下安装 minikube 的具体步骤，并在 k8s 中部署一个简单的服务。&lt;/p&gt;
-&lt;h2 id=&#34;安装-minikube&#34;&gt;安装 minikube&lt;/h2&gt;
-&lt;p&gt;开局一张图，先展示一下 minikube 的整个架构。&lt;/p&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://runzhen.github.io/image/2019/k8s.jpeg&#34; alt=&#34;zone1&#34;  /&gt;
-&lt;/p&gt;
-&lt;p&gt;首先是准备工作，更新系统，安装必要组件。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt-get update
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt-get install apt-transport-https
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt-get upgrade
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后安装 virtualbox，&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install virtualbox virtualbox-ext-pack
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装 minikube&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;chmod +x minikube-linux-amd64
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo mv minikube-linux-amd64 /usr/local/bin/minikube
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;添加 kubectl 源&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; sudo apt-key add -
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;值得注意的是，我的主机是 ubuntu 18.04，代号 bionic，而安装的源却是 xenial，对应 ubuntu 16.04。
-这是因为 kubernetes 源还没有为 18.04 更新，不过旧的源仍然可以用，亲测有效。&lt;/p&gt;</description>
+      <description>本来想在我的 linux 主机上创建 3 个虚拟机，然后手工搭建一个拥有 3 个节点的 k8s 集群。
+但是翻了翻网上的各种教程，发现每个教程都是巨复杂，给我一种 “即使我跟着教程千辛万苦敲完所有命令，也不一定能运行” 的感觉。最后，我发现了 minikube 这个东西，可以方便的搭建一个单机版 k8s。
+麻雀虽小五脏俱全，即便是这样一个简单的 k8s，目前也足够我学习一些基本知识了。
+本文记录一下安装 minikube 的具体步骤，并在 k8s 中部署一个简单的服务。
+安装 minikube 开局一张图，先展示一下 minikube 的整个架构。
+首先是准备工作，更新系统，安装必要组件。
+sudo apt-get update sudo apt-get install apt-transport-https sudo apt-get upgrade 然后安装 virtualbox，
+sudo apt install virtualbox virtualbox-ext-pack 安装 minikube
+wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 chmod +x minikube-linux-amd64 sudo mv minikube-linux-amd64 /usr/local/bin/minikube 添加 kubectl 源
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 值得注意的是，我的主机是 ubuntu 18.04，代号 bionic，而安装的源却是 xenial，对应 ubuntu 16.</description>
     </item>
   </channel>
 </rss>
